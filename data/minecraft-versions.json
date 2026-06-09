@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "versions": [
+    { "id": "1.18.2", "enabled": true },
+    { "id": "1.20.1", "enabled": true },
+    { "id": "1.21.1", "enabled": false },
+    { "id": "1.19.2", "enabled": false },
+    { "id": "1.16.5", "enabled": true },
+    { "id": "1.12.2", "enabled": false }
+  ]
+}

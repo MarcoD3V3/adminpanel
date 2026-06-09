@@ -1,0 +1,1972 @@
+/* Widgets compartidos Hub Builder ↔ Launcher (selectores, tabs) */
+@import "./hub-text-fonts.css";
+
+/* Sin contorno amarillo/naranja de foco del sistema (Windows / Chromium) */
+.hub-runtime-content :focus,
+.hub-runtime-content :focus-visible,
+.hub-preview-root :focus,
+.hub-preview-root :focus-visible {
+  outline: none;
+  outline-offset: 0;
+}
+
+.hub-pill-select:focus,
+.hub-pill-select:focus-visible {
+  outline: none;
+  outline-offset: 0;
+}
+
+.hub-pill-select {
+  width: 100%;
+  height: 100%;
+  min-height: 32px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: #1a1d22;
+  color: #d7d8da;
+  padding: 0 28px 0 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23d7d8da' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  box-sizing: border-box;
+}
+
+.hub-pill-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hub-pill-select option {
+  background: #1a1d22;
+  color: #d7d8da;
+}
+
+/* Capa fill de controles en runtime (launcher): sin fondo por defecto */
+.hub-preview-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  font: inherit;
+  cursor: inherit;
+  box-sizing: border-box;
+  background: transparent;
+}
+
+.hub-preview-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.hub-preview-pill-fill {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: auto;
+  max-width: none;
+  height: auto;
+  min-width: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Estilo 1 — Clásico (por defecto) */
+.hub-pill-style-1 {
+  border-color: rgba(255, 255, 255, 0.08);
+  background-color: #1a1d22;
+}
+
+/* Estilo 2 — Cristal */
+.hub-pill-style-2 {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(26, 29, 34, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Estilo 3 — Neón */
+.hub-pill-style-3 {
+  border-color: rgba(255, 168, 64, 0.65);
+  background: linear-gradient(180deg, #1c1a16 0%, #14120f 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 140, 40, 0.25),
+    0 0 14px rgba(255, 140, 40, 0.22),
+    inset 0 1px 0 rgba(255, 200, 120, 0.12);
+}
+
+/* Estilo 4 — Línea */
+.hub-pill-style-4 {
+  border-color: transparent;
+  background: transparent;
+  padding-left: 4px;
+  font-weight: 600;
+  color: #e8e9eb;
+}
+
+/* Estilo 5 — Bosque */
+.hub-pill-style-5 {
+  border-color: rgba(107, 158, 120, 0.55);
+  background: linear-gradient(180deg, rgba(73, 111, 79, 0.35) 0%, rgba(26, 29, 34, 0.95) 100%);
+  box-shadow: inset 0 1px 0 rgba(107, 158, 120, 0.2);
+}
+
+/* Estilo 6 — Humo */
+.hub-pill-style-6 {
+  border-color: rgba(255, 255, 255, 0.06);
+  background: rgba(42, 44, 50, 0.72);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+  color: #c8c9cc;
+}
+
+/* Estilo 7 — Noche */
+.hub-pill-style-7 {
+  border-color: rgba(255, 255, 255, 0.04);
+  background: #08090b;
+  box-shadow: none;
+  color: #ececee;
+}
+
+/* Estilo 8 — Plata */
+.hub-pill-style-8 {
+  border-color: rgba(168, 178, 198, 0.38);
+  background: linear-gradient(180deg, rgba(58, 62, 72, 0.9) 0%, rgba(28, 30, 36, 0.98) 100%);
+  box-shadow: inset 0 1px 0 rgba(220, 228, 240, 0.1);
+  color: #e4e7ee;
+}
+
+/* Estilo 9 — Arena */
+.hub-pill-style-9 {
+  border-color: rgba(186, 162, 128, 0.32);
+  background: linear-gradient(180deg, rgba(48, 42, 36, 0.92) 0%, rgba(28, 25, 22, 0.98) 100%);
+  box-shadow: inset 0 1px 0 rgba(210, 188, 150, 0.08);
+  color: #ddd4c8;
+}
+
+/* Estilo 10 — Hielo */
+.hub-pill-style-10 {
+  border-color: rgba(130, 188, 228, 0.42);
+  background: linear-gradient(180deg, rgba(24, 36, 48, 0.88) 0%, rgba(14, 20, 30, 0.98) 100%);
+  box-shadow: inset 0 1px 0 rgba(180, 220, 255, 0.1);
+  color: #d8e8f4;
+}
+
+.lp-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 20px 12px;
+  box-sizing: border-box;
+}
+
+.lp-tab {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.lp-tab.active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e8e9eb;
+}
+
+.lp-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px 12px;
+  box-sizing: border-box;
+}
+
+.lp-search-field {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.lp-search-field > .lp-search-input,
+.lp-search-field > .lp-input,
+.lp-search-field > .hub-preview-input-fake {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+.lp-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  color: rgba(255, 255, 255, 0.45);
+  pointer-events: none;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.lp-search-input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0.45em 0.55em 0.45em 2.25rem;
+  line-height: 1.35;
+}
+
+.lp-search .lp-btn-secondary,
+.lp-search .hub-preview-btn {
+  flex-shrink: 0;
+}
+
+/* Dentro de elementos posicionados del Hub: sin padding extra (1:1 con canvas) */
+.hub-runtime-content .lp-tabs {
+  gap: 4px;
+  padding: 0;
+  width: max-content;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.hub-runtime-content .lp-tab {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85em;
+  padding: 0.35em 0.65em;
+  line-height: 1.35;
+}
+
+.hub-runtime-content .lp-search {
+  gap: 0.4em;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  align-items: center;
+}
+
+.hub-runtime-content .lp-search-field {
+  align-self: center;
+}
+
+.hub-runtime-content .lp-search .lp-btn-secondary,
+.hub-runtime-content .lp-search .hub-preview-btn {
+  align-self: center;
+}
+
+.hub-runtime-content .lp-search-input,
+.hub-runtime-content .lp-input {
+  font-size: 0.85em;
+  padding: 0.45em 0.55em 0.45em 2.25rem;
+  line-height: 1.35;
+}
+
+.hub-search-field-fill .lp-search-input {
+  padding-left: 2.25rem;
+}
+
+.hub-runtime-content .hub-pill-select:not(.hub-preview-pill-fill) {
+  width: auto;
+  min-width: min(100%, 8rem);
+  max-width: 100%;
+  flex-shrink: 0;
+}
+
+/* ——— Estilos de buscador / campos de texto ——— */
+.hub-search-field-fill {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.hub-search-field-fill > .lp-search,
+.hub-search-field-fill > input,
+.hub-search-field-fill > .ih-input,
+.hub-search-field-fill > .hub-preview-field,
+.hub-search-field-fill > .installed-mods-mini-search-wrap {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+
+.hub-runtime-content .hub-preview-search .hub-preview-input-fake.lp-search-input {
+  padding: 0.4em 0.55em 0.4em 2.25rem;
+}
+
+.hub-search-field-fill .hub-preview-field .ih-input,
+.hub-search-field-fill .hub-preview-field .hub-preview-input-fake {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.hub-search-field-style-1 .lp-search-input,
+.hub-search-field-style-1 .lp-input,
+.hub-search-field-style-1 .hub-search-field-input,
+.hub-search-field-style-1 .hub-preview-input-fake,
+.hub-search-field-style-1 .ih-input {
+  background: #14161a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #d7d8da;
+  box-shadow: none;
+}
+
+.hub-search-field-style-2 .lp-search-input,
+.hub-search-field-style-2 .lp-input,
+.hub-search-field-style-2 .hub-search-field-input,
+.hub-search-field-style-2 .hub-preview-input-fake,
+.hub-search-field-style-2 .ih-input {
+  background: rgba(26, 29, 34, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  color: #e8e9eb;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.hub-search-field-style-3 .lp-search-input,
+.hub-search-field-style-3 .lp-input,
+.hub-search-field-style-3 .hub-search-field-input,
+.hub-search-field-style-3 .hub-preview-input-fake,
+.hub-search-field-style-3 .ih-input {
+  background: #0a0b0d;
+  border: 1px solid rgba(255, 168, 64, 0.72);
+  border-radius: 999px;
+  color: #f2f2f3;
+  box-shadow:
+    0 0 0 1px rgba(255, 140, 40, 0.22),
+    0 0 14px rgba(255, 140, 40, 0.2);
+}
+
+.hub-search-field-style-3 .lp-btn-secondary,
+.hub-search-field-style-3 .hub-preview-btn.secondary {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 168, 64, 0.35);
+  background: rgba(255, 140, 40, 0.12);
+  color: #ffd9a8;
+}
+
+.hub-search-field-style-4 .lp-search-field {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+  box-sizing: border-box;
+}
+
+.hub-search-field-style-4 .lp-search-input,
+.hub-search-field-style-4 .lp-input,
+.hub-search-field-style-4 .hub-search-field-input,
+.hub-search-field-style-4 .hub-preview-input-fake,
+.hub-search-field-style-4 .ih-input {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  color: #e8e9eb;
+  box-shadow: none;
+  padding: 0.45em 0.55em 0.45em 2.25rem;
+}
+
+.hub-search-field-style-4 .installed-mods-mini-search-wrap {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+  padding-bottom: 2px;
+  box-sizing: border-box;
+}
+
+.hub-search-field-style-4 .installed-mods-mini-search,
+.hub-search-field-style-4 .hub-preview-installed-search .hub-preview-input-fake {
+  border: none;
+  border-bottom: none;
+  border-radius: 0;
+  background: transparent;
+  padding-bottom: 4px;
+}
+
+.hub-search-field-style-5 .lp-search-input,
+.hub-search-field-style-5 .lp-input,
+.hub-search-field-style-5 .hub-search-field-input,
+.hub-search-field-style-5 .hub-preview-input-fake,
+.hub-search-field-style-5 .ih-input {
+  background: linear-gradient(180deg, rgba(73, 111, 79, 0.2) 0%, rgba(20, 22, 26, 0.95) 100%);
+  border: 1px solid rgba(107, 158, 120, 0.55);
+  border-radius: 12px;
+  color: #d7d8da;
+  box-shadow: inset 0 1px 0 rgba(107, 158, 120, 0.18);
+}
+
+.hub-search-field-style-5 .lp-btn-secondary,
+.hub-search-field-style-5 .hub-preview-btn.secondary {
+  border: 1px solid rgba(107, 158, 120, 0.45);
+  background: rgba(73, 111, 79, 0.28);
+  color: #b8dcc0;
+}
+
+.hub-search-field-style-6 .lp-search-input,
+.hub-search-field-style-6 .lp-input,
+.hub-search-field-style-6 .hub-search-field-input,
+.hub-search-field-style-6 .hub-preview-input-fake,
+.hub-search-field-style-6 .ih-input {
+  background: rgba(42, 44, 50, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  color: #c8c9cc;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+
+.hub-search-field-style-7 .lp-search-input,
+.hub-search-field-style-7 .lp-input,
+.hub-search-field-style-7 .hub-search-field-input,
+.hub-search-field-style-7 .hub-preview-input-fake,
+.hub-search-field-style-7 .ih-input {
+  background: #08090b;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  color: #ececee;
+  box-shadow: none;
+}
+
+.hub-search-field-style-8 .lp-search-input,
+.hub-search-field-style-8 .lp-input,
+.hub-search-field-style-8 .hub-search-field-input,
+.hub-search-field-style-8 .hub-preview-input-fake,
+.hub-search-field-style-8 .ih-input {
+  background: linear-gradient(180deg, rgba(58, 62, 72, 0.9) 0%, rgba(28, 30, 36, 0.98) 100%);
+  border: 1px solid rgba(168, 178, 198, 0.38);
+  border-radius: 10px;
+  color: #e4e7ee;
+  box-shadow: inset 0 1px 0 rgba(220, 228, 240, 0.08);
+}
+
+.hub-search-field-style-9 .lp-search-input,
+.hub-search-field-style-9 .lp-input,
+.hub-search-field-style-9 .hub-search-field-input,
+.hub-search-field-style-9 .hub-preview-input-fake,
+.hub-search-field-style-9 .ih-input {
+  background: linear-gradient(180deg, rgba(48, 42, 36, 0.92) 0%, rgba(28, 25, 22, 0.98) 100%);
+  border: 1px solid rgba(186, 162, 128, 0.32);
+  border-radius: 10px;
+  color: #ddd4c8;
+  box-shadow: inset 0 1px 0 rgba(210, 188, 150, 0.06);
+}
+
+.hub-search-field-style-10 .lp-search-input,
+.hub-search-field-style-10 .lp-input,
+.hub-search-field-style-10 .hub-search-field-input,
+.hub-search-field-style-10 .hub-preview-input-fake,
+.hub-search-field-style-10 .ih-input {
+  background: linear-gradient(180deg, rgba(24, 36, 48, 0.88) 0%, rgba(14, 20, 30, 0.98) 100%);
+  border: 1px solid rgba(130, 188, 228, 0.42);
+  border-radius: 12px;
+  color: #d8e8f4;
+  box-shadow: inset 0 1px 0 rgba(180, 220, 255, 0.08);
+}
+
+.hub-search-field-style-6 .lp-btn-secondary,
+.hub-search-field-style-6 .hub-preview-btn.secondary {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: #c8c9cc;
+}
+
+.hub-search-field-style-8 .lp-btn-secondary,
+.hub-search-field-style-8 .hub-preview-btn.secondary {
+  border: 1px solid rgba(168, 178, 198, 0.35);
+  background: rgba(58, 62, 72, 0.5);
+  color: #e4e7ee;
+}
+
+.hub-search-field-style-9 .lp-btn-secondary,
+.hub-search-field-style-9 .hub-preview-btn.secondary {
+  border: 1px solid rgba(186, 162, 128, 0.3);
+  background: rgba(48, 42, 36, 0.45);
+  color: #ddd4c8;
+}
+
+.hub-search-field-style-10 .lp-btn-secondary,
+.hub-search-field-style-10 .hub-preview-btn.secondary {
+  border: 1px solid rgba(130, 188, 228, 0.35);
+  background: rgba(24, 36, 48, 0.55);
+  color: #d8e8f4;
+}
+
+.hub-search-field-style-6 .installed-mods-mini-search,
+.hub-search-field-style-7 .installed-mods-mini-search,
+.hub-search-field-style-8 .installed-mods-mini-search,
+.hub-search-field-style-9 .installed-mods-mini-search,
+.hub-search-field-style-10 .installed-mods-mini-search {
+  border-radius: 10px;
+}
+
+/* Alineación vertical: icono + texto centrados en todos los estilos de buscador */
+.hub-search-field[class*="hub-search-field-style-"] .lp-search,
+.hub-search-field[class*="hub-search-field-style-"] .lp-search-field,
+.hub-search-field[class*="hub-search-field-style-"] .installed-mods-mini-search-wrap {
+  align-items: center;
+}
+
+.hub-search-field[class*="hub-search-field-style-"] .lp-search-icon,
+.hub-search-field[class*="hub-search-field-style-"] .installed-mods-mini-search-icon {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.hub-search-field[class*="hub-search-field-style-"] .lp-search-input,
+.hub-search-field[class*="hub-search-field-style-"] .lp-input,
+.hub-search-field[class*="hub-search-field-style-"] .hub-search-field-input,
+.hub-search-field[class*="hub-search-field-style-"] .hub-preview-input-fake,
+.hub-search-field[class*="hub-search-field-style-"] .installed-mods-mini-search,
+.hub-search-field[class*="hub-search-field-style-"] .ih-input {
+  line-height: 1.35;
+}
+
+/* ——— Lista mods instalados + mini buscador ——— */
+.installed-mods-mini-search-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.installed-mods-mini-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.42);
+  pointer-events: none;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.installed-mods-mini-search {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding-left: 30px !important;
+  font-size: 0.85em;
+  box-sizing: border-box;
+}
+
+.hub-search-field-style-3 .installed-mods-mini-search,
+.hub-search-field-style-3 .hub-preview-installed-search .hub-preview-input-fake {
+  border-radius: 999px;
+}
+
+.installed-mods-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+.installed-mods-list__refresh.is-refreshing svg {
+  animation: hub-refresh-spin 0.85s linear infinite;
+}
+
+@keyframes hub-refresh-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.lp-status-inline {
+  font-size: 0.78em;
+  opacity: 0.55;
+  margin: 0 0 6px;
+  padding: 0;
+}
+
+.installed-mods-list__items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.installed-mods-list__loading-more {
+  list-style: none;
+  padding: 8px 0;
+  font-size: 11px;
+}
+
+.installed-mod-card {
+  position: relative;
+  list-style: none;
+  padding: 0;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.installed-mod-card:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.installed-mod-card--selected,
+.installed-mod-card--menu-open {
+  border-color: rgba(107, 158, 120, 0.55);
+  background: rgba(73, 111, 79, 0.1);
+}
+
+.installed-mod-card__hit {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: none;
+  margin: 0;
+  padding: 8px 10px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.installed-mod-card__hit:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.installed-mod-card--disabled {
+  background: rgba(255, 255, 255, 0.015);
+  opacity: 0.62;
+}
+
+.installed-mod-card__main {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.installed-mod-card__title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.installed-mod-card__title {
+  font-size: 11px;
+  color: #d7d8da;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.installed-mod-card__badge {
+  flex-shrink: 0;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 2px 5px;
+  border-radius: 4px;
+  line-height: 1.2;
+}
+
+.installed-mod-card__badge--update {
+  color: #e8c56a;
+  background: rgba(232, 197, 106, 0.12);
+  border: 1px solid rgba(232, 197, 106, 0.28);
+}
+
+.installed-mod-card__badge--off {
+  color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.installed-mod-card--disabled .installed-mod-card__title {
+  color: rgba(215, 216, 218, 0.55);
+  text-decoration: line-through;
+  text-decoration-color: rgba(255, 255, 255, 0.2);
+}
+
+.installed-mod-card__file {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.35);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.installed-mod-card__size {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.35);
+  flex-shrink: 0;
+}
+
+/* ——— Menú contextual (clic derecho) ——— */
+.installed-mod-menu {
+  position: fixed;
+  z-index: 10000;
+  min-width: 188px;
+  max-width: min(260px, calc(100vw - 16px));
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #14161a;
+  box-shadow:
+    0 10px 32px rgba(0, 0, 0, 0.48),
+    0 0 0 1px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+}
+
+.installed-mod-menu__title {
+  margin: 2px 8px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #e8e9eb;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.installed-mod-menu__hint {
+  margin: 2px 8px 4px;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.38);
+  line-height: 1.35;
+}
+
+.installed-mod-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #d7d8da;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.installed-mod-menu__item:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.installed-mod-menu__item:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.installed-mod-menu__item--danger {
+  color: #e88a8a;
+}
+
+.installed-mod-menu__item--danger:hover:not(:disabled) {
+  background: rgba(229, 115, 115, 0.12);
+}
+
+.installed-mod-menu__sep {
+  height: 1px;
+  margin: 4px 6px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ——— Estilos tarjetas lista instalados ——— */
+.hub-list-card-style-1 .installed-mod-card {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.hub-list-card-style-2 .installed-mod-card {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(26, 29, 34, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.hub-list-card-style-3 .installed-mod-card {
+  border-color: rgba(255, 168, 64, 0.45);
+  background: rgba(20, 18, 15, 0.85);
+  box-shadow: 0 0 10px rgba(255, 140, 40, 0.08);
+}
+
+.hub-list-card-style-3 .installed-mod-card--selected {
+  border-color: rgba(255, 168, 64, 0.65);
+  background: rgba(255, 140, 40, 0.08);
+}
+
+.hub-list-card-style-4 .installed-mod-card {
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0;
+  background: transparent;
+}
+
+.hub-list-card-style-4 .installed-mod-card--selected {
+  border-bottom-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.hub-list-card-style-5 .installed-mod-card {
+  border-color: rgba(107, 158, 120, 0.4);
+  background: rgba(73, 111, 79, 0.08);
+}
+
+.hub-list-card-style-6 .installed-mod-card {
+  border-color: rgba(255, 255, 255, 0.05);
+  background: rgba(42, 44, 50, 0.55);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.hub-list-card-style-7 .installed-mod-card {
+  border-color: rgba(255, 255, 255, 0.03);
+  background: #08090b;
+}
+
+.hub-list-card-style-8 .installed-mod-card {
+  border-color: rgba(168, 178, 198, 0.28);
+  background: linear-gradient(180deg, rgba(58, 62, 72, 0.35) 0%, rgba(20, 22, 26, 0.7) 100%);
+}
+
+.hub-list-card-style-9 .installed-mod-card {
+  border-color: rgba(186, 162, 128, 0.22);
+  background: rgba(48, 42, 36, 0.35);
+}
+
+.hub-list-card-style-10 .installed-mod-card {
+  border-color: rgba(130, 188, 228, 0.3);
+  background: rgba(24, 36, 48, 0.35);
+}
+
+/* ——— Estilos pestañas catálogo ——— */
+.hub-tab-strip-style-1 .lp-tab.active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e8e9eb;
+}
+
+.hub-tab-strip-style-2 .lp-tab.active {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #e8e9eb;
+}
+
+.hub-tab-strip-style-3 .lp-tab.active {
+  background: rgba(255, 140, 40, 0.14);
+  color: #ffd9a8;
+  box-shadow: 0 0 12px rgba(255, 140, 40, 0.15);
+}
+
+.hub-tab-strip-style-4 .lp-tab.active {
+  background: transparent;
+  color: #e8e9eb;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 0;
+}
+
+.hub-tab-strip-style-5 .lp-tab.active {
+  background: rgba(73, 111, 79, 0.28);
+  color: #b8dcc0;
+  border: 1px solid rgba(107, 158, 120, 0.35);
+}
+
+.hub-tab-strip-style-6 .lp-tab.active {
+  background: rgba(255, 255, 255, 0.06);
+  color: #c8c9cc;
+}
+
+.hub-tab-strip-style-7 .lp-tab.active {
+  background: #12141a;
+  color: #ececee;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.hub-tab-strip-style-8 .lp-tab.active {
+  background: rgba(58, 62, 72, 0.55);
+  color: #e4e7ee;
+  border: 1px solid rgba(168, 178, 198, 0.25);
+}
+
+.hub-tab-strip-style-9 .lp-tab.active {
+  background: rgba(48, 42, 36, 0.55);
+  color: #ddd4c8;
+  border: 1px solid rgba(186, 162, 128, 0.2);
+}
+
+.hub-tab-strip-style-10 .lp-tab.active {
+  background: rgba(24, 36, 48, 0.55);
+  color: #d8e8f4;
+  border: 1px solid rgba(130, 188, 228, 0.28);
+}
+
+/* ——— Superficie del elemento (rellena el área del Hub, no solo el contenido) ——— */
+.hub-element-surface-shell {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.hub-preview-scroll > .hub-element-surface-shell,
+.hub-content-scaled > .hub-element-surface-shell {
+  flex: 1;
+  min-height: 0;
+}
+
+.hub-element-surface-shell > .hub-preview-scroll,
+.hub-element-surface-shell > .hub-content-scaled,
+.hub-element-surface-shell > .installed-mods-list,
+.hub-element-surface-shell > .hub-inner-scroll,
+.hub-element-surface-shell > .lp-tabs {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+.hub-element-surface-shell .hub-preview-pane,
+.hub-element-surface-shell .mc-preview {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+  border: none;
+  background: transparent;
+  border-radius: inherit;
+}
+
+.hub-tab-strip-style-1,
+.hub-tab-strip-style-2,
+.hub-tab-strip-style-3,
+.hub-tab-strip-style-4,
+.hub-tab-strip-style-5,
+.hub-tab-strip-style-6,
+.hub-tab-strip-style-7,
+.hub-tab-strip-style-8,
+.hub-tab-strip-style-9,
+.hub-tab-strip-style-10 {
+  justify-content: center;
+}
+
+.hub-list-card-style-1,
+.hub-list-card-style-2,
+.hub-list-card-style-3,
+.hub-list-card-style-4,
+.hub-list-card-style-5,
+.hub-list-card-style-6,
+.hub-list-card-style-7,
+.hub-list-card-style-8,
+.hub-list-card-style-9,
+.hub-list-card-style-10 {
+  overflow: auto;
+}
+
+/* ——— Estilos panel vista previa mod (en el elemento completo) ——— */
+.hub-panel-surface-style-1 {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
+}
+
+.hub-panel-surface-style-2 {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(26, 29, 34, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+}
+
+.hub-panel-surface-style-3 {
+  border: 1px solid rgba(255, 168, 64, 0.45);
+  background: rgba(14, 12, 10, 0.88);
+  box-shadow: 0 0 16px rgba(255, 140, 40, 0.1);
+  border-radius: 12px;
+}
+
+.hub-panel-surface-style-4 {
+  border: none;
+  border-left: 2px solid rgba(255, 255, 255, 0.22);
+  background: transparent;
+  border-radius: 0;
+  padding-left: 12px;
+}
+
+.hub-panel-surface-style-5 {
+  border: 1px solid rgba(107, 158, 120, 0.4);
+  background: rgba(73, 111, 79, 0.08);
+  border-radius: 10px;
+}
+
+.hub-panel-surface-style-6 {
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(42, 44, 50, 0.5);
+  border-radius: 10px;
+}
+
+.hub-panel-surface-style-7 {
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  background: #08090b;
+  border-radius: 8px;
+}
+
+.hub-panel-surface-style-8 {
+  border: 1px solid rgba(168, 178, 198, 0.28);
+  background: linear-gradient(180deg, rgba(58, 62, 72, 0.3) 0%, rgba(16, 18, 22, 0.85) 100%);
+  border-radius: 10px;
+}
+
+.hub-panel-surface-style-9 {
+  border: 1px solid rgba(186, 162, 128, 0.22);
+  background: rgba(48, 42, 36, 0.35);
+  border-radius: 10px;
+}
+
+.hub-panel-surface-style-10 {
+  border: 1px solid rgba(130, 188, 228, 0.3);
+  background: rgba(24, 36, 48, 0.35);
+  border-radius: 12px;
+}
+
+/* ——— Estilos visuales universales (botones, paneles, etc.) ——— */
+
+.hub-preview-btn--fill[class*="hub-control-style-"] {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto !important;
+  max-width: none !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 10px !important;
+  box-sizing: border-box !important;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* 1 — Clásico: respeta color de fondo del Hub */
+.hub-control-style-1 {
+  --hub-control-face: #1a1d22;
+  background: var(--hub-control-face);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--hub-radius, 10px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  color: #e8e9eb;
+  box-sizing: border-box;
+}
+
+/* 2 — Cristal */
+.hub-control-style-2 {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  border-radius: 12px !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 8px 24px rgba(0, 0, 0, 0.22) !important;
+  color: #f0f2f5 !important;
+  box-sizing: border-box;
+}
+
+/* 3 — Neón */
+.hub-control-style-3 {
+  background: linear-gradient(180deg, rgba(42, 28, 12, 0.95) 0%, rgba(24, 16, 8, 0.98) 100%) !important;
+  border: 1px solid rgba(255, 140, 40, 0.75) !important;
+  border-radius: 10px !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 140, 40, 0.35),
+    0 0 18px rgba(255, 120, 20, 0.35),
+    inset 0 0 12px rgba(255, 140, 40, 0.08) !important;
+  color: #ffd4a8 !important;
+  box-sizing: border-box;
+}
+
+/* 4 — Línea */
+.hub-control-style-4 {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.55) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: #e8e9eb !important;
+  box-sizing: border-box;
+}
+
+/* 5 — Bosque */
+.hub-control-style-5 {
+  background: linear-gradient(180deg, #496f4f 0%, #324a35 100%) !important;
+  border: 1px solid rgba(107, 158, 120, 0.65) !important;
+  border-radius: 10px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(180, 220, 190, 0.2),
+    0 4px 14px rgba(0, 0, 0, 0.28) !important;
+  color: #eef6ef !important;
+  box-sizing: border-box;
+}
+
+/* 6 — Humo */
+.hub-control-style-6 {
+  background: linear-gradient(180deg, #2a2d33 0%, #14161a 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45) !important;
+  color: #d7d8da !important;
+  box-sizing: border-box;
+}
+
+/* 7 — Noche */
+.hub-control-style-7 {
+  background: #08090b !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 8px !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03) !important;
+  color: #c8cace !important;
+  box-sizing: border-box;
+}
+
+/* 8 — Plata */
+.hub-control-style-8 {
+  background: linear-gradient(180deg, rgba(88, 94, 108, 0.55) 0%, rgba(28, 32, 40, 0.92) 100%) !important;
+  border: 1px solid rgba(168, 178, 198, 0.55) !important;
+  border-radius: 10px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(240, 244, 252, 0.18),
+    0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  color: #eef1f7 !important;
+  box-sizing: border-box;
+}
+
+/* 9 — Arena */
+.hub-control-style-9 {
+  background: linear-gradient(180deg, rgba(92, 78, 62, 0.72) 0%, rgba(48, 40, 32, 0.92) 100%) !important;
+  border: 1px solid rgba(186, 162, 128, 0.45) !important;
+  border-radius: 10px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(230, 210, 170, 0.12),
+    0 4px 14px rgba(0, 0, 0, 0.28) !important;
+  color: #f2e8da !important;
+  box-sizing: border-box;
+}
+
+/* 10 — Hielo */
+.hub-control-style-10 {
+  background: linear-gradient(180deg, rgba(72, 108, 138, 0.55) 0%, rgba(24, 36, 48, 0.92) 100%) !important;
+  border: 1px solid rgba(130, 188, 228, 0.55) !important;
+  border-radius: 12px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(200, 230, 255, 0.2),
+    0 0 16px rgba(100, 170, 230, 0.18) !important;
+  color: #e8f4ff !important;
+  box-sizing: border-box;
+}
+
+/* 11 — Minecraft */
+.hub-control-style-11 {
+  --hub-mc-face: #5c9629;
+  --hub-mc-hi: #7bc046;
+  --hub-mc-lo: #2e5616;
+  --hub-mc-edge: #1a1a1a;
+
+  background: var(--hub-mc-face) !important;
+  border: 2px solid var(--hub-mc-edge) !important;
+  border-radius: 0 !important;
+  box-shadow:
+    inset 3px 3px 0 0 var(--hub-mc-hi),
+    inset -3px -3px 0 0 var(--hub-mc-lo) !important;
+  color: #fff !important;
+  image-rendering: pixelated;
+  transition: filter 0.06s ease, transform 0.06s ease, box-shadow 0.06s ease;
+}
+
+.hub-control-style-11:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.hub-control-style-11:active:not(:disabled) {
+  box-shadow:
+    inset 3px 3px 0 0 var(--hub-mc-lo),
+    inset -3px -3px 0 0 var(--hub-mc-hi) !important;
+  transform: translate(1px, 1px);
+  filter: brightness(0.94);
+}
+
+.hub-preview-btn.hub-control-style-11,
+.hub-preview-btn--fill.hub-control-style-11 {
+  background: var(--hub-mc-face) !important;
+  border: 2px solid var(--hub-mc-edge) !important;
+  border-radius: 0 !important;
+  box-shadow:
+    inset 3px 3px 0 0 var(--hub-mc-hi),
+    inset -3px -3px 0 0 var(--hub-mc-lo) !important;
+  image-rendering: pixelated;
+}
+
+.hub-preview-btn.hub-control-style-1,
+.hub-preview-btn.hub-control-style-2,
+.hub-preview-btn.hub-control-style-3,
+.hub-preview-btn.hub-control-style-4,
+.hub-preview-btn.hub-control-style-5,
+.hub-preview-btn.hub-control-style-6,
+.hub-preview-btn.hub-control-style-7,
+.hub-preview-btn.hub-control-style-8,
+.hub-preview-btn.hub-control-style-9,
+.hub-preview-btn.hub-control-style-10,
+.hub-preview-btn.hub-control-style-11 {
+  box-sizing: border-box;
+}
+
+/* ——— Avatares circulares de perfiles (Hub Builder + Launcher) ——— */
+
+.ih-instance-avatar-single-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ih-instance-avatar-grid {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ih-instance-avatar-grid-inner {
+  box-sizing: border-box;
+}
+
+.ih-instance-avatar-groups {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.ih-instance-avatar-group {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ih-instance-avatar-grid-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+}
+
+.ih-instance-avatar {
+  position: relative;
+  border-radius: 50% !important;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none;
+  padding: 0;
+  color: #fff;
+  font-weight: 700;
+  line-height: 1;
+  aspect-ratio: 1;
+  box-sizing: border-box;
+}
+
+.ih-instance-avatar--fluid {
+  width: 100%;
+  max-width: 100%;
+}
+
+.ih-instance-avatar--fill {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.ih-instance-avatar.clickable {
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.ih-instance-avatar.clickable:hover:not(:disabled) {
+  transform: scale(1.06);
+}
+
+.ih-instance-avatar.clickable:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ih-instance-avatar.selected {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.88);
+}
+
+.ih-instance-avatar-letter {
+  font-size: clamp(10px, 42%, 2.5rem);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  user-select: none;
+}
+
+.ih-instance-avatar--fluid .ih-instance-avatar-letter,
+.ih-instance-avatar--fill .ih-instance-avatar-letter {
+  font-size: clamp(10px, 45cqw, 2.5rem);
+}
+
+.ih-instance-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.ih-instance-avatar--empty {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.45);
+  width: min(100%, 100%);
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 1;
+  font-size: clamp(12px, 40%, 1.5rem);
+}
+
+.ih-instance-avatar-empty {
+  padding: 8px;
+  font-size: 11px;
+}
+
+/* Perfiles embebidos en el Hub (preview + launcher) */
+.ih-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.ih-form-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text, #d7d8da);
+}
+
+.ih-form-hint {
+  margin: 0;
+  font-size: 10px;
+  color: var(--muted, #8b8d92);
+  line-height: 1.35;
+}
+
+.ih-input {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1a1d22;
+  color: var(--text, #d7d8da);
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+.ih-btn {
+  width: 100%;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent, #6b9e78);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ih-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ih-muted {
+  font-size: 11px;
+  color: var(--muted, #8b8d92);
+  padding: 8px;
+}
+
+.ih-instance-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  overflow-y: auto;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.ih-instance {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.ih-instance-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+}
+
+.ih-instance.active .ih-instance-main {
+  border-color: rgba(73, 111, 79, 0.5);
+  background: rgba(73, 111, 79, 0.12);
+}
+
+.ih-instance-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ih-instance-dot.large {
+  width: 14px;
+  height: 14px;
+}
+
+.ih-instance-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ih-instance-text strong {
+  font-size: 12px;
+}
+
+.ih-instance-text small {
+  font-size: 10px;
+  color: var(--muted, #8b8d92);
+}
+
+.ih-badge {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(73, 111, 79, 0.35);
+  color: #b8e0c0;
+  flex-shrink: 0;
+}
+
+.ih-icon-danger {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(200, 80, 80, 0.15);
+  color: #ffb4b4;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.ih-active-card {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  height: 100%;
+  box-sizing: border-box;
+  align-items: flex-start;
+}
+
+.ih-active-label {
+  margin: 0;
+  font-size: 10px;
+  color: var(--muted, #8b8d92);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ih-active-name {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.ih-active-meta,
+.ih-active-folder,
+.ih-active-stats {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--muted, #8b8d92);
+}
+
+.ih-surface-box {
+  isolation: isolate;
+  -webkit-backdrop-filter: var(--ih-surface-backdrop, none);
+}
+
+/* CSS avanzado — fuerza overrides sobre presets visuales (!important en clases) */
+.hub-css-force-no-border,
+.hub-css-force-no-border.hub-preview-btn,
+.hub-css-force-no-border.hub-preview-icon-btn,
+.hub-css-force-no-border.lh-hub-wrap,
+.hub-css-force-no-border[class*="hub-control-style-"] {
+  border: none !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+  /* Presets (p. ej. Clásico) simulan borde con inset box-shadow */
+  box-shadow: none !important;
+}
+
+.hub-css-force-no-radius,
+.hub-css-force-no-radius.hub-preview-btn,
+.hub-css-force-no-radius.hub-preview-icon-btn,
+.hub-css-force-no-radius[class*="hub-control-style-"] {
+  border-radius: 0 !important;
+}
+
+.hub-css-force-no-shadow,
+.hub-css-force-no-shadow[class*="hub-control-style-"] {
+  box-shadow: none !important;
+}
+
+.hub-css-force-no-outline {
+  outline: none !important;
+}
+
+/* ——— Estilos de texto (Hub Builder ↔ Launcher) ——— */
+
+.hub-text-style-target,
+.hub-text-style-target .hub-preview-btn,
+.hub-preview-btn.hub-text-style-target {
+  font-synthesis: none;
+}
+
+.hub-text-style-12,
+.hub-text-style-12 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-12,
+.hub-text-style-13,
+.hub-text-style-13 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-13,
+.hub-text-style-14,
+.hub-text-style-14 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-14,
+.hub-text-style-15,
+.hub-text-style-15 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-15,
+.hub-text-style-16,
+.hub-text-style-16 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-16 {
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+}
+
+.hub-text-style-19,
+.hub-text-style-19 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-19,
+.hub-text-style-20,
+.hub-text-style-20 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-20,
+.hub-text-style-21,
+.hub-text-style-21 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-21,
+.hub-text-style-22,
+.hub-text-style-22 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-22,
+.hub-text-style-23,
+.hub-text-style-23 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-23 {
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+}
+
+.hub-text-style-2,
+.hub-text-style-2 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-2,
+.hub-text-style-2 .hub-pill-select,
+.hub-text-style-2 input,
+.hub-text-style-2 textarea,
+.hub-text-style-2 select,
+.hub-text-style-2 button {
+  font-family: "Pacifico", cursive !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.02em !important;
+  text-transform: none !important;
+  text-shadow: none !important;
+}
+
+.hub-text-style-3,
+.hub-text-style-3 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-3,
+.hub-text-style-3 .hub-pill-select,
+.hub-text-style-3 input,
+.hub-text-style-3 textarea,
+.hub-text-style-3 select,
+.hub-text-style-3 button {
+  font-family: "Kaushan Script", cursive !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.01em !important;
+  text-transform: none !important;
+  text-shadow: none !important;
+}
+
+.hub-text-style-4,
+.hub-text-style-4 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-4,
+.hub-text-style-4 .hub-pill-select,
+.hub-text-style-4 input,
+.hub-text-style-4 textarea,
+.hub-text-style-4 select,
+.hub-text-style-4 button {
+  font-family: "Permanent Marker", cursive !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.03em !important;
+  text-transform: none !important;
+  text-shadow: none !important;
+}
+
+.hub-text-style-5,
+.hub-text-style-5 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-5,
+.hub-text-style-5 .hub-pill-select,
+.hub-text-style-5 input,
+.hub-text-style-5 textarea,
+.hub-text-style-5 select,
+.hub-text-style-5 button {
+  font-family: "Bebas Neue", sans-serif !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  text-shadow: none !important;
+}
+
+.hub-text-style-6,
+.hub-text-style-6 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-6,
+.hub-text-style-6 .hub-pill-select,
+.hub-text-style-6 input,
+.hub-text-style-6 textarea,
+.hub-text-style-6 select,
+.hub-text-style-6 button {
+  font-family: "Righteous", sans-serif !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  text-shadow: none !important;
+}
+
+.hub-text-style-7,
+.hub-text-style-7 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-7,
+.hub-text-style-7 .hub-pill-select,
+.hub-text-style-7 input,
+.hub-text-style-7 textarea,
+.hub-text-style-7 select,
+.hub-text-style-7 button {
+  font-family: "Cinzel Decorative", serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: none !important;
+  text-shadow: none !important;
+}
+
+.hub-text-style-8,
+.hub-text-style-8 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-8,
+.hub-text-style-8 .hub-pill-select,
+.hub-text-style-8 input,
+.hub-text-style-8 textarea,
+.hub-text-style-8 select,
+.hub-text-style-8 button {
+  font-family: "Audiowide", sans-serif !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  text-shadow: none !important;
+}
+
+.hub-text-style-9,
+.hub-text-style-9 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-9,
+.hub-text-style-9 .hub-pill-select,
+.hub-text-style-9 input,
+.hub-text-style-9 textarea,
+.hub-text-style-9 select,
+.hub-text-style-9 button {
+  font-family: "Lobster", cursive !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.02em !important;
+  text-transform: none !important;
+  text-shadow: none !important;
+}
+
+.hub-text-style-10,
+.hub-text-style-10 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-10,
+.hub-text-style-10 .hub-pill-select,
+.hub-text-style-10 input,
+.hub-text-style-10 textarea,
+.hub-text-style-10 select,
+.hub-text-style-10 button {
+  font-family: "Bungee", sans-serif !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+  text-shadow: none !important;
+}
+
+.hub-text-style-11,
+.hub-text-style-11 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-11,
+.hub-text-style-11 .hub-pill-select,
+.hub-text-style-11 input,
+.hub-text-style-11 textarea,
+.hub-text-style-11 select,
+.hub-text-style-11 button {
+  font-family: "Orbitron", sans-serif !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.12em !important;
+  text-shadow: none !important;
+}
+
+/* Minecraft — Minecrafter CDN + pixel */
+
+.hub-text-style-12,
+.hub-text-style-12 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-12,
+.hub-text-style-12 .hub-pill-select,
+.hub-text-style-12 input,
+.hub-text-style-12 textarea,
+.hub-text-style-12 select,
+.hub-text-style-12 button {
+  font-family: "Minecrafter", "Silkscreen", monospace !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.14em !important;
+  text-shadow: 4px 4px 0 #000, 5px 5px 0 rgba(0, 0, 0, 0.45) !important;
+}
+
+.hub-text-style-13,
+.hub-text-style-13 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-13,
+.hub-text-style-13 .hub-pill-select,
+.hub-text-style-13 input,
+.hub-text-style-13 textarea,
+.hub-text-style-13 select,
+.hub-text-style-13 button {
+  font-family: "Press Start 2P", monospace !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  line-height: 1.45 !important;
+  text-shadow: 3px 3px 0 #000 !important;
+}
+
+.hub-text-style-14,
+.hub-text-style-14 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-14,
+.hub-text-style-14 .hub-pill-select,
+.hub-text-style-14 input,
+.hub-text-style-14 textarea,
+.hub-text-style-14 select,
+.hub-text-style-14 button {
+  font-family: "VT323", monospace !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  text-shadow: 2px 2px 0 #000, 3px 3px 0 #000 !important;
+}
+
+.hub-text-style-15,
+.hub-text-style-15 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-15,
+.hub-text-style-15 .hub-pill-select,
+.hub-text-style-15 input,
+.hub-text-style-15 textarea,
+.hub-text-style-15 select,
+.hub-text-style-15 button {
+  font-family: "Pixelify Sans", monospace !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  text-shadow: 3px 3px 0 #000 !important;
+}
+
+.hub-text-style-16,
+.hub-text-style-16 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-16,
+.hub-text-style-16 .hub-pill-select,
+.hub-text-style-16 input,
+.hub-text-style-16 textarea,
+.hub-text-style-16 select,
+.hub-text-style-16 button {
+  font-family: "Minecrafter Alt", "DotGothic16", monospace !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  text-shadow: 4px 4px 0 #000 !important;
+}
+
+.hub-text-style-17,
+.hub-text-style-17 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-17,
+.hub-text-style-17 .hub-pill-select,
+.hub-text-style-17 input,
+.hub-text-style-17 textarea,
+.hub-text-style-17 select,
+.hub-text-style-17 button {
+  font-family: "MedievalSharp", serif !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  text-shadow: 2px 2px 0 #000, 3px 3px 0 rgba(0, 0, 0, 0.55) !important;
+}
+
+.hub-text-style-18,
+.hub-text-style-18 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-18,
+.hub-text-style-18 .hub-pill-select,
+.hub-text-style-18 input,
+.hub-text-style-18 textarea,
+.hub-text-style-18 select,
+.hub-text-style-18 button {
+  font-family: "Montserrat", system-ui, sans-serif !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  text-shadow: 3px 3px 0 #000 !important;
+}
+
+.hub-text-style-19,
+.hub-text-style-19 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-19,
+.hub-text-style-19 .hub-pill-select,
+.hub-text-style-19 input,
+.hub-text-style-19 textarea,
+.hub-text-style-19 select,
+.hub-text-style-19 button {
+  font-family: "Silkscreen", monospace !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  text-shadow: 2px 2px 0 #1a1a1a !important;
+}
+
+.hub-text-style-20,
+.hub-text-style-20 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-20,
+.hub-text-style-20 .hub-pill-select,
+.hub-text-style-20 input,
+.hub-text-style-20 textarea,
+.hub-text-style-20 select,
+.hub-text-style-20 button {
+  font-family: "Minecraftia", "Silkscreen", monospace !important;
+  font-weight: 400 !important;
+  text-transform: none !important;
+  letter-spacing: 0.04em !important;
+  text-shadow: 3px 3px 0 #000 !important;
+}
+
+.hub-text-style-21,
+.hub-text-style-21 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-21,
+.hub-text-style-21 .hub-pill-select,
+.hub-text-style-21 input,
+.hub-text-style-21 textarea,
+.hub-text-style-21 select,
+.hub-text-style-21 button {
+  font-family: "Minecraft", "Minecrafter", monospace !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.12em !important;
+  text-shadow: 4px 4px 0 #000, 5px 5px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
+.hub-text-style-22,
+.hub-text-style-22 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-22,
+.hub-text-style-22 .hub-pill-select,
+.hub-text-style-22 input,
+.hub-text-style-22 textarea,
+.hub-text-style-22 select,
+.hub-text-style-22 button {
+  font-family: "Sixtyfour", "Press Start 2P", monospace !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  line-height: 1.4 !important;
+  text-shadow: 3px 3px 0 #000, 4px 4px 0 #333 !important;
+}
+
+.hub-text-style-23,
+.hub-text-style-23 .hub-preview-btn,
+.hub-preview-btn.hub-text-style-23,
+.hub-text-style-23 .hub-pill-select,
+.hub-text-style-23 input,
+.hub-text-style-23 textarea,
+.hub-text-style-23 select,
+.hub-text-style-23 button {
+  font-family: "Silkscreen", monospace !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  text-shadow:
+    0 0 6px #6bff6b,
+    0 0 14px #3dcc3d,
+    0 0 22px rgba(34, 139, 34, 0.55),
+    3px 3px 0 #0d2b0d !important;
+}
+

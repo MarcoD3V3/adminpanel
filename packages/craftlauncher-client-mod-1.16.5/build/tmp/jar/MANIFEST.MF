@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Implementation-Title: craftlauncher-client-1.16.5
+MixinConfigs: craftlauncher_loading.mixins.json
+Implementation-Version: 1.0.0
+Specification-Vendor: CraftLauncher
+Specification-Title: CraftLauncher Client
+Specification-Version: 1
+Implementation-Vendor: CraftLauncher
+

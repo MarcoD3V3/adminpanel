@@ -1,0 +1,1207 @@
+{
+  "activationTokens": [
+    {
+      "id": "atk_f0b3e030b1f9c719",
+      "label": "Token-2026-05-30-001",
+      "tokenHash": "eed26c4491e40841ab964f2d4397df7b446f852ee210bed9d356d4f0c6989250",
+      "createdAt": "2026-05-30T00:40:48.848Z",
+      "expiresAt": "2026-06-06T00:40:48.848Z",
+      "revoked": false,
+      "usedAt": "2026-05-30T00:41:00.354Z",
+      "usedByDeviceId": "28d33556-efef-4962-b485-c802c2a6f185"
+    },
+    {
+      "id": "atk_8288675e493b983c",
+      "label": "Token-2026-05-30-002",
+      "tokenHash": "00c2d1556fae97cf9ba557586a61cfc2ee2051e99d8b957c350e68c4a398f3f9",
+      "createdAt": "2026-05-30T01:12:25.043Z",
+      "expiresAt": "2026-06-06T01:12:25.043Z",
+      "revoked": false,
+      "usedAt": "2026-05-30T01:12:29.041Z",
+      "usedByDeviceId": "e71ca041-64a7-40ec-846d-d1687617e99f"
+    }
+  ],
+  "sessions": [
+    {
+      "id": "ses_01b3ff0cb89ee05f",
+      "tokenHash": "cd37e02b8097abc970a2b934e6f4f87bc2f080172ee2e670908d1830cf4fc32b",
+      "deviceId": "28d33556-efef-4962-b485-c802c2a6f185",
+      "deviceFingerprintHash": "34abe5ebf653cd26f1f9801d18c256859764ef2bec0258cbef393c42a08aff1b",
+      "label": "Token-2026-05-30-001",
+      "createdAt": "2026-05-30T00:41:00.354Z",
+      "expiresAt": "2026-08-28T00:41:00.354Z",
+      "lastSeenAt": "2026-05-30T01:08:09.445Z",
+      "revoked": false,
+      "ipHint": "::1"
+    },
+    {
+      "id": "ses_edbe7d1ca2a56582",
+      "tokenHash": "1f10a054372241bd381a1bf1343c3774964b813e6bf162f7289e8134ed2f4107",
+      "deviceId": "e71ca041-64a7-40ec-846d-d1687617e99f",
+      "deviceFingerprintHash": "9e2114e32bbca1d3399859ec818140956bd72d39552fa34188b5c0871bd8c437",
+      "label": "Token-2026-05-30-002",
+      "createdAt": "2026-05-30T01:12:29.041Z",
+      "expiresAt": "2026-08-28T01:12:29.041Z",
+      "lastSeenAt": "2026-06-02T06:43:27.588Z",
+      "revoked": false,
+      "ipHint": "::1"
+    },
+    {
+      "id": "ses_b2517542507a821d",
+      "tokenHash": "3311cb284918b780fd202864d04ff496f5a269e74944a0a57ee902d7c86077e2",
+      "deviceId": "e71ca041-64a7-40ec-846d-d1687617e99f",
+      "deviceFingerprintHash": "9e2114e32bbca1d3399859ec818140956bd72d39552fa34188b5c0871bd8c437",
+      "label": "papapapa",
+      "userId": "usr_bc31221c521524b8",
+      "username": "papa",
+      "tier": "free",
+      "createdAt": "2026-06-02T06:45:40.991Z",
+      "expiresAt": "2026-08-31T06:45:40.991Z",
+      "lastSeenAt": "2026-06-02T06:48:46.595Z",
+      "revoked": true,
+      "ipHint": "::1"
+    },
+    {
+      "id": "ses_e327f229be4b357a",
+      "tokenHash": "9480214149581c247532c377dd7235034cac0faeca2786814a741a807ab869be",
+      "deviceId": "e71ca041-64a7-40ec-846d-d1687617e99f",
+      "deviceFingerprintHash": "9e2114e32bbca1d3399859ec818140956bd72d39552fa34188b5c0871bd8c437",
+      "label": "papapapa",
+      "userId": "usr_bc31221c521524b8",
+      "username": "papa",
+      "tier": "free",
+      "createdAt": "2026-06-02T06:52:30.638Z",
+      "expiresAt": "2026-08-31T06:52:30.638Z",
+      "lastSeenAt": "2026-06-09T17:41:30.436Z",
+      "revoked": false,
+      "ipHint": "::1"
+    },
+    {
+      "id": "ses_f74d9b1f9628fe26",
+      "tokenHash": "15ca4244e15dc5fbcab72df9e3ba60f5cf13b4d59e41c40eeb550b888829e586",
+      "deviceId": "e71ca041-64a7-40ec-846d-d1687617e99f",
+      "deviceFingerprintHash": "9e2114e32bbca1d3399859ec818140956bd72d39552fa34188b5c0871bd8c437",
+      "label": "celada",
+      "userId": "usr_805d31d1ee7a482b",
+      "username": "celada",
+      "tier": "premium",
+      "createdAt": "2026-06-09T18:14:52.503Z",
+      "expiresAt": "2026-09-07T18:14:52.503Z",
+      "lastSeenAt": "2026-06-09T18:46:12.333Z",
+      "revoked": false,
+      "ipHint": "::1"
+    }
+  ],
+  "users": [
+    {
+      "id": "usr_bc31221c521524b8",
+      "username": "papa",
+      "displayName": "papa",
+      "passwordHash": "scrypt:cbb8644ff0a81fa0252fccfc20c201cc:b512d0f23ad3525e6985936bb8d2beaca84ecc47d42aa37539b7138c426825d92810c73f2a8862a896e407372c254a5cb884c009c13666899e4be36e88c6285d",
+      "tier": "free",
+      "createdAt": "2026-06-02T06:43:04.842Z",
+      "revoked": false,
+      "lastLoginAt": "2026-06-02T06:52:30.606Z"
+    },
+    {
+      "id": "usr_805d31d1ee7a482b",
+      "username": "celada",
+      "displayName": "celada",
+      "passwordHash": "scrypt:198ca52e9db7b62be917663f257b940a:c65d3915f53c39146aa4a941f4c0db063be5a8fe6f01d70a3225b2fe720c565f534feaa20af5593eedcb8ff45e6ffc5f69ef605cdc75c7d680aad16e9185a52e",
+      "tier": "premium",
+      "createdAt": "2026-06-09T18:14:20.722Z",
+      "revoked": false,
+      "lastLoginAt": "2026-06-09T18:14:52.453Z"
+    }
+  ],
+  "auditLog": [
+    {
+      "id": "aud_2e1cc3b33e0eafc3",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T18:28:28.519Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_ca74ac434e80aaa9",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T18:28:16.208Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_2ebe56caaadfed6b",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T18:23:53.245Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_19bababf4741fd80",
+      "action": "user_login_success",
+      "at": "2026-06-09T18:14:52.467Z",
+      "ipHint": "::1",
+      "meta": "celada"
+    },
+    {
+      "id": "aud_54cfdf6b5e078a16",
+      "action": "user_created",
+      "at": "2026-06-09T18:14:20.821Z",
+      "ipHint": "::1",
+      "meta": "celada"
+    },
+    {
+      "id": "aud_07fafd879f469467",
+      "action": "admin_login",
+      "at": "2026-06-09T18:11:39.138Z",
+      "ipHint": "::1"
+    },
+    {
+      "id": "aud_59de2f24b5fce523",
+      "action": "user_updated",
+      "at": "2026-06-09T17:56:51.007Z",
+      "ipHint": "::1",
+      "meta": "usr_bc31221c521524b8"
+    },
+    {
+      "id": "aud_8bff80b6b6c8b2c3",
+      "action": "session_revoked",
+      "at": "2026-06-09T17:56:23.388Z",
+      "ipHint": "::1",
+      "meta": "ses_b2517542507a821d"
+    },
+    {
+      "id": "aud_7a2c69ab7809ccdd",
+      "action": "admin_login",
+      "at": "2026-06-09T17:45:58.804Z",
+      "ipHint": "::1"
+    },
+    {
+      "id": "aud_45e068672cc72bbe",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T17:34:29.196Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_13d4c822764ad722",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T16:59:01.459Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_8f4d935227fc9a1a",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T16:17:19.838Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_5198c7164b6c22e6",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T16:17:19.838Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_ffc83acee9d31bd7",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T16:17:19.836Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_52b87af9c14eeb3b",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T15:31:05.279Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_a77e7f91d4e330b5",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T14:55:45.055Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_6ea13e2f941f8719",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T14:24:19.286Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_22804d3d53824890",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T11:07:32.808Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_253c7ff50b106262",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T10:41:21.730Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_ac5bd26f8c9e2d6f",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T10:15:02.438Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_fa5785d01f82501e",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T10:05:18.406Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_f0586b70044e3d86",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T10:03:47.368Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_1426a7126f9e5c5d",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T10:03:28.836Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_e1e3071b00709c64",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T09:50:36.667Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_0a42c923068a395d",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T09:48:11.701Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_b581b382f9996eac",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T08:36:49.434Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_362c0e036b519da8",
+      "action": "session_verify_failed",
+      "at": "2026-06-09T07:31:29.067Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_a520fd479784ec57",
+      "action": "session_verify_failed",
+      "at": "2026-06-08T17:18:15.634Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_73f92222b9a68cd3",
+      "action": "session_verify_failed",
+      "at": "2026-06-08T17:11:38.257Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_530e90552526ffe8",
+      "action": "session_verify_failed",
+      "at": "2026-06-08T16:28:09.396Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_195482b417fbf4d4",
+      "action": "session_verify_failed",
+      "at": "2026-06-08T15:35:53.570Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_ebc47527cc0d4a7f",
+      "action": "session_verify_failed",
+      "at": "2026-06-07T18:20:38.966Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_b233ee72233e7aca",
+      "action": "session_verify_failed",
+      "at": "2026-06-07T17:04:14.943Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_fe86005397c6bcf0",
+      "action": "session_verify_failed",
+      "at": "2026-06-06T18:36:23.339Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_61e576054734ea81",
+      "action": "session_verify_failed",
+      "at": "2026-06-06T16:46:49.729Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_5d59a4c043107500",
+      "action": "session_verify_failed",
+      "at": "2026-06-06T16:36:23.342Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_8b3e8d2bc6db61db",
+      "action": "session_verify_failed",
+      "at": "2026-06-06T16:16:23.350Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_dc424fbe93d327e4",
+      "action": "session_verify_failed",
+      "at": "2026-06-06T15:15:20.049Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_722ebf5eb58cbcd6",
+      "action": "session_verify_failed",
+      "at": "2026-06-06T14:47:23.530Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_a1c6b03ce9eae72e",
+      "action": "session_verify_failed",
+      "at": "2026-06-06T13:48:45.782Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_c5b3ce721b3a709d",
+      "action": "session_verify_failed",
+      "at": "2026-06-06T00:02:25.643Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_a1631fb14ba742b6",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T23:19:27.720Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_05cb13438a2c10ef",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T18:41:30.230Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_90fb393fa6ffec7f",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T17:51:30.272Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_432c23cc8b29234e",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T17:07:30.196Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_679a8bfaf5de42be",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T16:39:07.775Z",
+      "ipHint": "::1",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_5836a25d3902f3b1",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T16:29:21.125Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_d11aae07be6818b3",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T15:29:43.135Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_f2127ecdbffbef8d",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T14:49:30.343Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_8f94521a528c1cf5",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T14:40:25.906Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_49cf00e3965e08dd",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T14:22:49.963Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_0f6946ae77eb0714",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T14:22:28.402Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_628719e18fe13766",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T13:36:01.476Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_405bfaac8cbde00f",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T13:35:19.078Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_d1048b6683b81311",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T13:34:34.653Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_a4ae5bf5772c9b69",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T13:18:30.267Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_aa7ca05d7baff34b",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T13:08:30.189Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_91525232545a9a9d",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T12:36:30.168Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_30153336ec9020db",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T10:21:44.572Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_b248210cf3500fad",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T09:46:23.261Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_4ad4817f41dbcf4b",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T08:53:34.243Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_f741a6d5ab7c03c2",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T07:58:02.287Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_f1f8de06bac8dd9a",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T07:42:34.259Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_940ad2ce71281e5b",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T07:19:21.617Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_b8625c16083204c1",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T07:14:19.341Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_42dc7aa381e79c28",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T06:02:38.362Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_2d7665d3c2ef33fa",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T04:42:38.344Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_ec3042c65ec28d6d",
+      "action": "session_verify_failed",
+      "at": "2026-06-05T04:25:38.406Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_15441e9a59af2d5e",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T20:28:06.771Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_612e73f4f1ecbe00",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T20:01:41.831Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_c76c76c9f63f4680",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T19:54:54.325Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_bfa1a5275d16f9f6",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T19:38:39.820Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_efb1b6ac208262d5",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T18:24:48.788Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_638c36fca113db1e",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T17:54:07.985Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_10913399472426c4",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T17:10:21.838Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_1337ea212c81597e",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T16:39:21.561Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_b1afe6f3d9b3201b",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T15:16:23.119Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_ec2a2eef5002b19b",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T15:03:02.349Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_fec45c639d5dac5c",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T14:25:47.565Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_071844566a6beca7",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T14:25:47.564Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_15baf856a592a303",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T13:19:42.392Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_0c00c438b298a135",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T12:14:56.113Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_2fe7247a5f22e548",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T11:58:56.141Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_63c9e92a433a5af4",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T11:53:56.133Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_46f25e8e87e2e84b",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T11:27:56.153Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_84a8ba26937294c1",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T11:18:33.956Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_3306e6f781d549a0",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T11:16:56.928Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_78c51f358a242ac8",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T11:02:52.105Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_8cbe11cec5dea0b4",
+      "action": "session_verify_failed",
+      "at": "2026-06-04T09:15:06.102Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_39e96ea54717f0ef",
+      "action": "session_verify_failed",
+      "at": "2026-06-02T15:49:00.248Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_297a88bbab77f3ec",
+      "action": "session_verify_failed",
+      "at": "2026-06-02T10:46:28.827Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_0d890f61963635e6",
+      "action": "session_verify_failed",
+      "at": "2026-06-02T10:07:00.685Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_42893bfa07214bd3",
+      "action": "session_verify_failed",
+      "at": "2026-06-02T08:35:00.698Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_6385992fdd225f1b",
+      "action": "user_login_success",
+      "at": "2026-06-02T06:52:30.615Z",
+      "ipHint": "::1",
+      "meta": "papa"
+    },
+    {
+      "id": "aud_4e6539c2f5075ea4",
+      "action": "user_login_success",
+      "at": "2026-06-02T06:45:40.982Z",
+      "ipHint": "::1",
+      "meta": "papa"
+    },
+    {
+      "id": "aud_858e0b586a90bcba",
+      "action": "user_created",
+      "at": "2026-06-02T06:43:04.939Z",
+      "ipHint": "::1",
+      "meta": "papa"
+    },
+    {
+      "id": "aud_6ba53017b65f0e15",
+      "action": "admin_login",
+      "at": "2026-06-02T06:42:40.893Z",
+      "ipHint": "::1"
+    },
+    {
+      "id": "aud_0caf74890f2ffe05",
+      "action": "session_verify_failed",
+      "at": "2026-06-02T05:04:59.764Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_582aecb9b92ef126",
+      "action": "session_verify_failed",
+      "at": "2026-06-02T05:04:59.763Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_2befffeaee8a5b8e",
+      "action": "session_verify_failed",
+      "at": "2026-06-02T05:04:59.757Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_063d6aa3c0df7fc6",
+      "action": "session_verify_failed",
+      "at": "2026-06-02T04:35:06.936Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_6883d915b8c2267d",
+      "action": "session_verify_failed",
+      "at": "2026-06-02T04:18:44.683Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_1fcc4a7424741bc3",
+      "action": "session_verify_failed",
+      "at": "2026-06-01T16:02:01.729Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_b483e29d2f9b2478",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T18:04:32.195Z",
+      "ipHint": "::1",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_36c8773902516ee7",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T18:01:20.039Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_6b16a7bd050c176b",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T18:00:20.735Z",
+      "ipHint": "::1",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_59e940d3bf96b43d",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:57:11.659Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_f9fea08be3955f35",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:57:11.658Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_d87c1eb17c432f91",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:55:27.827Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_b3510ad90aa9f368",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:55:27.007Z",
+      "ipHint": "::1",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_f7b2226ba248c1c8",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:52:54.519Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_8ba03075ab80a311",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:45:11.645Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_3b4d6ab88983dcfd",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:45:11.350Z",
+      "ipHint": "::1",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_5b4c978d77e6fac4",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:45:09.745Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_318c0a1eb3715a64",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:45:09.216Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_1fddf089375c299e",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:45:09.215Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_ba6c85ac7bab2a1c",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:45:09.215Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_1db305d2a332f6d0",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:45:08.680Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_ff8c19de1dfa123a",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:45:07.574Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_755b7a0133df26f5",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:45:06.836Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_f334f2f6aeb9ebea",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:45:06.492Z",
+      "ipHint": "::1",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_11bdad2db835071b",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:45:05.908Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_3de0dbd7726eff17",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:45:05.907Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_ef44690d5ed0b7fe",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:45:05.616Z",
+      "ipHint": "::1",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_ef7387af1d673cfc",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:45:05.421Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_5f73ab9e1fd78a97",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:45:05.420Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_2fd9fc0071210278",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:44:23.624Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_2d82499e0103a4fe",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:44:21.577Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_6ab364db86923d7f",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:44:21.576Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_55c067c7069d9724",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:43:14.667Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_e2685283ce9662bf",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:43:14.667Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_66010decbefc3eb2",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:43:13.744Z",
+      "ipHint": "::1",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_c5f25368ee6650c3",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:42:36.054Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_45c27a58e094d430",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:42:25.759Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_cd22e8b2edd607e7",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:36:53.848Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_2a3fc77ae87d6980",
+      "action": "admin_login",
+      "at": "2026-05-31T17:36:00.885Z",
+      "ipHint": "::1"
+    },
+    {
+      "id": "aud_9c97c1c81d026455",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:01:49.412Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_535da4cf408a62aa",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:00:55.695Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_3a5338126ddb90ce",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T17:00:28.201Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_81f34a5cbdf4e268",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T16:31:20.049Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_0fbdfb2c7fd9f6dc",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T16:10:52.415Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_ac457a75c7d53aaf",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T16:09:21.562Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_c1e139bd7e7c858e",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T16:09:21.561Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_b5cc230da68b1de0",
+      "action": "session_verify_failed",
+      "at": "2026-05-31T15:55:33.974Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_9767d72bdaa2a522",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T01:12:30.652Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_57a8a71adafc95f4",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T01:12:30.651Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_275baad0ae4a4542",
+      "action": "activation_success",
+      "at": "2026-05-30T01:12:29.050Z",
+      "ipHint": "::1",
+      "meta": "ses_edbe7d1ca2a56582"
+    },
+    {
+      "id": "aud_b1f134898b7b61ac",
+      "action": "token_created",
+      "at": "2026-05-30T01:12:25.054Z",
+      "ipHint": "::1",
+      "meta": "Token-2026-05-30-002"
+    },
+    {
+      "id": "aud_9a34e0045a78eb69",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:59:35.645Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_4f5383b89e84f7f8",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:59:07.411Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_94bb783e484dd795",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:53:51.182Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_de23a4eafd92c24a",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:53:22.565Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_b216d17504daba0e",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:46:21.312Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_79375b0716f94561",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:41:02.095Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_70ced928456274e9",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:41:02.092Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_050b65aedcf80d00",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:41:02.091Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_fd37f8b12ef16707",
+      "action": "activation_success",
+      "at": "2026-05-30T00:41:00.363Z",
+      "ipHint": "::1",
+      "meta": "ses_01b3ff0cb89ee05f"
+    },
+    {
+      "id": "aud_988043c8d95236f9",
+      "action": "token_created",
+      "at": "2026-05-30T00:40:48.857Z",
+      "ipHint": "::1",
+      "meta": "Token-2026-05-30-001"
+    },
+    {
+      "id": "aud_c7d84c86ba6b6db2",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:35:10.774Z",
+      "ipHint": "::1",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_3b9886cdd26e0477",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:35:10.468Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_88e6a4e8609b8e5f",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:50.891Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_a416374099b92176",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:50.459Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_1e4a02df7de16a7a",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:45.886Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_2519f487609be450",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:45.465Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_8b21999cda93db97",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:40.888Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_def4590d3bf8b33b",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:40.468Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_171e95a87800d4c6",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:35.866Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_7c006cac6727c4aa",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:35.474Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_18175cd66ffe31bd",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:30.897Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_d1893723b4b33488",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:30.475Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_9642bff80cff8e4c",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:25.997Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_387d55fbc69e5266",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:25.481Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_2c00d1e44a906f71",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:20.969Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_2edf2bcfddd0d9d6",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:20.479Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_8a073869519aba47",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:15.941Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_9990d8f700f628f8",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:15.471Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_c7bd498e41de0370",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:11.728Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_20d24d5d26aadc08",
+      "action": "session_verify_failed",
+      "at": "2026-05-30T00:34:11.009Z",
+      "meta": "unknown"
+    }
+  ]
+}

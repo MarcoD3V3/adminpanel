@@ -1,0 +1,1485 @@
+@import "../../packages/shared/hub-runtime-widgets.css";
+
+/* Marco Hub Builder = shell del launcher (chrome + canvas 1:1) */
+.hub-builder-chrome {
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* Árbol (burbuja clic derecho) — card sólida, minimalista */
+.hub-tree-bubble {
+  position: fixed;
+  z-index: 9998;
+  width: 204px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface-raised);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.42);
+}
+
+.hub-tree-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: var(--color-surface);
+  padding: 7px 8px;
+}
+
+.hub-tree-header-kicker {
+  margin: 0;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.hub-tree-header-title {
+  margin: 2px 0 0;
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text);
+}
+
+.hub-tree-close {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  padding: 0;
+  color: var(--color-muted);
+}
+
+.hub-tree-close:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-soft);
+}
+
+.hub-tree-panel {
+  max-height: min(220px, 36vh);
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 4px 0 6px;
+  user-select: none;
+  scrollbar-width: thin;
+}
+
+.hub-tree-section + .hub-tree-section {
+  border-top: 1px solid var(--color-border-subtle);
+  margin-top: 2px;
+  padding-top: 2px;
+}
+
+.hub-tree-section-head {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  padding: 4px 8px;
+  text-align: left;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.hub-tree-section-head:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-soft);
+}
+
+.hub-tree-section-count {
+  margin-left: auto;
+  font-size: 8px;
+  font-weight: 500;
+  color: var(--color-muted);
+  opacity: 0.8;
+}
+
+.hub-tree-section-body {
+  padding-bottom: 2px;
+}
+
+.hub-tree-row {
+  display: flex;
+  height: 20px;
+  min-height: 20px;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  margin: 0 4px;
+  border-radius: 5px;
+  color: var(--color-text-soft);
+}
+
+.hub-tree-row:hover {
+  background: var(--color-surface-hover);
+}
+
+.hub-tree-row-selected {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.hub-tree-guides {
+  display: flex;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.hub-tree-indent {
+  position: relative;
+  display: block;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.hub-tree-indent-continue::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--color-border);
+}
+
+.hub-tree-indent-elbow::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--color-border);
+}
+
+.hub-tree-indent-elbow::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 9px;
+  width: 6px;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.hub-tree-indent-elbow-last::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 0;
+  height: 10px;
+  width: 1px;
+  background: var(--color-border);
+}
+
+.hub-tree-indent-elbow-last::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 9px;
+  width: 6px;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.hub-tree-chevron,
+.hub-tree-chevron-spacer {
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-muted);
+}
+
+.hub-tree-chevron {
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  padding: 0;
+}
+
+.hub-tree-chevron:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-soft);
+}
+
+.hub-tree-label-btn {
+  display: block;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  padding: 0 6px 0 0;
+  text-align: left;
+  font-size: 10px;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: inherit;
+}
+
+.hub-tree-empty {
+  margin: 0;
+  padding: 10px 8px;
+  text-align: center;
+  font-size: 9px;
+  color: var(--color-muted);
+}
+
+/* Fondo integrado: sin marco entre barra y contenido */
+.hub-frame-integrated-bg .hub-builder-chrome {
+  border: none !important;
+  box-shadow: none;
+}
+
+.hub-frame-integrated-bg .hub-builder-chrome > div {
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+/* Vista previa visual en Hub Builder (modo Probar) */
+.hub-preview-root {
+  --text: #d7d8da;
+  --muted: #8b8d92;
+  --accent: #6b9e78;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: #d7d8da;
+  box-sizing: border-box;
+}
+
+.hub-preview-scroll {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  box-sizing: border-box;
+}
+.hub-scroll-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hub-scroll-hidden::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+.hub-preview-scroll.hub-scroll-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hub-preview-scroll.hub-scroll-hidden::-webkit-scrollbar {
+  display: none;
+}
+.hub-scroll-hidden * {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hub-scroll-hidden *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.hub-preview-scaled,
+.hub-content-scaled {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Catálogo WYSIWYG: rellena el bounding box como en el launcher */
+.hub-preview-launcher.hub-preview-scroll,
+.hub-preview-launcher.hub-content-scaled {
+  align-items: stretch;
+}
+
+.hub-preview-launcher.hub-preview-scroll > *,
+.hub-preview-launcher.hub-content-scaled > * {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  align-self: stretch;
+}
+
+.hub-preview-launcher .lp-tabs {
+  width: 100%;
+  height: 100%;
+  align-self: stretch;
+}
+
+/* lp-tabs / lp-search / hub-pill-select → hub-runtime-widgets.css */
+
+.hub-preview-search,
+.hub-runtime-content .lp-search.hub-preview-search {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  align-self: stretch;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.hub-preview-field {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+
+.hub-preview-search .lp-search-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.hub-preview-search input,
+.hub-preview-search .hub-preview-input-fake,
+.hub-preview-field .hub-preview-input-fake {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  font-size: 0.85em;
+  min-height: 0;
+}
+
+.hub-preview-input-fake {
+  color: rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hub-preview-search .hub-preview-btn,
+.hub-preview-search .lp-btn-secondary {
+  padding: 0.3em 0.55em;
+  font-size: 0.8em;
+}
+
+.hub-preview-installed-search {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.hub-preview-installed-search .installed-mods-mini-search-icon {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.hub-preview-installed-search .hub-preview-input-fake {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.hub-preview-catalog,
+.hub-preview-launcher .mc-catalog {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+  padding: 12px 16px;
+  overflow: visible;
+}
+
+/* Misma rejilla/tarjetas que el launcher (WYSIWYG) */
+.mc-grid {
+  display: grid;
+  grid-template-columns: var(
+    --hub-grid-template,
+    repeat(auto-fill, minmax(var(--hub-grid-min, 140px), 1fr))
+  );
+  gap: var(--hub-grid-gap, 8px);
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.mc-card {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  text-align: left;
+  color: inherit;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.mc-card-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: #1a1d22;
+  flex-shrink: 0;
+}
+
+.mc-card-img-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.mc-card:hover,
+.mc-card.selected {
+  border-color: rgba(107, 158, 120, 0.45);
+  background: rgba(107, 158, 120, 0.08);
+}
+
+.mc-card-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.mc-card-name {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #e8e9eb;
+  margin-bottom: 4px;
+}
+
+.mc-card-summary {
+  margin: 0 0 4px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.35;
+}
+
+.mc-card-meta {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.hub-runtime-content {
+  font-size: var(--hub-base-font, 13px);
+  line-height: 1.35;
+  min-width: 0;
+}
+
+.hub-runtime-content .mc-card {
+  padding: 0.45em 0.5em;
+  gap: 0.45em;
+  border-radius: calc(var(--hub-radius, 10px) * 0.72);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.hub-runtime-content .mc-card-img {
+  width: 2.45em;
+  height: 2.45em;
+  border-radius: 0.5em;
+}
+
+.hub-runtime-content .mc-card-name {
+  font-size: 0.92em;
+  line-height: 1.2;
+  margin-bottom: 0.12em;
+}
+
+.hub-runtime-content .mc-card-summary {
+  font-size: 0.78em;
+  line-height: 1.25;
+  margin: 0 0 0.12em;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hub-runtime-content .mc-card-meta {
+  font-size: 0.72em;
+}
+
+/* Hub Builder: tamaños reales del launcher (sin encoger con em) */
+.hub-preview-launcher .mc-card {
+  padding: 10px;
+  gap: 10px;
+  border-radius: 10px;
+}
+
+.hub-preview-launcher .mc-card-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+}
+
+.hub-preview-launcher .mc-card-name {
+  font-size: 12px;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.hub-preview-launcher .mc-card-summary {
+  font-size: 10px;
+  line-height: 1.35;
+  margin: 0 0 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hub-preview-launcher .mc-card-meta {
+  font-size: 9px;
+}
+
+/* —— Preview pane (misma estructura que ModPreviewPane) —— */
+.hub-preview-launcher .mc-preview {
+  border-left: none;
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.hub-preview-launcher .mc-preview-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.hub-preview-launcher .mc-preview-hero {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.hub-preview-launcher .mc-preview-hero-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.hub-preview-launcher .mc-preview-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #1a1d22;
+}
+
+.hub-preview-launcher .mc-preview-logo-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.hub-preview-launcher .mc-preview-title {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #e8e9eb;
+}
+
+.hub-preview-launcher .mc-preview-authors {
+  margin: 0;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.hub-preview-launcher .mc-preview-status-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.hub-preview-launcher .mc-preview-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hub-preview-launcher .mc-preview-status--ok {
+  color: #9fd4a8;
+  background: rgba(73, 111, 79, 0.14);
+  border: 1px solid rgba(107, 158, 120, 0.22);
+}
+
+.hub-preview-launcher .mc-preview-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.hub-preview-launcher .mc-tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 9px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #b8babf;
+}
+
+.hub-preview-launcher .mc-preview-desc {
+  margin: 0 0 12px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: #b8babf;
+}
+
+.hub-preview-launcher .mc-preview-meta {
+  margin: 0 0 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: grid;
+  gap: 6px 10px;
+}
+
+.hub-preview-launcher .mc-preview-meta__row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.hub-preview-launcher .mc-preview-meta dt {
+  margin: 0;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.hub-preview-launcher .mc-preview-meta dd {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #d7d8da;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hub-preview-launcher .mc-preview-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hub-preview-launcher .mc-preview-actions .lp-btn,
+.hub-preview-launcher .mc-preview-actions .lp-btn-secondary {
+  width: 100%;
+  justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hub-preview-launcher .lp-btn,
+.hub-preview-launcher .lp-btn-secondary,
+.hub-preview-launcher .lp-btn-sm {
+  border: none;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: default;
+  box-sizing: border-box;
+}
+
+.hub-preview-launcher .lp-btn {
+  padding: 9px 14px;
+  background: #496f4f;
+  color: #fff;
+}
+
+.hub-preview-launcher .lp-btn-secondary {
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #d7d8da;
+}
+
+.hub-preview-launcher .lp-btn-installed {
+  background: rgba(73, 111, 79, 0.45);
+  opacity: 0.85;
+}
+
+.hub-preview-launcher .lp-btn-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 6px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #9fd4a8;
+}
+
+/* Lista instalada WYSIWYG */
+.hub-preview-installed-list {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  padding: 8px 10px 10px;
+  box-sizing: border-box;
+}
+
+.hub-preview-installed-list .installed-mods-list__items {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.hub-preview-pane {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  flex: 1;
+  box-sizing: border-box;
+}
+.hub-preview-pane h4 {
+  margin: 0;
+  font-size: 11px;
+}
+.hub-preview-pane p {
+  margin: 0;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.35;
+}
+
+.hub-preview-pane--mod-review {
+  gap: 8px;
+}
+
+.hub-preview-mod-hero {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.hub-preview-mod-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #1a1d22;
+  flex-shrink: 0;
+}
+
+.hub-preview-mod-author {
+  font-size: 8px !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.hub-preview-mod-status {
+  align-self: flex-start;
+  font-size: 8px;
+  padding: 3px 6px;
+  border-radius: 5px;
+  color: #9fd4a8;
+  background: rgba(73, 111, 79, 0.14);
+  border: 1px solid rgba(107, 158, 120, 0.22);
+}
+
+.hub-preview-mod-desc {
+  line-height: 1.45 !important;
+}
+
+.hub-preview-mod-meta {
+  margin: 0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: grid;
+  gap: 4px;
+}
+
+.hub-preview-mod-meta > div {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.hub-preview-mod-meta dt {
+  margin: 0;
+  font-size: 7px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.hub-preview-mod-meta dd {
+  margin: 0;
+  font-size: 8px;
+  color: #d7d8da;
+}
+.hub-preview-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: var(--hub-radius, 8px);
+  border: none;
+  background: #496f4f;
+  color: #fff;
+  font-size: 10px;
+}
+.hub-preview-btn.secondary {
+  background: #1a1d22;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hub-preview-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hub-preview-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 9px;
+}
+
+.panel-vis-select {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  padding: 0 4px;
+  box-sizing: border-box;
+}
+
+.panel-vis-select-label {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.hub-preview-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #1a1d22;
+  font-size: 10px;
+}
+
+.hub-preview-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  margin: 8px;
+}
+.hub-preview-progress > span {
+  display: block;
+  height: 100%;
+  width: 45%;
+  background: #496f4f;
+  border-radius: 999px;
+}
+
+.hub-preview-log {
+  padding: 6px;
+  font-family: ui-monospace, monospace;
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.5;
+}
+
+.hub-preview-compact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  height: 100%;
+  box-sizing: border-box;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 10px;
+}
+
+.hub-preview-root--compact {
+  font-size: 9px;
+}
+
+.hub-preview-chrome {
+  display: flex;
+  align-items: center;
+  padding: 1px 2px;
+  width: max-content;
+  max-width: 100%;
+  height: max-content;
+  max-height: 100%;
+  flex-shrink: 0;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.hub-runtime-content > .hub-preview-btn:not(.hub-preview-btn--fill),
+.hub-runtime-content > .hub-preview-btn.secondary:not(.hub-preview-btn--fill),
+.hub-runtime-content > .hub-preview-btn--play:not(.hub-preview-btn--fill) {
+  width: max-content;
+  max-width: 100%;
+  flex-shrink: 0;
+}
+
+/* Relleno 1:1 con el bounding box del canvas (como el launcher) */
+.hub-content-stretch-fill {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.hub-content-stretch-fill > .hub-preview-btn--fill {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  max-width: none;
+  height: auto;
+  margin: 0;
+  padding: 0 10px;
+  box-sizing: border-box;
+  border-radius: var(--hub-radius, 8px);
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.hub-content-stretch-fill > .hub-preview-pill-fill {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: auto;
+  max-width: none;
+  height: auto;
+  min-width: 0;
+  margin: 0;
+  box-sizing: border-box;
+  border-radius: var(--hub-radius, 999px);
+  font-size: inherit;
+}
+
+.hub-content-stretch-fill > .panel-vis-select {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Cuadrícula del canvas — puntos pequeños, sutiles pero visibles */
+.hub-builder-canvas-grid {
+  --hub-grid-cell: 2px;
+  --hub-grid-line: rgba(255, 255, 255, 0.09);
+  background-image: radial-gradient(circle, var(--hub-grid-line) 0.45px, transparent 0.45px);
+  background-size: var(--hub-grid-cell) var(--hub-grid-cell);
+}
+
+.hub-builder-canvas-grid--chrome {
+  --hub-grid-cell: 2px;
+  --hub-grid-line: rgba(107, 158, 120, 0.12);
+  background-image: radial-gradient(circle, var(--hub-grid-line) 0.4px, transparent 0.4px);
+  background-size: var(--hub-grid-cell) var(--hub-grid-cell);
+}
+
+/* Contorno al hover — sigue border-radius del elemento */
+.hub-builder-el-interactive::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px dashed rgba(107, 158, 120, 0.34);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  pointer-events: none;
+  z-index: 6;
+  box-sizing: border-box;
+}
+
+.hub-builder-el-interactive.hub-builder-el-hovered::after,
+.hub-builder-el-interactive.hub-builder-el-active::after,
+.hub-builder-el-selected::after {
+  opacity: 1;
+}
+
+.hub-builder-el-selected::after,
+.hub-builder-el-selected.hub-builder-el-hovered::after {
+  border-color: rgba(107, 158, 120, 0.52);
+}
+
+/* Parpadeo al navegar desde el árbol / búsqueda */
+.hub-builder-el-flash::after {
+  opacity: 1 !important;
+  border-width: 2px !important;
+  border-style: solid !important;
+  animation: hub-builder-el-flash 1s ease-out;
+}
+
+@keyframes hub-builder-el-flash {
+  0%,
+  100% {
+    border-color: rgba(107, 158, 120, 0.35);
+    box-shadow: none;
+  }
+  20%,
+  60% {
+    border-color: rgba(130, 220, 155, 0.95);
+    box-shadow: 0 0 0 1px rgba(130, 220, 155, 0.35), 0 0 14px rgba(107, 158, 120, 0.45);
+  }
+  40%,
+  80% {
+    border-color: rgba(107, 158, 120, 0.55);
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+/* Sin contorno de foco amarillo en Hub Builder y vista previa */
+[data-hub-el="true"],
+[data-hub-el="true"] *,
+.hub-preview-root :focus,
+.hub-preview-root :focus-visible,
+.hub-runtime-content :focus,
+.hub-runtime-content :focus-visible {
+  outline: none !important;
+  outline-offset: 0;
+}
+
+/* Handles minimalistas — solo al hover del elemento seleccionado */
+.hub-builder-resize-handles {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+.hub-builder-el-selected .hub-builder-resize-handles,
+.hub-builder-el-selected.hub-builder-el-hovered .hub-builder-resize-handles,
+.hub-builder-el-selected.hub-builder-el-active .hub-builder-resize-handles {
+  opacity: 1;
+  pointer-events: auto;
+}
+.hub-preview-chrome-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.hub-preview-btn--play:not(.hub-preview-btn--fill) {
+  width: calc(100% - 12px);
+  margin: 6px;
+}
+
+.hub-preview-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: #1a1d22;
+  font-size: 12px;
+}
+
+.hub-preview-link {
+  display: block;
+  padding: 8px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  color: #8eb896;
+  font-size: 10px;
+}
+
+.hub-preview-text {
+  margin: 0;
+  padding: 0;
+  line-height: 1.35;
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
+.hub-preview-phase-label {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8eb896;
+}
+
+.hub-preview-launch-hint {
+  opacity: 0.65;
+}
+
+.hub-runtime-content > .hub-preview-text,
+.hub-runtime-content > .hub-preview-link {
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
+.hub-preview-image,
+.hub-preview-image-placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+.hub-preview-image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a1d22;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.hub-preview-banner {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+  min-height: 48px;
+  padding: 8px;
+  border-radius: inherit;
+  background: #1a1d22;
+}
+.hub-preview-banner span {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.hub-preview-news-line {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 9px;
+}
+
+.hub-preview-modpack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+}
+.hub-preview-modpack-cover {
+  height: 40px;
+  border-radius: 8px;
+  background: #1a1d22;
+}
+.hub-preview-modpack span {
+  font-size: 9px;
+}
+
+.hub-preview-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+}
+.hub-preview-profile-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(73, 111, 79, 0.35);
+  color: #8eb896;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.hub-preview-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+}
+.hub-preview-stat strong {
+  font-size: 14px;
+}
+.hub-preview-stat span {
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.hub-preview-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: inherit;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 9px;
+}
+
+.hub-preview-surface-box {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.hub-preview-divider {
+  width: 100%;
+  height: 1px;
+  margin: auto 8px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.hub-preview-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  font-size: 10px;
+}
+.hub-preview-check-box {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: rgba(73, 111, 79, 0.5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+}
+
+.hub-preview-toggle {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  margin: 8px;
+  border-radius: 999px;
+  background: #496f4f;
+}
+.hub-preview-toggle > span {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.hub-preview-slider {
+  position: relative;
+  height: 6px;
+  margin: 12px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+.hub-preview-slider > span {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: #496f4f;
+  transform: translate(-50%, -50%);
+}
+
+.hub-preview-logic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 8px;
+  border: 1px dashed rgba(107, 158, 120, 0.35);
+  border-radius: inherit;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.hub-preview-error {
+  color: #e57373 !important;
+}
+
+.hub-palette-preview {
+  width: 100%;
+  height: 52px;
+  overflow: hidden;
+  border-radius: 6px;
+  pointer-events: none;
+  position: relative;
+  isolation: isolate;
+  contain: layout paint;
+}
+
+.hub-palette-preview--static {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface-hover);
+}
+
+.hub-palette-category {
+  position: relative;
+  isolation: isolate;
+  contain: layout style;
+}
+
+/* Estilo Minecraft en el canvas del menú del juego — idéntico a CraftButton in-game */
+[data-game-menu="true"] .hub-preview-root,
+[data-game-menu="true"] .hub-preview-frame,
+[data-game-menu="true"] .hub-preview-root.hub-preview-root--compact {
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+[data-game-menu="true"] .hub-preview-btn,
+[data-game-menu="true"] .hub-preview-btn.secondary,
+[data-game-menu="true"] .hub-preview-btn.hub-preview-btn--play {
+  border-radius: calc(var(--gm-btn-radius, 0px) * var(--gm-ui-scale, 1)) !important;
+  font-family: "VT323", "Pixelify Sans", ui-monospace, monospace !important;
+  font-size: calc(var(--gm-btn-size, 8px) * var(--gm-ui-scale, 1)) !important;
+  font-weight: var(--gm-btn-weight, 400);
+  line-height: 1 !important;
+  text-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: var(--gm-btn-bg, #2b2e33) !important;
+  border: calc(1px * var(--gm-ui-scale, 1)) solid var(--gm-btn-border, #72757a) !important;
+  box-shadow: none !important;
+  color: var(--gm-btn-text, #e8eaed) !important;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+[data-game-menu="true"] .hub-preview-btn:hover:not(:disabled),
+[data-game-menu="true"] .hub-preview-btn.secondary:hover:not(:disabled),
+[data-game-menu="true"] .hub-preview-btn.hub-preview-btn--play:hover:not(:disabled) {
+  background: var(--gm-btn-hover, #3a3e45) !important;
+}
+
+[data-game-menu="true"] .hub-preview-btn--ghost,
+[data-game-menu="true"] .hub-preview-btn--ghost.secondary,
+[data-game-menu="true"] .hub-preview-btn--ghost.hub-preview-btn--play {
+  background: transparent !important;
+}
+
+[data-game-menu="true"] .hub-preview-btn--ghost:hover:not(:disabled) {
+  background: var(--gm-btn-hover, rgba(255, 255, 255, 0.08)) !important;
+}
+
+[data-game-menu="true"] .hub-preview-text {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  font-family: "VT323", "Pixelify Sans", ui-monospace, monospace !important;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+}
+
+/* Selección sutil en edición — no tapa el estilo del juego */
+[data-game-menu="true"] .hub-builder-el-selected {
+  outline: 1px dashed rgba(107, 158, 120, 0.75) !important;
+  outline-offset: 0;
+  box-shadow: none !important;
+}
+
+[data-game-menu="true"] .hub-builder-el-hovered {
+  outline: 1px dashed rgba(107, 158, 120, 0.35);
+  outline-offset: 0;
+}
+
+/* Estilo pantalla de carga en el canvas del Hub */
+[data-game-loading="true"] .hub-preview-text {
+  font-family: "VT323", "Pixelify Sans", ui-monospace, monospace !important;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.02em;
+}
+
+[data-game-loading="true"] .hub-preview-progress {
+  height: 100%;
+  margin: 0;
+  border-radius: 0;
+  background: var(--cl-loading-track, #1a1d22);
+}
+
+[data-game-loading="true"] .hub-preview-progress > span {
+  border-radius: 0;
+  background: var(--cl-loading-fill, #6b9e78);
+}

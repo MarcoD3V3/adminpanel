@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Specification-Title: CraftLauncher Loading
+Specification-Vendor: CraftLauncher
+Specification-Version: 1
+Implementation-Title: craftlauncher-loading-mod
+Implementation-Version: 1.0.0
+Implementation-Vendor: CraftLauncher
+MixinConfigs: craftlauncher_loading.mixins.json
+

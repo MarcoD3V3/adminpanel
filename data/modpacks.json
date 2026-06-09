@@ -1,0 +1,36 @@
+[
+  {
+    "id": "mp-cf-885460",
+    "name": "All of Create",
+    "description": "The Ultimate Create Experience | Create 6.0 with 50+ Addons, Quests and Great Performance",
+    "mcVersion": "1.21.1",
+    "loader": "forge",
+    "curseForgeId": 885460,
+    "curseForgeSlug": "aoc",
+    "catalogKind": "modpack",
+    "modCount": 1,
+    "downloads": 1566645,
+    "sizeMb": 12,
+    "enabled": true,
+    "premiumOnly": false,
+    "author": "quickqwek",
+    "updatedAt": "2026-06-05T07:09:57.204Z"
+  },
+  {
+    "id": "mp-cf-925200",
+    "name": "All the Mods 10 - ATM10",
+    "description": "The top pack of 2025 with around 500 mods! Tons of quests and a proper endgame. ",
+    "mcVersion": "1.21.1",
+    "loader": "forge",
+    "curseForgeId": 925200,
+    "curseForgeSlug": "all-the-mods-10",
+    "catalogKind": "modpack",
+    "modCount": 1,
+    "downloads": 18199585,
+    "sizeMb": 181,
+    "enabled": true,
+    "premiumOnly": false,
+    "author": "ATMTeam",
+    "updatedAt": "2026-06-05T07:09:57.301Z"
+  }
+]

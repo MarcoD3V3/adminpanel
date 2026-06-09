@@ -1,0 +1,16 @@
+[
+{
+  "modid": "craftlauncher_loading",
+  "name": "CraftLauncher Client",
+  "description": "Custom main menu from CraftLauncher Hub Builder (config/craftlauncher-ui.json).",
+  "version": "${mod_version}",
+  "mcversion": "${minecraft_version}",
+  "url": "https://github.com/craftlauncher/craftlauncher",
+  "updateUrl": "",
+  "authorList": ["CraftLauncher"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

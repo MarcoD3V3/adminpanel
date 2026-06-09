@@ -1,0 +1,48 @@
+{
+  "mappings": {
+    "io/craftlauncher/loading/mixin/AbstractClientPlayerEntityMixin": {
+      "getLocationSkin": "Lnet/minecraft/client/entity/player/AbstractClientPlayerEntity;func_110306_p()Lnet/minecraft/util/ResourceLocation;"
+    },
+    "io/craftlauncher/loading/mixin/ResourceLoadProgressGuiMixin": {
+      "render(Lcom/mojang/blaze3d/matrix/MatrixStack;IIF)V": "Lnet/minecraft/client/gui/ResourceLoadProgressGui;func_230430_a_(Lcom/mojang/blaze3d/matrix/MatrixStack;IIF)V"
+    },
+    "io/craftlauncher/loading/mixin/TitleScreenMixin": {
+      "init": "Lnet/minecraft/client/gui/screen/MainMenuScreen;func_231160_c_()V",
+      "tick": "Lnet/minecraft/client/gui/screen/MainMenuScreen;func_231023_e_()V"
+    },
+    "io/craftlauncher/loading/mixin/TitleScreenDecorMixin": {
+      "Lnet/minecraft/client/renderer/texture/TextureManager;bindTexture(Lnet/minecraft/util/ResourceLocation;)V": "Lnet/minecraft/client/renderer/texture/TextureManager;func_110577_a(Lnet/minecraft/util/ResourceLocation;)V",
+      "render(Lcom/mojang/blaze3d/matrix/MatrixStack;IIF)V": "Lnet/minecraft/client/gui/screen/MainMenuScreen;func_230430_a_(Lcom/mojang/blaze3d/matrix/MatrixStack;IIF)V"
+    },
+    "io/craftlauncher/loading/mixin/ScreenAccessor": {
+      "minecraft": "field_230706_i_:Lnet/minecraft/client/Minecraft;",
+      "buttons": "field_230710_m_:Ljava/util/List;",
+      "children": "field_230705_e_:Ljava/util/List;",
+      "addButton": "func_230480_a_(Lnet/minecraft/client/gui/widget/Widget;)Lnet/minecraft/client/gui/widget/Widget;"
+    }
+  },
+  "data": {
+    "searge": {
+      "io/craftlauncher/loading/mixin/AbstractClientPlayerEntityMixin": {
+        "getLocationSkin": "Lnet/minecraft/client/entity/player/AbstractClientPlayerEntity;func_110306_p()Lnet/minecraft/util/ResourceLocation;"
+      },
+      "io/craftlauncher/loading/mixin/ResourceLoadProgressGuiMixin": {
+        "render(Lcom/mojang/blaze3d/matrix/MatrixStack;IIF)V": "Lnet/minecraft/client/gui/ResourceLoadProgressGui;func_230430_a_(Lcom/mojang/blaze3d/matrix/MatrixStack;IIF)V"
+      },
+      "io/craftlauncher/loading/mixin/TitleScreenMixin": {
+        "init": "Lnet/minecraft/client/gui/screen/MainMenuScreen;func_231160_c_()V",
+        "tick": "Lnet/minecraft/client/gui/screen/MainMenuScreen;func_231023_e_()V"
+      },
+      "io/craftlauncher/loading/mixin/TitleScreenDecorMixin": {
+        "Lnet/minecraft/client/renderer/texture/TextureManager;bindTexture(Lnet/minecraft/util/ResourceLocation;)V": "Lnet/minecraft/client/renderer/texture/TextureManager;func_110577_a(Lnet/minecraft/util/ResourceLocation;)V",
+        "render(Lcom/mojang/blaze3d/matrix/MatrixStack;IIF)V": "Lnet/minecraft/client/gui/screen/MainMenuScreen;func_230430_a_(Lcom/mojang/blaze3d/matrix/MatrixStack;IIF)V"
+      },
+      "io/craftlauncher/loading/mixin/ScreenAccessor": {
+        "minecraft": "field_230706_i_:Lnet/minecraft/client/Minecraft;",
+        "buttons": "field_230710_m_:Ljava/util/List;",
+        "children": "field_230705_e_:Ljava/util/List;",
+        "addButton": "func_230480_a_(Lnet/minecraft/client/gui/widget/Widget;)Lnet/minecraft/client/gui/widget/Widget;"
+      }
+    }
+  }
+}

@@ -1,0 +1,96 @@
+/**
+ * Configuración central de mods CraftLauncher Client por versión MC.
+ * Usado por scaffold-client-mod.mjs y build-loading-mod.mjs
+ */
+export const MOD_VERSION_CONFIG = {
+  "1.21.1": {
+    template: "modern",
+    dir: "craftlauncher-client-mod-1.21.1",
+    java: 21,
+    gradle: "8.8.0",
+    loaderVersion: 52,
+    minecraft_version: "1.21.1",
+    forge_version: "52.1.0",
+    mapping_channel: "official",
+    mapping_version: "1.21.1",
+    loaderRange: "[52,)",
+    mcRange: "[1.21.1,1.22)",
+    archivesName: "craftlauncher-client-1.21.1",
+  },
+  "1.20.1": {
+    template: "modern",
+    dir: "craftlauncher-client-mod-1.20.1",
+    java: 17,
+    gradle: "8.8.0",
+    loaderVersion: 47,
+    minecraft_version: "1.20.1",
+    forge_version: "47.3.12",
+    mapping_channel: "official",
+    mapping_version: "1.20.1",
+    loaderRange: "[47,)",
+    mcRange: "[1.20.1,1.21)",
+    archivesName: "craftlauncher-client-1.20.1",
+  },
+  "1.19.2": {
+    template: "modern",
+    dir: "craftlauncher-client-mod-1.19.2",
+    java: 17,
+    gradle: "8.8.0",
+    loaderVersion: 43,
+    minecraft_version: "1.19.2",
+    forge_version: "43.4.0",
+    mapping_channel: "official",
+    mapping_version: "1.19.2",
+    loaderRange: "[43,)",
+    mcRange: "[1.19.2,1.20)",
+    archivesName: "craftlauncher-client-1.19.2",
+  },
+  "1.18.2": {
+    template: "modern",
+    dir: "craftlauncher-loading-mod",
+    java: 17,
+    gradle: "8.8.0",
+    loaderVersion: 40,
+    minecraft_version: "1.18.2",
+    forge_version: "40.2.21",
+    mapping_channel: "official",
+    mapping_version: "1.18.2",
+    loaderRange: "[40,)",
+    mcRange: "[1.18.2,1.19)",
+    archivesName: "craftlauncher-loading",
+  },
+  "1.16.5": {
+    template: "legacy",
+    dir: "craftlauncher-client-mod-1.16.5",
+    java: 8,
+    gradle: "7.6.4",
+    loaderVersion: 36,
+    minecraft_version: "1.16.5",
+    forge_version: "36.2.39",
+    mapping_channel: "snapshot",
+    mapping_version: "20210309-1.16.5",
+    loaderRange: "[36,)",
+    mcRange: "[1.16.5,1.17)",
+    archivesName: "craftlauncher-client-1.16.5",
+  },
+  "1.12.2": {
+    template: "legacy",
+    dir: "craftlauncher-client-mod-1.12.2",
+    java: 8,
+    gradle: "7.6.4",
+    loaderVersion: 14,
+    minecraft_version: "1.12.2",
+    forge_version: "14.23.5.2860",
+    mapping_channel: "snapshot",
+    mapping_version: "20171003-1.12",
+    loaderRange: "[14,)",
+    mcRange: "[1.12.2,1.13)",
+    archivesName: "craftlauncher-client-1.12.2",
+  },
+};
+
+export const ALL_MOD_MC_VERSIONS = Object.keys(MOD_VERSION_CONFIG);
+
+export function modConfigFor(mcVersion) {
+  return MOD_VERSION_CONFIG[String(mcVersion ?? "").trim()] ?? null;
+}

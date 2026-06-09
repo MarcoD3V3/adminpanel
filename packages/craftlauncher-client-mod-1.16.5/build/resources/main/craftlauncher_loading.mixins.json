@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.craftlauncher.loading.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "craftlauncher_loading.refmap.json",
+  "client": [
+    "AbstractClientPlayerEntityMixin",
+    "ResourceLoadProgressGuiMixin",
+    "ScreenAccessor",
+    "TitleScreenMixin",
+    "TitleScreenDecorMixin"
+  ]
+}

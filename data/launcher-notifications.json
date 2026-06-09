@@ -1,0 +1,43 @@
+{
+  "items": [
+    {
+      "id": "ntf_9b64cdc2c377faa4",
+      "title": "Debug",
+      "message": "prueba en vivo",
+      "style": "info",
+      "display": "toast",
+      "target": "all",
+      "createdAt": "2026-05-30T00:36:43.173Z",
+      "deliveredTo": [
+        "28d33556-efef-4962-b485-c802c2a6f185",
+        "e71ca041-64a7-40ec-846d-d1687617e99f"
+      ]
+    },
+    {
+      "id": "ntf_8dbadce3d65305c5",
+      "title": "Test",
+      "message": "hola",
+      "style": "info",
+      "display": "toast",
+      "target": "all",
+      "createdAt": "2026-05-30T00:30:38.715Z",
+      "deliveredTo": [
+        "28d33556-efef-4962-b485-c802c2a6f185",
+        "e71ca041-64a7-40ec-846d-d1687617e99f"
+      ]
+    },
+    {
+      "id": "ntf_742fbd98e9c71e68",
+      "title": "Test",
+      "message": "hola",
+      "style": "info",
+      "display": "toast",
+      "target": "all",
+      "createdAt": "2026-05-30T00:30:31.897Z",
+      "deliveredTo": [
+        "28d33556-efef-4962-b485-c802c2a6f185",
+        "e71ca041-64a7-40ec-846d-d1687617e99f"
+      ]
+    }
+  ]
+}

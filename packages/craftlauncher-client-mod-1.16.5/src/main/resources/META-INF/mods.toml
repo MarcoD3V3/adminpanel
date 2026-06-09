@@ -1,0 +1,22 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="MIT"
+issueTrackerURL="https://github.com/craftlauncher/craftlauncher"
+[[mods]]
+modId="craftlauncher_loading"
+version="${file.jarVersion}"
+displayName="CraftLauncher Client"
+authors="CraftLauncher"
+description='''CraftLauncher custom menu and loading screen via JSON config.'''
+[[dependencies.craftlauncher_loading]]
+modId="forge"
+mandatory=true
+versionRange="[36,)"
+ordering="NONE"
+side="CLIENT"
+[[dependencies.craftlauncher_loading]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.16.5,1.17)"
+ordering="NONE"
+side="CLIENT"

@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "backgroundColor": "#0a0b0d",
+  "backgroundImage": "",
+  "overlayColor": "#00000055",
+  "progress": {
+    "enabled": false,
+    "anchorX": "left",
+    "anchorY": "bottom",
+    "offsetX": 16,
+    "offsetY": 7,
+    "widthRatio": 0.4166666666666667,
+    "height": 3,
+    "color": "#6b9e78",
+    "trackColor": "#1a1d22"
+  },
+  "elements": [
+    {
+      "type": "label",
+      "text": "CraftLauncher",
+      "anchorX": "left",
+      "anchorY": "bottom",
+      "offsetX": 16,
+      "offsetY": 18,
+      "w": 200,
+      "h": 16,
+      "textColor": "#c8cad0"
+    }
+  ]
+}

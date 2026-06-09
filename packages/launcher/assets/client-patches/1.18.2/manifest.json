@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "description": "Parches directos al client jar de Minecraft (sin mods). Coloca archivos en files/ con la misma ruta interna del jar.",
+  "entries": [],
+  "gameFiles": [],
+  "_help": {
+    "entries": "jarPath = ruta dentro del .jar, file = ruta relativa en files/",
+    "example": {
+      "jarPath": "assets/minecraft/texts/splashes.txt",
+      "file": "assets/minecraft/texts/splashes.txt"
+    },
+    "loadingOverlay": "Para cambiar la pantalla roja de Mojang hay que reemplazar net/minecraft/client/gui/screens/LoadingOverlay.class — requiere clase compilada para esa versión exacta."
+  }
+}

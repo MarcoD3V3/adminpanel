@@ -1,0 +1,45 @@
+{
+  "name": "launcher-admin",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "next dev",
+    "dev:turbo": "next dev --turbo",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "launcher:dev": "npm run electron:dev -w craftlauncher-desktop",
+    "launcher:build": "npm run electron:build -w craftlauncher-desktop",
+    "build:client-mod": "node scripts/build-loading-mod.mjs",
+    "build:client-mod:all": "node scripts/build-loading-mod.mjs --all",
+    "scaffold:client-mod": "node scripts/scaffold-client-mod.mjs --all",
+    "build:loading-mod": "node scripts/build-loading-mod.mjs",
+    "build:ui-pack": "node scripts/build-ui-pack.mjs"
+  },
+  "dependencies": {
+    "@craftlauncher/shared": "*",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.511.0",
+    "next": "^15.3.3",
+    "react": "^19.1.0",
+    "react-colorful": "^5.7.0",
+    "react-dom": "^19.1.0",
+    "tailwind-merge": "^3.3.0",
+    "zustand": "^5.0.5"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@tailwindcss/postcss": "^4.1.8",
+    "@types/node": "^22.15.29",
+    "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.1.5",
+    "eslint": "^9.28.0",
+    "eslint-config-next": "^15.3.3",
+    "tailwindcss": "^4.1.8",
+    "typescript": "^5.8.3"
+  }
+}

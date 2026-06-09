@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "deprecated": true,
+  "description": "DEPRECADO — La UI in-game ahora va por mod Forge (mixins), no por fork del client jar.",
+  "note": "Usa npm run build:client-mod y el launcher instalará craftlauncher-client-{version}.jar en mods/"
+}
