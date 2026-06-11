@@ -9,6 +9,8 @@ import {
   revokeSessionsForUser,
   updateLauncherUser,
 } from "@/lib/launcher-auth/service";
+import { buildUserModerationIntel } from "@/lib/launcher-auth/profile-moderation";
+import { listPresenceRecords } from "@/lib/live-ops/service";
 import {
   assertAdminSession,
   clientIp,
@@ -22,10 +24,19 @@ export async function GET() {
     return jsonSecure({ authenticated: false, users: [], sessions: [], auditLog: [] });
   }
 
-  const [{ users, sessions }, auditLog] = await Promise.all([
+  const [{ users, sessions }, auditLog, presence] = await Promise.all([
     getAdminProfilesOverview(),
-    listAuditLog(30),
+    listAuditLog(120),
+    listPresenceRecords(),
   ]);
+
+  const fingerprintBySessionId = new Map(
+    sessions.map((s) => [s.id, s.fingerprintPrefix ?? ""])
+  );
+
+  const moderation = users.map((user) =>
+    buildUserModerationIntel(user, sessions, presence, auditLog, fingerprintBySessionId)
+  );
 
   const stats = {
     totalUsers: users.length,
@@ -33,9 +44,10 @@ export async function GET() {
     revokedUsers: users.filter((u) => u.revoked).length,
     activeSessions: sessions.filter((s) => !s.revoked && Date.parse(s.expiresAt) > Date.now()).length,
     usersWithSkin: users.filter((u) => u.hasSkin).length,
+    launchersOnline: moderation.filter((m) => m.launcherOpen).length,
   };
 
-  return jsonSecure({ authenticated: true, users, sessions, auditLog, stats });
+  return jsonSecure({ authenticated: true, users, sessions, auditLog, moderation, stats });
 }
 
 export async function POST(request: Request) {

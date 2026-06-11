@@ -11,10 +11,11 @@ import { Tabs } from "@/components/ui/Tabs";
 import { Avatar } from "@/components/ui/Avatar";
 import { PasswordStrength } from "@/components/ui/PasswordStrength";
 import { badgeDefault, rowItem } from "@/lib/styles";
-import { validatePassword, passwordPolicySummary } from "@/lib/password-policy";
+import { validatePassword, passwordPolicySummary, generateSecurePassword } from "@/lib/password-policy";
+import type { UserModerationIntel } from "@/lib/launcher-auth/profile-moderation";
+import { ProfileLiveMonitor, ProfileModerationDetail } from "@/components/profiles/ProfileLiveMonitor";
 import {
   expiresWithin,
-  formatDate,
   formatExpiresIn,
   formatRelativeTime,
   isExpired,
@@ -34,7 +35,11 @@ import {
   Upload,
   UserPlus,
   Users,
+  Wifi,
+  Wand2,
 } from "lucide-react";
+import Link from "next/link";
+import { formatModerationReport } from "@/lib/launcher-auth/profile-moderation";
 
 type ProfileUser = {
   id: string;
@@ -62,6 +67,7 @@ type ProfileSession = {
   lastSeenAt: string;
   revoked: boolean;
   ipHint?: string;
+  fingerprintPrefix?: string;
 };
 
 type AuditEntry = {
@@ -78,10 +84,12 @@ type OverviewStats = {
   revokedUsers: number;
   activeSessions: number;
   usersWithSkin: number;
+  launchersOnline?: number;
 };
 
 const FILTER_OPTIONS = [
   { id: "all", label: "Todos" },
+  { id: "live", label: "En vivo" },
   { id: "active", label: "Activos" },
   { id: "sessions", label: "Con sesión" },
   { id: "skin", label: "Con skin" },
@@ -89,6 +97,7 @@ const FILTER_OPTIONS = [
 ];
 
 const DETAIL_TABS = [
+  { id: "moderation", label: "Moderación" },
   { id: "general", label: "General" },
   { id: "sessions", label: "Sesiones" },
   { id: "skin", label: "Skin" },
@@ -141,6 +150,7 @@ export function ProfileAdminPanel() {
   const [tier, setTier] = useState<"free" | "premium">("free");
   const [creating, setCreating] = useState(false);
   const [lastCreated, setLastCreated] = useState<{ username: string; password: string } | null>(null);
+  const [moderation, setModeration] = useState<UserModerationIntel[]>([]);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -152,6 +162,7 @@ export function ProfileAdminPanel() {
         users?: ProfileUser[];
         sessions?: ProfileSession[];
         auditLog?: AuditEntry[];
+        moderation?: UserModerationIntel[];
         stats?: OverviewStats;
         error?: string;
       };
@@ -159,6 +170,7 @@ export function ProfileAdminPanel() {
       setUsers(data.users ?? []);
       setSessions(data.sessions ?? []);
       setAuditLog(data.auditLog ?? []);
+      setModeration(data.moderation ?? []);
       setStats(data.stats ?? null);
       if (!data.authenticated) {
         setError("Inicia sesión en Acceso Launcher para gestionar perfiles.");
@@ -174,8 +186,26 @@ export function ProfileAdminPanel() {
     void refresh();
   }, [refresh]);
 
+  useEffect(() => {
+    if (filter !== "live") return;
+    const timer = setInterval(() => void refresh(), 12_000);
+    return () => clearInterval(timer);
+  }, [filter, refresh]);
+
+  const moderationByUserId = useMemo(() => {
+    const map = new Map<string, UserModerationIntel>();
+    for (const m of moderation) map.set(m.userId, m);
+    return map;
+  }, [moderation]);
+
   const filtered = useMemo(() => {
     let list = users;
+    if (filter === "live") {
+      list = list.filter((u) => {
+        const intel = moderationByUserId.get(u.id);
+        return intel?.launcherOpen || (intel?.activeSessionCount ?? 0) > 0;
+      });
+    }
     if (filter === "active") list = list.filter((u) => !u.revoked);
     if (filter === "revoked") list = list.filter((u) => u.revoked);
     if (filter === "sessions") list = list.filter((u) => u.activeSessionCount > 0);
@@ -190,11 +220,16 @@ export function ProfileAdminPanel() {
       );
     }
     return list;
-  }, [users, filter, search]);
+  }, [users, filter, search, moderationByUserId]);
 
   const selected = useMemo(
     () => users.find((u) => u.id === selectedId) ?? filtered[0] ?? null,
     [users, selectedId, filtered]
+  );
+
+  const selectedIntel = useMemo(
+    () => (selected ? moderationByUserId.get(selected.id) ?? null : null),
+    [selected, moderationByUserId]
   );
 
   const userSessions = useMemo(() => {
@@ -344,10 +379,39 @@ export function ProfileAdminPanel() {
 
       {error && <p className="text-sm text-red-400">{error}</p>}
 
+      <Card className="border-[var(--color-border-subtle)]">
+        <CardContent className="flex flex-wrap items-center justify-between gap-3 py-3">
+          <p className="text-xs text-[var(--color-muted)]">
+            Herramientas: exportar informes, Live Ops remoto y contraseñas generadas al crear cuentas.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={moderation.length === 0}
+              onClick={() => {
+                const text = moderation.map((m) => formatModerationReport(m)).join("\n\n---\n\n");
+                void navigator.clipboard.writeText(text);
+              }}
+            >
+              <Copy className="h-3.5 w-3.5" />
+              Copiar informes (todos)
+            </Button>
+            <Link href="/live-ops">
+              <Button variant="outline" size="sm">
+                <Monitor className="h-3.5 w-3.5" />
+                Abrir Live Ops
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+
       {stats && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
           <StatCard title="Cuentas" value={stats.totalUsers} icon={Users} />
           <StatCard title="Activas" value={stats.activeUsers} icon={Shield} />
+          <StatCard title="Launchers en vivo" value={stats.launchersOnline ?? 0} icon={Wifi} />
           <StatCard title="Sesiones vivas" value={stats.activeSessions} icon={Monitor} />
           <StatCard title="Con skin" value={stats.usersWithSkin} icon={ImageIcon} />
           <StatCard title="Revocadas" value={stats.revokedUsers} icon={ShieldOff} />
@@ -390,7 +454,7 @@ export function ProfileAdminPanel() {
                 { value: "premium", label: "Premium" },
               ]}
             />
-            <div className="sm:col-span-2 lg:col-span-4">
+            <div className="flex flex-wrap gap-2 sm:col-span-2 lg:col-span-4">
               <Button
                 type="submit"
                 disabled={
@@ -404,6 +468,15 @@ export function ProfileAdminPanel() {
               >
                 <KeyRound className="h-3.5 w-3.5" />
                 {creating ? "Creando…" : "Crear cuenta"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setPassword(generateSecurePassword())}
+                title="Generar contraseña segura aleatoria"
+              >
+                <Wand2 className="h-3.5 w-3.5" />
+                Generar contraseña
               </Button>
             </div>
           </form>
@@ -440,6 +513,30 @@ export function ProfileAdminPanel() {
         <FilterPills options={FILTER_OPTIONS} active={filter} onChange={setFilter} />
       </div>
 
+      {filter === "live" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Wifi className="h-4 w-4 text-emerald-400" />
+              Monitoreo en vivo
+            </CardTitle>
+            <CardDescription>
+              Launchers con heartbeat activo (últimos 45 s). Se actualiza cada 12 s.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ProfileLiveMonitor
+              items={moderation}
+              selectedId={selected?.id ?? null}
+              onSelectUser={(id) => {
+                setSelectedId(id);
+                setDetailTab("moderation");
+              }}
+            />
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="space-y-2 lg:col-span-2">
           {filtered.length === 0 ? (
@@ -451,29 +548,39 @@ export function ProfileAdminPanel() {
                 type="button"
                 onClick={() => {
                   setSelectedId(user.id);
-                  setDetailTab("general");
+                  setDetailTab("moderation");
                 }}
                 className={`w-full text-left ${rowItem} ${
                   selected?.id === user.id ? "border-[var(--color-accent-muted)] bg-[var(--color-accent-soft)]/20" : ""
                 } ${user.revoked ? "opacity-60" : ""}`}
               >
                 <div className="flex items-center gap-3">
-                  <Avatar name={user.displayName ?? user.username} size="md" />
+                  <div className="relative shrink-0">
+                    <Avatar name={user.displayName ?? user.username} size="md" />
+                    {moderationByUserId.get(user.id)?.launcherOpen && (
+                      <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--color-surface)] bg-emerald-400" />
+                    )}
+                  </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="text-sm text-[var(--color-text)]">@{user.username}</p>
                       {user.tier === "premium" && <Badge className={badgeDefault}>Premium</Badge>}
                       {user.revoked && <Badge className="bg-red-500/20 text-red-300">Revocado</Badge>}
-                      {user.activeSessionCount > 0 && (
-                        <Badge className="bg-emerald-500/15 text-emerald-300">{user.activeSessionCount} sesión</Badge>
+                      {moderationByUserId.get(user.id)?.launcherOpen && (
+                        <Badge className="bg-emerald-500/15 text-emerald-300">En vivo</Badge>
                       )}
-                      {user.hasSkin && <Badge className={badgeDefault}>Skin</Badge>}
+                      {user.activeSessionCount > 0 && (
+                        <Badge className="bg-sky-500/15 text-sky-200">{user.activeSessionCount} sesión</Badge>
+                      )}
                     </div>
                     <p className="mt-0.5 truncate text-xs text-[var(--color-text-soft)]">
-                      {user.displayName ?? user.username}
+                      {moderationByUserId.get(user.id)?.primaryIp
+                        ? `IP ${moderationByUserId.get(user.id)?.primaryIp}`
+                        : user.displayName ?? user.username}
                     </p>
                     <p className="mt-1 text-[11px] text-[var(--color-muted)]">
-                      Login {user.lastLoginAt ? formatRelativeTime(user.lastLoginAt) : "nunca"} · {user.totalSessionCount} sesiones totales
+                      {moderationByUserId.get(user.id)?.launcherStatusLabel ??
+                        (user.lastLoginAt ? `Visto ${formatRelativeTime(user.lastLoginAt)}` : "Sin actividad reciente")}
                     </p>
                   </div>
                 </div>
@@ -491,7 +598,12 @@ export function ProfileAdminPanel() {
                   <div>
                     <CardTitle>@{selected.username}</CardTitle>
                     <CardDescription>
-                      {selected.revoked ? "Cuenta revocada" : "Cuenta activa"} · ID {selected.id}
+                      {selectedIntel?.launcherOpen
+                        ? `${selectedIntel.launcherStatusLabel} · ${selectedIntel.primaryIp ?? "IP —"}`
+                        : selected.revoked
+                          ? "Cuenta revocada"
+                          : "Launcher cerrado"}{" "}
+                      · ID {selected.id.slice(0, 16)}…
                     </CardDescription>
                   </div>
                 </div>
@@ -499,6 +611,13 @@ export function ProfileAdminPanel() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
+              {detailTab === "moderation" && selectedIntel && (
+                <ProfileModerationDetail intel={selectedIntel} />
+              )}
+              {detailTab === "moderation" && !selectedIntel && (
+                <p className="text-sm text-[var(--color-muted)]">Sin datos de moderación para este usuario.</p>
+              )}
+
               {detailTab === "general" && (
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Input label="Nombre visible" value={selected.displayName ?? selected.username} onChange={(e) => setUsers((prev) => prev.map((u) => (u.id === selected.id ? { ...u, displayName: e.target.value } : u)))} onBlur={() => void saveUser(selected)} />
@@ -516,12 +635,6 @@ export function ProfileAdminPanel() {
                       { value: "premium", label: "Premium" },
                     ]}
                   />
-                  <div className="text-xs text-[var(--color-muted)] sm:col-span-2">
-                    <p>Creado: {formatDate(selected.createdAt)}</p>
-                    <p>Último login: {selected.lastLoginAt ? formatDate(selected.lastLoginAt) : "—"}</p>
-                    <p>Sesiones activas: {selected.activeSessionCount} / {selected.totalSessionCount}</p>
-                    <p>Skin: {selected.hasSkin ? `Sí · ${selected.skinUpdatedAt ? formatRelativeTime(selected.skinUpdatedAt) : ""}` : "No"}</p>
-                  </div>
                 </div>
               )}
 
@@ -560,7 +673,8 @@ export function ProfileAdminPanel() {
                               <div className="min-w-0">
                                 <p className="truncate font-medium">{s.label ?? s.deviceId.slice(0, 18)}</p>
                                 <p className="text-[11px] text-[var(--color-muted)]">
-                                  {s.deviceId.slice(0, 24)}… · {s.ipHint ?? "IP desconocida"}
+                                  {s.deviceId.slice(0, 24)}… · IP {s.ipHint ?? "—"}
+                                  {s.fingerprintPrefix ? ` · fp ${s.fingerprintPrefix}` : ""}
                                 </p>
                                 <p className="text-[11px] text-[var(--color-muted)]">
                                   Visto {formatRelativeTime(s.lastSeenAt)} · {formatExpiresIn(s.expiresAt)}

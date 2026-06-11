@@ -167,6 +167,8 @@ export interface LiveOpsSession {
   cpuUsage: number;
   health: LiveOpsHealth;
   connectedAt: string;
+  lastSeenAt?: string;
+  deviceId?: string;
   launcherId: string;
 }
 

@@ -206,3 +206,23 @@ export function validatePassword(
 export function passwordPolicySummary(): string {
   return `Mín. ${MIN_LENGTH} caracteres, mayúscula, minúscula, número y símbolo`;
 }
+
+const GENERATED_CHARS =
+  "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%&*-_";
+
+export function generateSecurePassword(length = 16): string {
+  const size = Math.max(MIN_LENGTH, length);
+  const bytes = new Uint8Array(size);
+  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+    crypto.getRandomValues(bytes);
+  } else {
+    for (let i = 0; i < size; i++) bytes[i] = Math.floor(Math.random() * 256);
+  }
+  let raw = "";
+  for (let i = 0; i < size; i++) {
+    raw += GENERATED_CHARS[bytes[i] % GENERATED_CHARS.length];
+  }
+  const check = validatePassword(raw);
+  if (check.valid) return raw;
+  return `${raw}A9!`;
+}

@@ -84,28 +84,36 @@ export async function upsertPresence(input: PresenceHeartbeatInput): Promise<Liv
 }
 
 export async function listLiveSessions(): Promise<LiveOpsSession[]> {
+  return listPresenceRecords().then((records) =>
+    records.map((p) => ({
+      id: p.id,
+      userId: p.userId ?? p.deviceId,
+      username: p.username,
+      status: p.status,
+      premium: p.premium,
+      country: p.country,
+      countryCode: p.countryCode,
+      city: p.city,
+      lat: p.lat,
+      lng: p.lng,
+      launcherVersion: p.launcherVersion,
+      minecraftVersion: p.minecraftVersion,
+      os: p.os,
+      ip: p.ip,
+      ramUsage: p.ramUsage,
+      cpuUsage: p.cpuUsage,
+      health: p.health,
+      connectedAt: p.connectedAt,
+      lastSeenAt: p.lastSeenAt,
+      deviceId: p.deviceId,
+      launcherId: p.launcherId,
+    }))
+  );
+}
+
+export async function listPresenceRecords(): Promise<LivePresenceRecord[]> {
   const store = loadLiveOpsStore();
-  return prunePresence(store.presence).map((p) => ({
-    id: p.id,
-    userId: p.userId ?? p.deviceId,
-    username: p.username,
-    status: p.status,
-    premium: p.premium,
-    country: p.country,
-    countryCode: p.countryCode,
-    city: p.city,
-    lat: p.lat,
-    lng: p.lng,
-    launcherVersion: p.launcherVersion,
-    minecraftVersion: p.minecraftVersion,
-    os: p.os,
-    ip: p.ip,
-    ramUsage: p.ramUsage,
-    cpuUsage: p.cpuUsage,
-    health: p.health,
-    connectedAt: p.connectedAt,
-    launcherId: p.launcherId,
-  }));
+  return prunePresence(store.presence);
 }
 
 export async function enqueueCommand(

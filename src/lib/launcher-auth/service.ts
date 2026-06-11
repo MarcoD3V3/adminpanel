@@ -488,7 +488,9 @@ export type AdminProfileUser = LauncherUserPublic & {
   skinUpdatedAt?: string;
 };
 
-export type AdminSessionPublic = Omit<DeviceSessionRecord, "tokenHash" | "deviceFingerprintHash">;
+export type AdminSessionPublic = Omit<DeviceSessionRecord, "tokenHash" | "deviceFingerprintHash"> & {
+  fingerprintPrefix?: string;
+};
 
 export async function getAdminProfilesOverview(): Promise<{
   users: AdminProfileUser[];
@@ -508,7 +510,10 @@ export async function getAdminProfilesOverview(): Promise<{
   });
 
   const sessions: AdminSessionPublic[] = store.sessions.map(
-    ({ tokenHash: _t, deviceFingerprintHash: _f, ...session }) => session
+    ({ tokenHash: _t, deviceFingerprintHash, ...session }) => ({
+      ...session,
+      fingerprintPrefix: deviceFingerprintHash.slice(0, 12),
+    })
   );
 
   return { users, sessions };
