@@ -54,10 +54,12 @@ import {
   syncLayoutByPositionClass,
 } from "@craftlauncher/shared";
 import {
+  fetchHubLayoutDraftFromApi,
   fetchHubLayoutFromApi,
   layoutFingerprint,
   publishHubLayoutToApi,
   readHubLayoutFromStorage,
+  saveHubLayoutDraftToApi,
   writeHubLayoutToStorage,
 } from "@/lib/hub-builder-persistence";
 import {
@@ -1904,6 +1906,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
     } else {
       set({ layout });
     }
+    void saveHubLayoutDraftToApi(layout);
     return ok;
   },
 
@@ -1914,8 +1917,13 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
 
     try {
       const local = readHubLayoutFromStorage();
+      let serverDraft: HubLayout | null = null;
+      if (!local) {
+        serverDraft = await fetchHubLayoutDraftFromApi();
+      }
+      const seed = local ?? serverDraft;
       const initial = prepareLayoutForEditor(
-        local ? cloneLayout(local) : cloneLayout(defaultHubLayout)
+        seed ? cloneLayout(seed) : cloneLayout(defaultHubLayout)
       );
       const fp = layoutFingerprint(initial);
 
@@ -1925,9 +1933,11 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
           initial.updatedAt = new Date().toISOString();
           writeHubLayoutToStorage(initial);
         }
+      } else if (serverDraft) {
+        writeHubLayoutToStorage(initial);
       }
 
-      // Mostrar el editor de inmediato (local o default). La API no debe bloquear la UI.
+      // Mostrar el editor de inmediato (local, borrador servidor o default). La API no debe bloquear la UI.
       set({
         storageHydrated: true,
         layout: initial,
@@ -1936,7 +1946,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
         selectedId: null,
         selectedIds: [],
         editSessionActive: false,
-        savedFingerprint: local ? fp : null,
+        savedFingerprint: seed ? fp : null,
         publishedFingerprint: null,
       });
 
@@ -1952,7 +1962,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
             return;
           }
 
-          if (!local) {
+          if (!local && !serverDraft) {
             const remoteLayout = prepareLayoutForEditor(cloneLayout(remote));
             set({
               layout: remoteLayout,
@@ -1969,7 +1979,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
         }
       })();
 
-      return Boolean(local);
+      return Boolean(local ?? serverDraft);
     } catch {
       const fresh = prepareLayoutForEditor(cloneLayout(defaultHubLayout));
       const fp = layoutFingerprint(fresh);

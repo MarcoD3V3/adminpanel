@@ -1,3 +1,4 @@
+import { validatePassword } from "@/lib/password-policy";
 import { appendAuditLog } from "./audit";
 import {
   generateActivationToken,
@@ -97,8 +98,9 @@ export async function createLauncherUser(
   if (!isValidUsername(normalized)) {
     return { error: "Usuario inválido (3–32 caracteres, letras/números/._-)" };
   }
-  if (!password || password.length < 6) {
-    return { error: "La contraseña debe tener al menos 6 caracteres" };
+  const passwordCheck = validatePassword(password, { username: normalized, displayName });
+  if (!passwordCheck.valid) {
+    return { error: passwordCheck.errors[0] ?? "Contraseña demasiado débil" };
   }
 
   const store = await loadAuthStore();
@@ -198,15 +200,24 @@ export async function resetLauncherUserPassword(
   ipHint?: string
 ): Promise<{ success: boolean; error?: string }> {
   if (!isValidRecordId(id)) return { success: false, error: "ID inválido" };
-  if (!newPassword || newPassword.length < 6) {
-    return { success: false, error: "La contraseña debe tener al menos 6 caracteres" };
+
+  const store = await loadAuthStore();
+  const user = store.users.find((x) => x.id === id);
+  if (!user || user.revoked) return { success: false, error: "Usuario no encontrado" };
+
+  const passwordCheck = validatePassword(newPassword, {
+    username: user.username,
+    displayName: user.displayName,
+  });
+  if (!passwordCheck.valid) {
+    return { success: false, error: passwordCheck.errors[0] ?? "Contraseña demasiado débil" };
   }
 
   let ok = false;
-  await mutateAuthStore((store) => {
-    const user = store.users.find((x) => x.id === id);
-    if (!user || user.revoked) return;
-    user.passwordHash = hashPassword(newPassword);
+  await mutateAuthStore((s) => {
+    const target = s.users.find((x) => x.id === id);
+    if (!target || target.revoked) return;
+    target.passwordHash = hashPassword(newPassword);
     ok = true;
   });
 

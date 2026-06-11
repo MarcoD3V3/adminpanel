@@ -2,6 +2,8 @@ import type { HubLayout } from "@/types/hub-builder";
 
 /** v2: layout en blanco por defecto (sin ventanas/elementos de fábrica) */
 export const HUB_LAYOUT_STORAGE_KEY = "craftlauncher-hub-layout-v2";
+/** Borrador en servidor (data/hub-layouts/_autosave.json) */
+export const HUB_LAYOUT_DRAFT_FILE = "_autosave";
 
 function isHubLayout(value: unknown): value is HubLayout {
   if (!value || typeof value !== "object") return false;
@@ -126,10 +128,98 @@ export async function publishHubLayoutToApi(layout: HubLayout): Promise<boolean>
     const res = await fetch("/api/hub-builder", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify(layout),
     });
     return res.ok;
   } catch {
     return false;
+  }
+}
+
+export async function saveHubLayoutDraftToApi(layout: HubLayout): Promise<boolean> {
+  try {
+    const res = await fetch("/api/hub-builder/files", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ name: HUB_LAYOUT_DRAFT_FILE, layout }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+export async function fetchHubLayoutDraftFromApi(): Promise<HubLayout | null> {
+  try {
+    const res = await fetch(`/api/hub-builder/files/${encodeURIComponent(HUB_LAYOUT_DRAFT_FILE)}`, {
+      cache: "no-store",
+      credentials: "include",
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { layout?: unknown; verified?: boolean };
+    return data.verified && isHubLayout(data.layout) ? data.layout : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function verifyHubLayoutRaw(
+  raw: string
+): Promise<{ valid: boolean; layout?: HubLayout; error?: string; reason?: string }> {
+  try {
+    const res = await fetch("/api/hub-builder/verify-layout", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ raw }),
+    });
+    const data = (await res.json()) as {
+      valid?: boolean;
+      layout?: HubLayout;
+      error?: string;
+      reason?: string;
+    };
+    if (!res.ok || !data.valid || !data.layout) {
+      return { valid: false, error: data.error ?? "Archivo no verificado", reason: data.reason };
+    }
+    return { valid: true, layout: data.layout };
+  } catch {
+    return { valid: false, error: "No se pudo contactar al servidor para verificar la firma" };
+  }
+}
+
+export async function fetchSignedHubLayoutJson(layout: HubLayout): Promise<string | null> {
+  try {
+    const res = await fetch("/api/hub-builder/verify-layout", {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ layout }),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { signedJson?: string };
+    return data.signedJson ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function saveHubLayoutNamedFile(
+  name: string,
+  layout: HubLayout
+): Promise<{ ok: boolean; signedJson?: string; error?: string }> {
+  try {
+    const res = await fetch("/api/hub-builder/files", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ name, layout }),
+    });
+    const data = (await res.json()) as { success?: boolean; signedJson?: string; error?: string };
+    return { ok: res.ok && Boolean(data.success), signedJson: data.signedJson, error: data.error };
+  } catch {
+    return { ok: false, error: "Error de red" };
   }
 }

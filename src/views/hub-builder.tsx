@@ -1,10 +1,17 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { usePathname } from "next/navigation";
 import { HubCanvas } from "@/components/hub-builder/HubCanvas";
 import { HubEditorToolbar } from "@/components/hub-builder/HubEditorToolbar";
-import { getHubSyncStatus } from "@/lib/hub-builder-persistence";
+import {
+  fetchSignedHubLayoutJson,
+  getHubSyncStatus,
+  saveHubLayoutNamedFile,
+  verifyHubLayoutRaw,
+} from "@/lib/hub-builder-persistence";
+import { safeHubLayoutFileName } from "@/lib/hub-layout-file";
+import type { HubLayout } from "@/types/hub-builder";
 import { ElementPalette } from "@/components/hub-builder/ElementPalette";
 import { HubElementOutlinePanel } from "@/components/hub-builder/HubElementOutlinePanel";
 import { HubElementTreeBubble } from "@/components/hub-builder/HubElementTreeBubble";
@@ -179,50 +186,94 @@ export default function HubBuilderPage() {
   };
 
   const handleSaveFile = async () => {
-    const name = prompt("Nombre de archivo (ej: ajustes-v1)");
-    if (!name) return;
+    const signedJson = await fetchSignedHubLayoutJson(layout);
+    if (!signedJson) {
+      alert("No se pudo firmar el layout. Inicia sesión admin y configura LAUNCHER_ADMIN_SECRET.");
+      return;
+    }
+
+    const suggested = `hub-layout-${new Date().toISOString().slice(0, 10)}.json`;
+    let localName = suggested.replace(/\.json$/i, "");
+
     try {
-      const res = await fetch("/api/hub-builder/files", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, layout }),
-      });
-      if (!res.ok) alert("No se pudo guardar el archivo");
-      else alert("Guardado en data/hub-layouts/" + name.replace(/\\.json$/i, "") + ".json");
-    } catch {
-      alert("Error de red");
+      if ("showSaveFilePicker" in window) {
+        const handle = await (
+          window as Window & {
+            showSaveFilePicker: (opts: {
+              suggestedName?: string;
+              types?: Array<{ description: string; accept: Record<string, string[]> }>;
+            }) => Promise<FileSystemFileHandle>;
+          }
+        ).showSaveFilePicker({
+          suggestedName: suggested,
+          types: [{ description: "JSON", accept: { "application/json": [".json"] } }],
+        });
+        const writable = await handle.createWritable();
+        await writable.write(signedJson);
+        await writable.close();
+        localName = handle.name.replace(/\.json$/i, "") || localName;
+      } else {
+        const blob = new Blob([signedJson], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = suggested;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return;
+    }
+
+    const safeName = safeHubLayoutFileName(localName);
+    if (!safeName) {
+      alert("Guardado firmado en tu PC. El nombre no es válido para el servidor.");
+      return;
+    }
+
+    const saved = await saveHubLayoutNamedFile(safeName, layout);
+    if (saved.ok) {
+      alert(`Layout firmado guardado en tu PC y en data/hub-layouts/${safeName}.json`);
+    } else {
+      alert(
+        saved.error ??
+          "Guardado firmado en tu PC. No se pudo copiar al servidor (¿sesión admin activa?)."
+      );
     }
   };
 
-  const handleLoadFile = async () => {
+  const handleLoadFile = () => {
+    loadFileInputRef.current?.click();
+  };
+
+  const handleLoadFilePicked = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
     try {
-      const listRes = await fetch("/api/hub-builder/files");
-      const data = (await listRes.json()) as { files?: string[] };
-      const files = data.files ?? [];
-      const pick = prompt("Nombre a cargar:\n" + files.join("\n"));
-      if (!pick) return;
-      const res = await fetch(`/api/hub-builder/files/${encodeURIComponent(pick)}`);
-      if (!res.ok) {
-        alert("No se pudo cargar");
+      const text = await file.text();
+      const verified = await verifyHubLayoutRaw(text);
+      if (!verified.valid || !verified.layout) {
+        alert(
+          verified.error ??
+            "Archivo rechazado: no está firmado por el panel admin o fue modificado fuera del sistema."
+        );
         return;
       }
-      const loaded = (await res.json()) as typeof layout;
-      useHubBuilderStore.setState({
-        layout: loaded,
-        history: [loaded],
-        historyIndex: 0,
-        selectedId: null,
-        selectedIds: [],
-        editSessionActive: false,
-      } as never);
-      alert("Cargado: " + pick);
+      applyLoadedLayout(verified.layout, file.name);
     } catch {
-      alert("Error de red");
+      alert("No se pudo leer el archivo");
     }
   };
 
-  const handleDownloadCurrent = () => {
-    const blob = new Blob([JSON.stringify(layout, null, 2)], { type: "application/json" });
+  const handleDownloadCurrent = async () => {
+    const signedJson = await fetchSignedHubLayoutJson(layout);
+    if (!signedJson) {
+      alert("No se pudo firmar la descarga. Inicia sesión admin.");
+      return;
+    }
+    const blob = new Blob([signedJson], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -237,7 +288,23 @@ export default function HubBuilderPage() {
 
   useHubBuilderShortcuts({ onSave: handleSave, disabled: previewMode });
 
+  const loadFileInputRef = useRef<HTMLInputElement>(null);
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const applyLoadedLayout = useCallback((loaded: HubLayout, label: string) => {
+    useHubBuilderStore.setState({
+      layout: loaded,
+      history: [loaded],
+      historyIndex: 0,
+      selectedId: null,
+      selectedIds: [],
+      editSessionActive: false,
+    } as never);
+    useHubBuilderStore.getState().saveLayout();
+    window.setTimeout(() => {
+      alert(`Layout cargado: ${label}`);
+    }, 0);
+  }, []);
   useEffect(() => {
     if (!isActivePage || !storageHydrated || previewMode || !needsSave) return;
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
@@ -305,6 +372,13 @@ export default function HubBuilderPage() {
 
   return (
     <HubBuilderPreviewProvider>
+    <input
+      ref={loadFileInputRef}
+      type="file"
+      accept=".json,application/json"
+      className="hidden"
+      onChange={(e) => void handleLoadFilePicked(e)}
+    />
     <div className="flex h-[calc(100dvh)] max-h-[calc(100dvh)] flex-col overflow-hidden">
       {!previewMode && <HubContextMenu />}
       {!previewMode && <HubElementTreeBubble />}

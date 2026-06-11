@@ -9,7 +9,9 @@ import { FilterPills } from "@/components/ui/FilterPills";
 import { StatCard } from "@/components/ui/StatCard";
 import { Tabs } from "@/components/ui/Tabs";
 import { Avatar } from "@/components/ui/Avatar";
+import { PasswordStrength } from "@/components/ui/PasswordStrength";
 import { badgeDefault, rowItem } from "@/lib/styles";
+import { validatePassword, passwordPolicySummary } from "@/lib/password-policy";
 import {
   expiresWithin,
   formatDate,
@@ -229,7 +231,11 @@ export function ProfileAdminPanel() {
 
   const handleCreate = async (e: FormEvent) => {
     e.preventDefault();
-    if (!username.trim() || password.length < 6) return;
+    const policy = validatePassword(password, {
+      username: username.trim(),
+      displayName: (displayName || username).trim(),
+    });
+    if (!username.trim() || !policy.valid) return;
     setCreating(true);
     setError(null);
     setLastCreated(null);
@@ -359,7 +365,21 @@ export function ProfileAdminPanel() {
         <CardContent>
           <form className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" onSubmit={(e) => void handleCreate(e)}>
             <Input label="Usuario" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="jugador1" autoComplete="off" />
-            <Input label="Contraseña" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="mín. 6" />
+            <div className="space-y-1.5">
+              <Input
+                label="Contraseña"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={passwordPolicySummary()}
+                autoComplete="new-password"
+              />
+              <PasswordStrength
+                password={password}
+                username={username}
+                displayName={displayName || username}
+              />
+            </div>
             <Input label="Nombre visible" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Opcional" />
             <Select
               label="Plan"
@@ -371,7 +391,17 @@ export function ProfileAdminPanel() {
               ]}
             />
             <div className="sm:col-span-2 lg:col-span-4">
-              <Button type="submit" disabled={creating || !username.trim() || password.length < 6}>
+              <Button
+                type="submit"
+                disabled={
+                  creating ||
+                  !username.trim() ||
+                  !validatePassword(password, {
+                    username: username.trim(),
+                    displayName: (displayName || username).trim(),
+                  }).valid
+                }
+              >
                 <KeyRound className="h-3.5 w-3.5" />
                 {creating ? "Creando…" : "Crear cuenta"}
               </Button>
@@ -606,9 +636,23 @@ export function ProfileAdminPanel() {
                     variant="outline"
                     size="sm"
                     onClick={async () => {
-                      const next = prompt("Nueva contraseña (mín. 6 caracteres):");
-                      if (!next || next.length < 6) return;
-                      const data = await profileAction({ action: "reset-password", id: selected.id, password: next });
+                      const next = prompt(
+                        `Nueva contraseña (${passwordPolicySummary()}):`
+                      );
+                      if (!next) return;
+                      const policy = validatePassword(next, {
+                        username: selected.username,
+                        displayName: selected.displayName,
+                      });
+                      if (!policy.valid) {
+                        setError(policy.errors.join(" · "));
+                        return;
+                      }
+                      const data = await profileAction({
+                        action: "reset-password",
+                        id: selected.id,
+                        password: next,
+                      });
                       if (!data.success) setError(data.error ?? "No se pudo resetear");
                     }}
                   >

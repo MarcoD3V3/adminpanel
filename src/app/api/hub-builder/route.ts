@@ -10,6 +10,11 @@ import {
 } from "@/lib/launcher-auth/service";
 import { corsHeaders, jsonWithCors, optionsResponse } from "@/lib/launcher-auth/http";
 import { requireAdminSession } from "@/lib/launcher-auth/require-admin";
+import {
+  parseStoredLayoutFile,
+  signHubLayout,
+  serializeSignedDocument,
+} from "@/lib/hub-layout-signing";
 
 const LAYOUT_FILE = path.join(process.cwd(), "data", "hub-layout.json");
 
@@ -73,8 +78,9 @@ async function readSavedLayout(): Promise<HubLayout | null> {
   try {
     const raw = await readFile(LAYOUT_FILE, "utf-8");
     if (!raw.trim()) return null;
-    const parsed: unknown = JSON.parse(raw);
-    return isHubLayout(parsed) ? parsed : null;
+    const verified = parseStoredLayoutFile(raw);
+    if (verified.ok) return verified.layout;
+    return null;
   } catch {
     return null;
   }
@@ -133,9 +139,18 @@ export async function POST(request: Request) {
         updatedAt: new Date().toISOString(),
       })
     );
+    const signed = signHubLayout(layout);
+    if (!signed) {
+      return jsonWithCors(
+        { success: false, message: "No se pudo firmar el layout (LAUNCHER_ADMIN_SECRET)" },
+        { status: 503 },
+        origin
+      );
+    }
+
     await mkdir(path.dirname(LAYOUT_FILE), { recursive: true });
     const tmp = `${LAYOUT_FILE}.tmp`;
-    await writeFile(tmp, JSON.stringify(layout, null, 2), "utf-8");
+    await writeFile(tmp, serializeSignedDocument(signed), "utf-8");
     await rename(tmp, LAYOUT_FILE);
     return jsonWithCors(
       { success: true, message: "Layout del hub guardado", layout },

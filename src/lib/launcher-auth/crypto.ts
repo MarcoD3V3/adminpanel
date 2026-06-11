@@ -73,23 +73,40 @@ export function maskToken(token: string): string {
   return `${token.slice(0, 8)}…${token.slice(-4)}`;
 }
 
+const SCRYPT_V1_OPTS = { N: 16384, r: 8, p: 1 } as const;
+const SCRYPT_V2_OPTS = { N: 32768, r: 8, p: 2 } as const;
+
 export function hashPassword(password: string): string {
   const salt = randomBytes(16).toString("hex");
-  const hash = scryptSync(`${pepper()}:${password}`, salt, 64).toString("hex");
-  return `scrypt:${salt}:${hash}`;
+  const hash = scryptSync(`${pepper()}:${password}`, salt, 64, SCRYPT_V2_OPTS).toString("hex");
+  return `scrypt2:${salt}:${hash}`;
 }
 
-export function verifyPassword(password: string, stored: string): boolean {
-  if (!stored.startsWith("scrypt:")) return false;
-  const parts = stored.split(":");
-  if (parts.length !== 3) return false;
-  const salt = parts[1];
-  const expected = parts[2];
-  const actual = scryptSync(`${pepper()}:${password}`, salt, 64).toString("hex");
+function verifyScryptHash(
+  password: string,
+  salt: string,
+  expected: string,
+  opts: { N: number; r: number; p: number }
+): boolean {
+  const actual = scryptSync(`${pepper()}:${password}`, salt, 64, opts).toString("hex");
   const a = Buffer.from(actual);
   const b = Buffer.from(expected);
   if (a.length !== b.length) return false;
   return timingSafeEqual(a, b);
+}
+
+export function verifyPassword(password: string, stored: string): boolean {
+  if (stored.startsWith("scrypt2:")) {
+    const parts = stored.split(":");
+    if (parts.length !== 3) return false;
+    return verifyScryptHash(password, parts[1], parts[2], SCRYPT_V2_OPTS);
+  }
+  if (stored.startsWith("scrypt:")) {
+    const parts = stored.split(":");
+    if (parts.length !== 3) return false;
+    return verifyScryptHash(password, parts[1], parts[2], SCRYPT_V1_OPTS);
+  }
+  return false;
 }
 
 const USERNAME_RE = /^[a-z0-9][a-z0-9._-]{2,31}$/i;

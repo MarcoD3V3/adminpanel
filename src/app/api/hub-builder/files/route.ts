@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import { mkdir, readdir, writeFile } from "fs/promises";
 import path from "path";
 import type { HubLayout } from "@/types/hub-builder";
+import {
+  isHubLayoutShape,
+  signHubLayout,
+  serializeSignedDocument,
+} from "@/lib/hub-layout-signing";
 import { requireAdminSession } from "@/lib/launcher-auth/require-admin";
 
 const DIR = path.join(process.cwd(), "data", "hub-layouts");
@@ -28,10 +33,21 @@ export async function POST(request: Request) {
   await mkdir(DIR, { recursive: true });
   const body = (await request.json()) as { name?: string; layout?: HubLayout };
   const name = body.name ? safeName(body.name) : null;
-  if (!name || !body.layout) return NextResponse.json({ success: false, error: "Nombre o layout inválido" }, { status: 400 });
+  if (!name || !body.layout || !isHubLayoutShape(body.layout)) {
+    return NextResponse.json({ success: false, error: "Nombre o layout inválido" }, { status: 400 });
+  }
 
+  const signed = signHubLayout(body.layout);
+  if (!signed) {
+    return NextResponse.json(
+      { success: false, error: "No se pudo firmar el layout (LAUNCHER_ADMIN_SECRET)" },
+      { status: 503 }
+    );
+  }
+
+  const signedJson = serializeSignedDocument(signed);
   const file = path.join(DIR, `${name}.json`);
-  await writeFile(file, JSON.stringify(body.layout, null, 2), "utf-8");
-  return NextResponse.json({ success: true, name });
+  await writeFile(file, signedJson, "utf-8");
+  return NextResponse.json({ success: true, name, signedJson });
 }
 

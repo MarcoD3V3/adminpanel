@@ -214,15 +214,20 @@ export function HubEditorToolbar({
           <Button size="sm" variant={showJson ? "secondary" : "outline"} onClick={onToggleJson}>
             JSON
           </Button>
-          <Button size="sm" variant="outline" onClick={onSaveFile} title="Guardar en /data/hub-layouts">
+          <Button size="sm" variant="outline" onClick={onSaveFile} title="Guardar en tu PC y en data/hub-layouts">
             <Save className="h-3.5 w-3.5" strokeWidth={1.5} />
             Archivo
           </Button>
-          <Button size="sm" variant="outline" onClick={onLoadFile} title="Cargar desde /data/hub-layouts">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onLoadFile}
+            title="Abrir layout firmado (.json) — rechaza archivos editados a mano"
+          >
             <FolderOpen className="h-3.5 w-3.5" strokeWidth={1.5} />
             Cargar
           </Button>
-          <Button size="sm" variant="outline" onClick={onDownloadJson} title="Descargar JSON">
+          <Button size="sm" variant="outline" onClick={onDownloadJson} title="Descargar JSON firmado digitalmente">
             <Download className="h-3.5 w-3.5" strokeWidth={1.5} />
           </Button>
           <Button
@@ -233,7 +238,7 @@ export function HubEditorToolbar({
               saveError
                 ? "Error al guardar"
                 : needsSave
-                  ? "Cambios sin guardar en este navegador"
+                  ? "Cambios sin guardar (navegador + borrador servidor)"
                   : undefined
             }
             className={cn(

@@ -1,0 +1,3927 @@
+{
+  "craftlauncherSigned": true,
+  "schema": 1,
+  "signedAt": "2026-06-11T13:28:53.255Z",
+  "signature": "34bcab9bada0c66c475878d50dfa58839e73eabf6b1e5966a4628d38bf39311e",
+  "layout": {
+    "id": "hub-default",
+    "name": "Hub principal",
+    "version": 1,
+    "activeScreenId": "screen-home",
+    "updatedAt": "2026-06-09T18:18:59.371Z",
+    "screens": [
+      {
+        "id": "screen-home",
+        "name": "Inicio",
+        "width": 980,
+        "height": 480,
+        "backgroundColor": "#0c0e11",
+        "elements": [
+          {
+            "id": "el-1780569820464-r0mr",
+            "type": "play-button",
+            "x": 420,
+            "y": 400,
+            "width": 144,
+            "height": 52,
+            "zIndex": 1,
+            "label": "JUGAR",
+            "action": "play",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 16,
+              "textColor": "#d7d8da",
+              "backgroundColor": "#3f8e2f",
+              "fontSize": 27,
+              "fontWeight": "bold"
+            },
+            "css": {},
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "scriptMode": "simple",
+              "constants": {
+                "RULE_VISIBILITY": true,
+                "SHOW_LIST": "barraProgreso",
+                "VIS_ACTIONS": "[{\"op\":\"show\",\"target\":\"barraProgreso\"}]",
+                "HIDE_LIST": "",
+                "CONTROL_STYLE": "11",
+                "TEXT_STYLE": "16"
+              },
+              "refId": "btnJugar"
+            },
+            "hubGroup": "lanzamiento"
+          },
+          {
+            "id": "el-1780584002293-6tsc",
+            "type": "instance-selector",
+            "x": 260,
+            "y": 412,
+            "width": 140,
+            "height": 32,
+            "zIndex": 10,
+            "label": "Perfil",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#d7d8da",
+              "backgroundColor": "#1a1d22",
+              "fontSize": 12
+            },
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "refId": "instance.active",
+              "constants": {
+                "PILL_SELECT_STYLE": "1",
+                "HIDE_SCROLLBAR": "false",
+                "TEXT_STYLE": "16"
+              }
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1780643564162-0a9x",
+            "type": "launch-phase-label",
+            "x": 0,
+            "y": 448,
+            "width": 148,
+            "height": 32,
+            "zIndex": 22,
+            "label": "Sincronizando",
+            "action": "none",
+            "visible": false,
+            "locked": false,
+            "style": {
+              "borderRadius": 10,
+              "contentAlignY": "end",
+              "contentAlignX": "start",
+              "fontSize": 8
+            },
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "constants": {
+                "CONTROL_STYLE": "1",
+                "TEXT_STYLE": "13"
+              }
+            },
+            "cssRaw": "bottom:none;",
+            "css": {
+              "bottom": "none"
+            }
+          },
+          {
+            "id": "el-1780708127275-0",
+            "type": "surface-box",
+            "x": 8,
+            "y": 10,
+            "width": 72,
+            "height": 460,
+            "zIndex": 23,
+            "label": "",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 12,
+              "backgroundColor": "transparent"
+            },
+            "container": {
+              "display": "flex",
+              "direction": "column",
+              "align": "start",
+              "justify": "start",
+              "gap": 8,
+              "padding": 12
+            },
+            "css": {
+              "border": "none"
+            },
+            "surface": {
+              "preset": "custom"
+            },
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "constants": {
+                "TEXT_STYLE": "1"
+              }
+            },
+            "cssRaw": "border: none;\n.modsbtnslidebar {\n  \n}",
+            "cssChildRules": {
+              "modsbtnslidebar": {}
+            }
+          },
+          {
+            "id": "el-1780708127275-1",
+            "type": "icon-button",
+            "x": 6,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "zIndex": 24,
+            "label": "ModsBtnSlideBar",
+            "action": "open-screen",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 10,
+              "textColor": "#d7d8da",
+              "backgroundColor": "transparent"
+            },
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "constants": {
+                "ICON_NAME": "puzzle"
+              }
+            },
+            "css": {
+              "border": "none"
+            },
+            "targetScreenId": "screen-1780582422624",
+            "parentId": "el-1780708127275-0",
+            "cssRaw": "border: none;"
+          },
+          {
+            "id": "el-1780708127275-2",
+            "type": "instance-avatar-grid",
+            "x": 2,
+            "y": 64,
+            "width": 44,
+            "height": 372,
+            "zIndex": 25,
+            "label": "Perfiles",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 12,
+              "backgroundColor": "transparent",
+              "fontSize": 13
+            },
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "constants": {
+                "GRID_COLUMNS": "0",
+                "GRID_GAP": "10",
+                "GRID_MIN_WIDTH": "48",
+                "INSTANCE_SORT": "created-desc",
+                "INSTANCE_ORDER": "",
+                "AVATAR_SIZE": "36"
+              },
+              "refId": "instance_avatar_grid"
+            },
+            "css": {},
+            "parentId": "el-1780708127275-0"
+          },
+          {
+            "id": "el-1781026079241-5j3m",
+            "type": "icon-button",
+            "x": 572,
+            "y": 416,
+            "width": 36,
+            "height": 36,
+            "zIndex": 26,
+            "label": "Ajustes",
+            "action": "open-screen",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 10,
+              "textColor": "#d7d8da",
+              "backgroundColor": "#14161a"
+            },
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "constants": {
+                "ICON_NAME": "settings"
+              }
+            },
+            "css": {},
+            "targetScreenId": "screen-1781023983476"
+          },
+          {
+            "id": "el-1781029120302-pri6",
+            "type": "text",
+            "x": 88,
+            "y": 12,
+            "width": 180,
+            "height": 28,
+            "zIndex": 27,
+            "label": "papa",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 10,
+              "textColor": "#d7d8da",
+              "fontWeight": "medium",
+              "fontSize": 14
+            },
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "constants": {
+                "ACCOUNT_BIND": "username"
+              },
+              "refId": "text_4"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781029138807-v5q3",
+            "type": "button",
+            "x": 616,
+            "y": 416,
+            "width": 120,
+            "height": 36,
+            "zIndex": 28,
+            "label": "Mi skin",
+            "action": "skin",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 10,
+              "textColor": "#8fd89a",
+              "backgroundColor": "#1a2a1f",
+              "fontWeight": "medium"
+            },
+            "css": {}
+          }
+        ],
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": [
+            {
+              "id": "el-1780569717494-eake",
+              "type": "chrome-icon-button",
+              "x": 948,
+              "y": 6,
+              "width": 30,
+              "height": 28,
+              "zIndex": 1,
+              "label": "×",
+              "action": "close-window",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10
+              },
+              "css": {},
+              "positionClass": "BtnAccionBarExit"
+            },
+            {
+              "id": "el-1780654543553-zi53",
+              "type": "chrome-screen-title",
+              "x": 16,
+              "y": 8,
+              "width": 40,
+              "height": 20,
+              "zIndex": 10,
+              "label": "Ventana",
+              "action": "none",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10,
+                "contentAlignX": "start",
+                "fontSize": 13
+              },
+              "css": {},
+              "positionClass": "PWD"
+            },
+            {
+              "id": "el-1780659164464-o22v",
+              "type": "chrome-icon-button",
+              "x": 920,
+              "y": 6,
+              "width": 30,
+              "height": 28,
+              "zIndex": 2,
+              "label": "−",
+              "action": "minimize-window",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10
+              },
+              "css": {},
+              "positionClass": "BtnAccionBarMinim",
+              "logic": {
+                "enabled": false,
+                "trigger": "click",
+                "script": "// Este script corre solo con el disparador elegido (clic, cambio…)\n// Refs en pantalla: usa $nombre — Constantes: @NOMBRE — Global: ~clave\n\nsi $contador >= @META {\n  avisa(\"¡Meta alcanzada!\");\n  abrir(\"screen-play\");\n} sino {\n  sumar($contador, 1);\n}",
+                "scriptMode": "simple"
+              }
+            },
+            {
+              "id": "el-1780679106301",
+              "type": "chrome-icon-button",
+              "x": 892,
+              "y": 6,
+              "width": 28,
+              "height": 28,
+              "zIndex": 11,
+              "label": "↻",
+              "action": "sync-layout",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10
+              },
+              "css": {},
+              "positionClass": "BtnAccionBarSync"
+            },
+            {
+              "id": "el-1781028939778-st1n",
+              "type": "text",
+              "x": 776,
+              "y": 6,
+              "width": 96,
+              "height": 28,
+              "zIndex": 12,
+              "label": "papa",
+              "action": "none",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10,
+                "textColor": "#d7d8da",
+                "fontWeight": "medium",
+                "fontSize": 14
+              },
+              "logic": {
+                "enabled": false,
+                "trigger": "click",
+                "script": "",
+                "constants": {
+                  "ACCOUNT_BIND": "username",
+                  "CONTROL_STYLE": "11"
+                },
+                "refId": "text_3"
+              },
+              "css": {}
+            }
+          ]
+        },
+        "backgroundChromeStyle": "blur",
+        "backgroundImage": "https://www.xtrafondos.com/wallpapers/resized/cofre-minecraft-del-tesoro-13755.jpg?s=large"
+      },
+      {
+        "id": "screen-1780579809529",
+        "name": "Ajustes",
+        "width": 980,
+        "height": 480,
+        "backgroundColor": "#0c0e11",
+        "backgroundImage": "",
+        "elements": [],
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": [
+            {
+              "id": "el-1780569717494-eake",
+              "type": "chrome-icon-button",
+              "x": 948,
+              "y": 6,
+              "width": 30,
+              "height": 28,
+              "zIndex": 1,
+              "label": "×",
+              "action": "close-window",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10
+              },
+              "css": {},
+              "positionClass": "BtnAccionBarExit"
+            },
+            {
+              "id": "el-1780569731326-6f23",
+              "type": "chrome-icon-button",
+              "x": 920,
+              "y": 6,
+              "width": 30,
+              "height": 28,
+              "zIndex": 2,
+              "label": "−",
+              "action": "minimize-window",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10
+              },
+              "css": {},
+              "positionClass": "BtnAccionBarMinim"
+            },
+            {
+              "id": "el-1780584154734-cupj",
+              "type": "chrome-icon-button",
+              "x": 892,
+              "y": 6,
+              "width": 28,
+              "height": 28,
+              "zIndex": 11,
+              "label": "↻",
+              "action": "sync-layout",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10
+              },
+              "css": {},
+              "positionClass": "BtnAccionBarSync"
+            },
+            {
+              "id": "el-1780654040333-c0mz",
+              "type": "chrome-screen-title",
+              "x": 16,
+              "y": 8,
+              "width": 40,
+              "height": 20,
+              "zIndex": 10,
+              "label": "Ventana",
+              "action": "none",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10,
+                "contentAlignX": "start",
+                "fontSize": 13
+              },
+              "css": {},
+              "positionClass": "PWD"
+            },
+            {
+              "id": "el-1780675009414-cydb",
+              "type": "icon-button",
+              "x": 65,
+              "y": 6,
+              "width": 28,
+              "height": 28,
+              "zIndex": 14,
+              "label": "Ajustes",
+              "action": "back",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10,
+                "textColor": "#d7d8da",
+                "backgroundColor": "transparent",
+                "fontWeight": "bold",
+                "fontSize": 13
+              },
+              "logic": {
+                "enabled": false,
+                "trigger": "click",
+                "script": "",
+                "constants": {
+                  "ICON_NAME": "arrow-left"
+                }
+              },
+              "positionClass": "atrasBTN",
+              "cssRaw": "border:none;",
+              "css": {
+                "border": "none"
+              },
+              "hubGroup": "atrasICONUNV"
+            }
+          ]
+        }
+      },
+      {
+        "id": "screen-1780582422624",
+        "name": "Mods",
+        "width": 980,
+        "height": 480,
+        "backgroundColor": "#0c0e11",
+        "backgroundImage": "",
+        "elements": [
+          {
+            "id": "el-1780604156483-iutj",
+            "type": "mods-results",
+            "x": 0,
+            "y": 0,
+            "width": 568,
+            "height": 480,
+            "zIndex": 40,
+            "label": "Resultados",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 14,
+              "contentAlignX": "center",
+              "contentAlignY": "start"
+            },
+            "css": {
+              "padding": "12px"
+            },
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "constants": {
+                "GRID_COLUMNS": "2",
+                "HIDE_SCROLLBAR": "true",
+                "CONTENT_SCALE": "1",
+                "GRID_GAP": "8"
+              }
+            }
+          },
+          {
+            "id": "el-1780644343264-98xx",
+            "type": "mods-installed-list",
+            "x": 800,
+            "y": 36,
+            "width": 176,
+            "height": 436,
+            "zIndex": 44,
+            "label": "Mods instalados",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 14,
+              "contentAlignY": "start"
+            },
+            "css": {
+              "padding": "5px"
+            },
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "constants": {
+                "HIDE_SCROLLBAR": "true",
+                "CONTENT_SCALE": "1"
+              }
+            }
+          },
+          {
+            "id": "el-1780644372926-nkmc",
+            "type": "mods-preview",
+            "x": 572,
+            "y": 4,
+            "width": 224,
+            "height": 472,
+            "zIndex": 45,
+            "label": "Preview",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 14,
+              "contentAlignY": "start"
+            },
+            "css": {},
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "constants": {
+                "HIDE_SCROLLBAR": "true",
+                "CONTENT_SCALE": "0.8"
+              }
+            }
+          },
+          {
+            "id": "el-1780674425748-t2xj",
+            "type": "mods-installed-search",
+            "x": 804,
+            "y": 8,
+            "width": 168,
+            "height": 28,
+            "zIndex": 46,
+            "label": "Filtrar mods instalados…",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 4,
+              "contentAlignX": "center",
+              "contentAlignY": "center"
+            },
+            "css": {},
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "constants": {
+                "CONTENT_SCALE": "0.65"
+              }
+            }
+          }
+        ],
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": [
+            {
+              "id": "el-1780569717494-eake",
+              "type": "chrome-icon-button",
+              "x": 948,
+              "y": 6,
+              "width": 30,
+              "height": 28,
+              "zIndex": 1,
+              "label": "×",
+              "action": "close-window",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10
+              },
+              "css": {},
+              "positionClass": "BtnAccionBarExit"
+            },
+            {
+              "id": "el-1780569731326-6f23",
+              "type": "chrome-icon-button",
+              "x": 920,
+              "y": 6,
+              "width": 30,
+              "height": 28,
+              "zIndex": 2,
+              "label": "−",
+              "action": "minimize-window",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10
+              },
+              "css": {},
+              "positionClass": "BtnAccionBarMinim"
+            },
+            {
+              "id": "el-1780584154734-cupj",
+              "type": "chrome-icon-button",
+              "x": 892,
+              "y": 6,
+              "width": 28,
+              "height": 28,
+              "zIndex": 11,
+              "label": "↻",
+              "action": "sync-layout",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10
+              },
+              "css": {},
+              "positionClass": "BtnAccionBarSync"
+            },
+            {
+              "id": "el-1780654509108-sdsi",
+              "type": "chrome-screen-title",
+              "x": 16,
+              "y": 8,
+              "width": 40,
+              "height": 20,
+              "zIndex": 10,
+              "label": "Ventana",
+              "action": "none",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10,
+                "contentAlignX": "start",
+                "fontSize": 13
+              },
+              "css": {},
+              "positionClass": "PWD"
+            },
+            {
+              "id": "el-1780665082475-swfd",
+              "type": "mods-search",
+              "x": 356,
+              "y": 6,
+              "width": 256,
+              "height": 28,
+              "zIndex": 11,
+              "label": "Buscar…",
+              "action": "none",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 12
+              },
+              "css": {},
+              "logic": {
+                "enabled": false,
+                "trigger": "click",
+                "script": "// Este script corre solo con el disparador elegido (clic, cambio…)\n// Refs en pantalla: usa $nombre — Constantes: @NOMBRE — Global: ~clave\n\nsi $contador >= @META {\n  avisa(\"¡Meta alcanzada!\");\n  abrir(\"screen-play\");\n} sino {\n  sumar($contador, 1);\n}",
+                "constants": {
+                  "SEARCH_FIELD_STYLE": "6"
+                },
+                "scriptMode": "simple"
+              }
+            },
+            {
+              "id": "el-1780665526664-9wzn",
+              "type": "mods-tabs",
+              "x": 106,
+              "y": 6,
+              "width": 244,
+              "height": 28,
+              "zIndex": 12,
+              "label": "Tabs",
+              "action": "none",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 12
+              },
+              "css": {}
+            },
+            {
+              "id": "el-1780665776438-yo0g",
+              "type": "instance-selector",
+              "x": 616,
+              "y": 6,
+              "width": 136,
+              "height": 28,
+              "zIndex": 13,
+              "label": "Perfil",
+              "action": "none",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 999,
+                "textColor": "#d7d8da",
+                "backgroundColor": "#1a1d22",
+                "fontSize": 12
+              },
+              "logic": {
+                "enabled": false,
+                "trigger": "click",
+                "script": "",
+                "refId": "instance_selector",
+                "constants": {
+                  "CONTENT_SCALE": "0.8",
+                  "PILL_SELECT_STYLE": "2"
+                }
+              },
+              "css": {}
+            },
+            {
+              "id": "el-1780675085864-zku9",
+              "type": "icon-button",
+              "x": 65,
+              "y": 6,
+              "width": 28,
+              "height": 28,
+              "zIndex": 14,
+              "label": "Atras",
+              "action": "back",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10,
+                "textColor": "#d7d8da",
+                "backgroundColor": "transparent",
+                "fontWeight": "bold",
+                "fontSize": 13
+              },
+              "logic": {
+                "enabled": false,
+                "trigger": "click",
+                "script": "",
+                "constants": {
+                  "ICON_NAME": "arrow-left"
+                }
+              },
+              "css": {
+                "border": "none"
+              },
+              "positionClass": "atrasBTN"
+            },
+            {
+              "id": "el-1780675518304-r6v4",
+              "type": "icon-button",
+              "x": 65,
+              "y": 6,
+              "width": 28,
+              "height": 28,
+              "zIndex": 14,
+              "label": "Ajustes",
+              "action": "back",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10,
+                "textColor": "#d7d8da",
+                "backgroundColor": "transparent",
+                "fontWeight": "bold",
+                "fontSize": 13
+              },
+              "logic": {
+                "enabled": false,
+                "trigger": "click",
+                "script": "",
+                "constants": {
+                  "ICON_NAME": "arrow-left"
+                }
+              },
+              "css": {
+                "border": "none"
+              },
+              "positionClass": "atrasBTN",
+              "targetScreenId": "screen-1780579809529",
+              "hubGroup": "atrasICONUNV"
+            }
+          ]
+        }
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "backgroundColor": "#17181b",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1780998325432-0s1a",
+            "type": "button",
+            "x": 8,
+            "y": 8,
+            "width": 98,
+            "height": 11,
+            "zIndex": 1,
+            "label": "Singleplayer",
+            "action": "play",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ],
+        "independentCanvas": true,
+        "minecraftVersion": "1.12.2"
+      },
+      {
+        "id": "craft-game-loading",
+        "name": "Pantalla de carga",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#0a0b0d",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "cl-brand",
+            "type": "text",
+            "x": 0,
+            "y": 152,
+            "width": 200,
+            "height": 16,
+            "zIndex": 1,
+            "label": "CraftLauncher",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "textColor": "#c8cad0",
+              "fontSize": 10
+            }
+          },
+          {
+            "id": "cl-progress",
+            "type": "launch-progress-bar",
+            "x": 16,
+            "y": 260,
+            "width": 200,
+            "height": 3,
+            "zIndex": 2,
+            "label": "Progreso",
+            "action": "none",
+            "visible": false,
+            "locked": false,
+            "style": {
+              "backgroundColor": "#1a1d22",
+              "textColor": "#6b9e78"
+            }
+          }
+        ],
+        "minecraftVersion": "1.12.2"
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1780998325432-0s1a",
+            "type": "button",
+            "x": 8,
+            "y": 8,
+            "width": 98,
+            "height": 11,
+            "zIndex": 1,
+            "label": "Singleplayer",
+            "action": "play",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1780998325432-0s1a",
+            "type": "button",
+            "x": 8,
+            "y": 8,
+            "width": 98,
+            "height": 11,
+            "zIndex": 1,
+            "label": "Singleplayer",
+            "action": "play",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1780998325432-0s1a",
+            "type": "button",
+            "x": 8,
+            "y": 8,
+            "width": 98,
+            "height": 11,
+            "zIndex": 1,
+            "label": "Singleplayer",
+            "action": "play",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1780998325432-0s1a",
+            "type": "button",
+            "x": 8,
+            "y": 8,
+            "width": 98,
+            "height": 11,
+            "zIndex": 1,
+            "label": "Singleplayer",
+            "action": "play",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1780998325432-0s1a",
+            "type": "button",
+            "x": 8,
+            "y": 8,
+            "width": 98,
+            "height": 11,
+            "zIndex": 1,
+            "label": "Singleplayer",
+            "action": "play",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1780998325432-0s1a",
+            "type": "button",
+            "x": 8,
+            "y": 8,
+            "width": 98,
+            "height": 11,
+            "zIndex": 1,
+            "label": "Singleplayer",
+            "action": "play",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1780998325432-0s1a",
+            "type": "button",
+            "x": 8,
+            "y": 8,
+            "width": 98,
+            "height": 11,
+            "zIndex": 1,
+            "label": "Singleplayer",
+            "action": "play",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1780998325432-0s1a",
+            "type": "button",
+            "x": 8,
+            "y": 8,
+            "width": 98,
+            "height": 11,
+            "zIndex": 1,
+            "label": "Singleplayer",
+            "action": "play",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1780998325432-0s1a",
+            "type": "button",
+            "x": 8,
+            "y": 8,
+            "width": 98,
+            "height": 11,
+            "zIndex": 1,
+            "label": "Singleplayer",
+            "action": "play",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1780998325432-0s1a",
+            "type": "button",
+            "x": 8,
+            "y": 8,
+            "width": 98,
+            "height": 11,
+            "zIndex": 1,
+            "label": "Singleplayer",
+            "action": "play",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1780998325432-0s1a",
+            "type": "button",
+            "x": 8,
+            "y": 8,
+            "width": 98,
+            "height": 11,
+            "zIndex": 1,
+            "label": "Singleplayer",
+            "action": "play",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1780998325432-0s1a",
+            "type": "button",
+            "x": 8,
+            "y": 8,
+            "width": 98,
+            "height": 11,
+            "zIndex": 1,
+            "label": "Singleplayer",
+            "action": "play",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1780998325432-0s1a",
+            "type": "button",
+            "x": 8,
+            "y": 8,
+            "width": 98,
+            "height": 11,
+            "zIndex": 1,
+            "label": "Singleplayer",
+            "action": "play",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1780998325432-0s1a",
+            "type": "button",
+            "x": 8,
+            "y": 8,
+            "width": 98,
+            "height": 11,
+            "zIndex": 1,
+            "label": "Singleplayer",
+            "action": "play",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      },
+      {
+        "id": "screen-1781023983476",
+        "name": "Perfil",
+        "width": 980,
+        "height": 480,
+        "backgroundColor": "#0c0e11",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": [
+            {
+              "id": "el-1781024715753-0",
+              "type": "chrome-screen-title",
+              "x": 16,
+              "y": 8,
+              "width": 40,
+              "height": 20,
+              "zIndex": 10,
+              "label": "Ventana",
+              "action": "none",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10,
+                "contentAlignX": "start",
+                "fontSize": 13
+              },
+              "css": {},
+              "positionClass": "PWD"
+            },
+            {
+              "id": "el-1781024749714-0",
+              "type": "chrome-icon-button",
+              "x": 920,
+              "y": 6,
+              "width": 30,
+              "height": 28,
+              "zIndex": 2,
+              "label": "−",
+              "action": "minimize-window",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10
+              },
+              "css": {},
+              "positionClass": "BtnAccionBarMinim"
+            },
+            {
+              "id": "el-1781024752248-0",
+              "type": "chrome-icon-button",
+              "x": 920,
+              "y": 6,
+              "width": 30,
+              "height": 28,
+              "zIndex": 2,
+              "label": "−",
+              "action": "minimize-window",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10
+              },
+              "css": {},
+              "positionClass": "BtnAccionBarMinim"
+            },
+            {
+              "id": "el-1781024780833-0",
+              "type": "chrome-icon-button",
+              "x": 948,
+              "y": 6,
+              "width": 30,
+              "height": 28,
+              "zIndex": 1,
+              "label": "×",
+              "action": "close-window",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10
+              },
+              "css": {},
+              "positionClass": "BtnAccionBarExit"
+            },
+            {
+              "id": "el-1781024887229-0",
+              "type": "icon-button",
+              "x": 65,
+              "y": 6,
+              "width": 28,
+              "height": 28,
+              "zIndex": 14,
+              "label": "Atras",
+              "action": "back",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10,
+                "textColor": "#d7d8da",
+                "backgroundColor": "transparent",
+                "fontWeight": "bold",
+                "fontSize": 13
+              },
+              "logic": {
+                "enabled": false,
+                "trigger": "click",
+                "script": "",
+                "constants": {
+                  "ICON_NAME": "arrow-left"
+                }
+              },
+              "css": {
+                "border": "none"
+              },
+              "positionClass": "atrasBTN",
+              "hubGroup": "atrasICONUNV"
+            },
+            {
+              "id": "el-1781026753575-0",
+              "type": "chrome-icon-button",
+              "x": 892,
+              "y": 6,
+              "width": 28,
+              "height": 28,
+              "zIndex": 11,
+              "label": "↻",
+              "action": "sync-layout",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10
+              },
+              "css": {},
+              "positionClass": "BtnAccionBarSync"
+            }
+          ]
+        },
+        "elements": [
+          {
+            "id": "el-1781026687412-ghwx",
+            "type": "profile-widget",
+            "x": 16,
+            "y": 16,
+            "width": 220,
+            "height": 72,
+            "zIndex": 1,
+            "label": "Usuario",
+            "action": "profile",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 12,
+              "textColor": "#e8e9eb",
+              "backgroundColor": "#14161a"
+            },
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "constants": {
+                "ACCOUNT_BIND": "profile"
+              },
+              "refId": "profile_widget"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781026698173-znax",
+            "type": "text",
+            "x": 12,
+            "y": 112,
+            "width": 200,
+            "height": 32,
+            "zIndex": 2,
+            "label": "Hola, jugador",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 10,
+              "textColor": "#e8e9eb",
+              "fontWeight": "medium",
+              "fontSize": 16
+            },
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "constants": {
+                "ACCOUNT_BIND": "display-greeting"
+              },
+              "refId": "text"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781026700701-epn0",
+            "type": "text",
+            "x": 240,
+            "y": 40,
+            "width": 180,
+            "height": 28,
+            "zIndex": 3,
+            "label": "papa",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 10,
+              "textColor": "#d7d8da",
+              "fontWeight": "medium",
+              "fontSize": 14
+            },
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "constants": {
+                "ACCOUNT_BIND": "username"
+              },
+              "refId": "text_2"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781026779326-0qgq",
+            "type": "icon-button",
+            "x": 220,
+            "y": 112,
+            "width": 36,
+            "height": 36,
+            "zIndex": 4,
+            "label": "Ajustes",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 10,
+              "textColor": "#d7d8da",
+              "backgroundColor": "transparent"
+            },
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "constants": {
+                "ICON_NAME": "settings"
+              },
+              "refId": "icon_button"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781026786146-qz4i",
+            "type": "button",
+            "x": 8,
+            "y": 436,
+            "width": 140,
+            "height": 36,
+            "zIndex": 5,
+            "label": "Cerrar sesión",
+            "action": "logout",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 10,
+              "textColor": "#f0a8a8",
+              "backgroundColor": "#3a2020",
+              "fontWeight": "medium"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781026794314-7cyh",
+            "type": "stat-card",
+            "x": 28,
+            "y": 176,
+            "width": 120,
+            "height": 64,
+            "zIndex": 6,
+            "label": "Sesión",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 10,
+              "textColor": "#d7d8da",
+              "backgroundColor": "#14161a"
+            },
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "constants": {
+                "ACCOUNT_BIND": "session-status"
+              },
+              "refId": "stat_card"
+            },
+            "value": "✓",
+            "css": {}
+          },
+          {
+            "id": "el-1781026801444-416o",
+            "type": "chip",
+            "x": 40,
+            "y": 264,
+            "width": 96,
+            "height": 26,
+            "zIndex": 7,
+            "label": "Free",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#8fd89a",
+              "backgroundColor": "#1a231c",
+              "fontSize": 11
+            },
+            "logic": {
+              "enabled": false,
+              "trigger": "click",
+              "script": "",
+              "constants": {
+                "ACCOUNT_BIND": "tier-chip"
+              },
+              "refId": "chip"
+            },
+            "css": {}
+          }
+        ],
+        "desktopWindow": true
+      },
+      {
+        "id": "craft-game-menu",
+        "name": "Menú Minecraft",
+        "width": 480,
+        "height": 270,
+        "independentCanvas": true,
+        "backgroundColor": "#000000",
+        "backgroundImage": "",
+        "chrome": {
+          "width": 980,
+          "height": 40,
+          "backgroundColor": "#0a0b0d",
+          "elements": []
+        },
+        "elements": [
+          {
+            "id": "el-1781024184882-s4ij",
+            "type": "play-button",
+            "x": 108,
+            "y": 72,
+            "width": 120,
+            "height": 14,
+            "zIndex": 2,
+            "label": "Entrar al servidor",
+            "action": "join-server",
+            "serverAddress": "mc.universocraft.com",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 8,
+              "textColor": "#6b9e78",
+              "backgroundColor": "#1a2e1f",
+              "fontSize": 9,
+              "fontWeight": "medium",
+              "borderColor": "#496f4f",
+              "backgroundColorHover": "#243828"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024383796-0crb",
+            "type": "chip",
+            "x": 116,
+            "y": 8,
+            "width": 56,
+            "height": 22,
+            "zIndex": 3,
+            "label": "100",
+            "action": "none",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 999,
+              "textColor": "#f0c040",
+              "backgroundColor": "#252830",
+              "fontSize": 7,
+              "borderColor": "#5c4a18",
+              "backgroundColorHover": "#2f323c"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024464429-gqw7",
+            "type": "button",
+            "x": 16,
+            "y": 236,
+            "width": 60,
+            "height": 16,
+            "zIndex": 4,
+            "label": "opciones ",
+            "action": "settings",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {}
+          },
+          {
+            "id": "el-1781024591506-c3s5",
+            "type": "button",
+            "x": 444,
+            "y": 244,
+            "width": 24,
+            "height": 16,
+            "zIndex": 5,
+            "label": "X",
+            "action": "join-server",
+            "visible": true,
+            "locked": false,
+            "style": {
+              "borderRadius": 0,
+              "textColor": "#e8eaed",
+              "backgroundColor": "#2b2e33",
+              "fontSize": 8,
+              "borderColor": "#72757a",
+              "backgroundColorHover": "#3a3e45"
+            },
+            "css": {},
+            "externalUrl": "https://",
+            "serverAddress": "play.miservidor.net"
+          }
+        ]
+      }
+    ],
+    "accountSurface": {
+      "activeScreenId": "screen-1781023983476",
+      "screens": [
+        {
+          "id": "screen-1781023983476",
+          "name": "Perfil",
+          "width": 980,
+          "height": 480,
+          "backgroundColor": "#0c0e11",
+          "backgroundImage": "",
+          "chrome": {
+            "width": 980,
+            "height": 40,
+            "backgroundColor": "#0a0b0d",
+            "elements": [
+              {
+                "id": "el-1781024715753-0",
+                "type": "chrome-screen-title",
+                "x": 16,
+                "y": 8,
+                "width": 40,
+                "height": 20,
+                "zIndex": 10,
+                "label": "Ventana",
+                "action": "none",
+                "visible": true,
+                "locked": false,
+                "style": {
+                  "borderRadius": 10,
+                  "contentAlignX": "start",
+                  "fontSize": 13
+                },
+                "css": {},
+                "positionClass": "PWD"
+              },
+              {
+                "id": "el-1781024749714-0",
+                "type": "chrome-icon-button",
+                "x": 920,
+                "y": 6,
+                "width": 30,
+                "height": 28,
+                "zIndex": 2,
+                "label": "−",
+                "action": "minimize-window",
+                "visible": true,
+                "locked": false,
+                "style": {
+                  "borderRadius": 10
+                },
+                "css": {},
+                "positionClass": "BtnAccionBarMinim"
+              },
+              {
+                "id": "el-1781024752248-0",
+                "type": "chrome-icon-button",
+                "x": 920,
+                "y": 6,
+                "width": 30,
+                "height": 28,
+                "zIndex": 2,
+                "label": "−",
+                "action": "minimize-window",
+                "visible": true,
+                "locked": false,
+                "style": {
+                  "borderRadius": 10
+                },
+                "css": {},
+                "positionClass": "BtnAccionBarMinim"
+              },
+              {
+                "id": "el-1781024780833-0",
+                "type": "chrome-icon-button",
+                "x": 948,
+                "y": 6,
+                "width": 30,
+                "height": 28,
+                "zIndex": 1,
+                "label": "×",
+                "action": "close-window",
+                "visible": true,
+                "locked": false,
+                "style": {
+                  "borderRadius": 10
+                },
+                "css": {},
+                "positionClass": "BtnAccionBarExit"
+              },
+              {
+                "id": "el-1781024887229-0",
+                "type": "icon-button",
+                "x": 65,
+                "y": 6,
+                "width": 28,
+                "height": 28,
+                "zIndex": 14,
+                "label": "Atras",
+                "action": "back",
+                "visible": true,
+                "locked": false,
+                "style": {
+                  "borderRadius": 10,
+                  "textColor": "#d7d8da",
+                  "backgroundColor": "transparent",
+                  "fontWeight": "bold",
+                  "fontSize": 13
+                },
+                "logic": {
+                  "enabled": false,
+                  "trigger": "click",
+                  "script": "",
+                  "constants": {
+                    "ICON_NAME": "arrow-left"
+                  }
+                },
+                "css": {
+                  "border": "none"
+                },
+                "positionClass": "atrasBTN",
+                "hubGroup": "atrasICONUNV"
+              },
+              {
+                "id": "el-1781026753575-0",
+                "type": "chrome-icon-button",
+                "x": 892,
+                "y": 6,
+                "width": 28,
+                "height": 28,
+                "zIndex": 11,
+                "label": "↻",
+                "action": "sync-layout",
+                "visible": true,
+                "locked": false,
+                "style": {
+                  "borderRadius": 10
+                },
+                "css": {},
+                "positionClass": "BtnAccionBarSync"
+              }
+            ]
+          },
+          "elements": [
+            {
+              "id": "el-1781026687412-ghwx",
+              "type": "profile-widget",
+              "x": 16,
+              "y": 16,
+              "width": 220,
+              "height": 72,
+              "zIndex": 1,
+              "label": "Usuario",
+              "action": "profile",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 12,
+                "textColor": "#e8e9eb",
+                "backgroundColor": "#14161a"
+              },
+              "logic": {
+                "enabled": false,
+                "trigger": "click",
+                "script": "",
+                "constants": {
+                  "ACCOUNT_BIND": "profile"
+                },
+                "refId": "profile_widget"
+              },
+              "css": {}
+            },
+            {
+              "id": "el-1781026698173-znax",
+              "type": "text",
+              "x": 12,
+              "y": 112,
+              "width": 200,
+              "height": 32,
+              "zIndex": 2,
+              "label": "Hola, jugador",
+              "action": "none",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10,
+                "textColor": "#e8e9eb",
+                "fontWeight": "medium",
+                "fontSize": 16
+              },
+              "logic": {
+                "enabled": false,
+                "trigger": "click",
+                "script": "",
+                "constants": {
+                  "ACCOUNT_BIND": "display-greeting"
+                },
+                "refId": "text"
+              },
+              "css": {}
+            },
+            {
+              "id": "el-1781026700701-epn0",
+              "type": "text",
+              "x": 240,
+              "y": 40,
+              "width": 180,
+              "height": 28,
+              "zIndex": 3,
+              "label": "papa",
+              "action": "none",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10,
+                "textColor": "#d7d8da",
+                "fontWeight": "medium",
+                "fontSize": 14
+              },
+              "logic": {
+                "enabled": false,
+                "trigger": "click",
+                "script": "",
+                "constants": {
+                  "ACCOUNT_BIND": "username"
+                },
+                "refId": "text_2"
+              },
+              "css": {}
+            },
+            {
+              "id": "el-1781026779326-0qgq",
+              "type": "icon-button",
+              "x": 220,
+              "y": 112,
+              "width": 36,
+              "height": 36,
+              "zIndex": 4,
+              "label": "Ajustes",
+              "action": "settings",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10,
+                "textColor": "#d7d8da",
+                "backgroundColor": "transparent"
+              },
+              "logic": {
+                "enabled": false,
+                "trigger": "click",
+                "script": "",
+                "constants": {
+                  "ICON_NAME": "settings"
+                },
+                "refId": "icon_button"
+              },
+              "css": {}
+            },
+            {
+              "id": "el-1781026786146-qz4i",
+              "type": "button",
+              "x": 8,
+              "y": 436,
+              "width": 140,
+              "height": 36,
+              "zIndex": 5,
+              "label": "Cerrar sesión",
+              "action": "logout",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10,
+                "textColor": "#f0a8a8",
+                "backgroundColor": "#3a2020",
+                "fontWeight": "medium"
+              },
+              "css": {}
+            },
+            {
+              "id": "el-1781026794314-7cyh",
+              "type": "stat-card",
+              "x": 28,
+              "y": 176,
+              "width": 120,
+              "height": 64,
+              "zIndex": 6,
+              "label": "Sesión",
+              "action": "none",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 10,
+                "textColor": "#d7d8da",
+                "backgroundColor": "#14161a"
+              },
+              "logic": {
+                "enabled": false,
+                "trigger": "click",
+                "script": "",
+                "constants": {
+                  "ACCOUNT_BIND": "session-status"
+                },
+                "refId": "stat_card"
+              },
+              "value": "✓",
+              "css": {}
+            },
+            {
+              "id": "el-1781026801444-416o",
+              "type": "chip",
+              "x": 40,
+              "y": 264,
+              "width": 96,
+              "height": 26,
+              "zIndex": 7,
+              "label": "Free",
+              "action": "none",
+              "visible": true,
+              "locked": false,
+              "style": {
+                "borderRadius": 999,
+                "textColor": "#8fd89a",
+                "backgroundColor": "#1a231c",
+                "fontSize": 11
+              },
+              "logic": {
+                "enabled": false,
+                "trigger": "click",
+                "script": "",
+                "constants": {
+                  "ACCOUNT_BIND": "tier-chip"
+                },
+                "refId": "chip"
+              },
+              "css": {}
+            }
+          ],
+          "desktopWindow": true
+        }
+      ]
+    },
+    "window": {
+      "lockSize": true,
+      "width": 980,
+      "height": 520
+    },
+    "ui": {
+      "launchDesktopWindow": true,
+      "accountScreenId": "screen-1780600029775"
+    }
+  }
+}
