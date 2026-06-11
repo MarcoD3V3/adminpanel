@@ -5,7 +5,7 @@ import {
   fetchPlayerSkin,
   uploadPlayerSkin,
 } from "@craftlauncher/shared";
-import { ADMIN_API_URL } from "@/lib/config";
+import { getAdminApiUrl } from "@/lib/config";
 import { useAuthStore } from "@/lib/auth-store";
 import { useLauncherDataStore } from "@/lib/launcher-data-store";
 
@@ -53,7 +53,7 @@ export function PlayerSkinPanel() {
       setLoading(false);
       return;
     }
-    const info = await fetchPlayerSkin(ADMIN_API_URL, headers, { includeImage: true });
+    const info = await fetchPlayerSkin(getAdminApiUrl(), headers, { includeImage: true });
     if (info.requiresAccount) {
       setRequiresAccount(true);
       setHasSkin(false);
@@ -103,7 +103,7 @@ export function PlayerSkinPanel() {
         setError("Sesión no disponible");
         return;
       }
-      const result = await uploadPlayerSkin(ADMIN_API_URL, headers, dataUrl);
+      const result = await uploadPlayerSkin(getAdminApiUrl(), headers, dataUrl);
       if (!result.success) {
         setError(result.error ?? "No se pudo subir la skin");
         return;
@@ -123,7 +123,7 @@ export function PlayerSkinPanel() {
     setError(null);
     const headers = await resolveHeaders();
     if (!headers) return;
-    const result = await deletePlayerSkin(ADMIN_API_URL, headers);
+    const result = await deletePlayerSkin(getAdminApiUrl(), headers);
     if (!result.success) {
       setError(result.error ?? "No se pudo eliminar");
       setSaving(false);

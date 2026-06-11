@@ -16,7 +16,7 @@ import {
   type InstalledModRow,
 } from "./electron-api";
 import { resolveModInstallStatus } from "./mod-install-status";
-import { ADMIN_API_URL } from "./config";
+import { getAdminApiUrl } from "./config";
 import { useAuthStore } from "./auth-store";
 
 export type LauncherPanel = "instances" | "mods" | "skin" | null;
@@ -458,7 +458,7 @@ export const useLauncherDataStore = create<LauncherDataState>((set, get) => ({
         loading: false,
       });
       try {
-        const res = await fetch(`${ADMIN_API_URL}/api/catalog-settings`, { cache: "no-store" });
+        const res = await fetch(`${getAdminApiUrl()}/api/catalog-settings`, { cache: "no-store" });
         if (res.ok) {
           const d = (await res.json()) as { settings?: { featuredTabLabel?: string } };
           const label = d.settings?.featuredTabLabel?.trim();
@@ -821,7 +821,7 @@ export const useLauncherDataStore = create<LauncherDataState>((set, get) => ({
       };
     };
     try {
-      const res = await fetch(`${ADMIN_API_URL}/api/modpacks`, { cache: "no-store" });
+      const res = await fetch(`${getAdminApiUrl()}/api/modpacks`, { cache: "no-store" });
       if (res.ok) {
         const data = (await res.json()) as { modpacks?: FeaturedModpack[]; rev?: string };
         const rev = String(data.rev ?? "0");

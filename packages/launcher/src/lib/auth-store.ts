@@ -6,7 +6,7 @@ import {
   type LauncherAuthHeaders,
   type LauncherTier,
 } from "@craftlauncher/shared";
-import { ADMIN_API_URL } from "./config";
+import { getAdminApiUrl } from "./config";
 import * as storage from "./auth-storage";
 
 const TIER_KEY = "cl_tier";
@@ -109,7 +109,7 @@ async function verifyWithDiskRetry(): Promise<{
   let headers = await storage.buildAuthHeaders();
   if (!headers) return { headers: null, result: { valid: false, reason: "sin_credenciales" } };
 
-  let result = await verifyLauncherSession(ADMIN_API_URL, headers);
+  let result = await verifyLauncherSession(getAdminApiUrl(), headers);
   if (result.valid || result.reason === "network" || result.reason === "rate") {
     return { headers, result };
   }
@@ -118,7 +118,7 @@ async function verifyWithDiskRetry(): Promise<{
   headers = await storage.buildAuthHeaders();
   if (!headers) return { headers: null, result };
 
-  result = await verifyLauncherSession(ADMIN_API_URL, headers);
+  result = await verifyLauncherSession(getAdminApiUrl(), headers);
   return { headers, result };
 }
 
@@ -221,7 +221,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const deviceId = storage.getOrCreateDeviceId();
     const fingerprint = await storage.getDeviceFingerprint();
     const result = await loginLauncherAccount(
-      ADMIN_API_URL,
+      getAdminApiUrl(),
       username.trim(),
       password,
       deviceId,
@@ -252,7 +252,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const deviceId = storage.getOrCreateDeviceId();
     const fingerprint = await storage.getDeviceFingerprint();
     const result = await activateLauncherToken(
-      ADMIN_API_URL,
+      getAdminApiUrl(),
       activationToken.trim(),
       deviceId,
       fingerprint

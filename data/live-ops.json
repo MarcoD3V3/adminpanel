@@ -12,15 +12,15 @@
       "minecraftVersion": "danilo · 1.16.5 Forge",
       "os": "Windows 32",
       "ip": "::1",
-      "ramUsage": 0,
+      "ramUsage": 1,
       "cpuUsage": 8,
       "country": "España",
       "countryCode": "ES",
       "city": "Madrid",
       "lat": 40.42,
       "lng": -3.7,
-      "connectedAt": "2026-06-09T18:45:25.574Z",
-      "lastSeenAt": "2026-06-09T18:46:06.684Z",
+      "connectedAt": "2026-06-11T12:19:57.034Z",
+      "lastSeenAt": "2026-06-11T12:19:57.034Z",
       "launcherId": "e71ca041-64a7-40ec-846d-d1687617e99f",
       "health": "healthy"
     }

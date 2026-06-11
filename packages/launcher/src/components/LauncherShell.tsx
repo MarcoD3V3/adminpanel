@@ -24,7 +24,7 @@ import { LaunchProgressPanel } from "./LaunchProgressPanel";
 import { ModsPanel } from "./ModsPanel";
 import { PlayerSkinPanel } from "./PlayerSkinPanel";
 import { useLauncherDataStore } from "@/lib/launcher-data-store";
-import { ADMIN_API_URL } from "@/lib/config";
+import { getAdminApiSource, getAdminApiUrl } from "@/lib/config";
 
 export function LauncherShell() {
   const layout = useLauncherStore((s) => s.layout);
@@ -41,7 +41,7 @@ export function LauncherShell() {
     () =>
       backgroundExtendsIntoChrome(resolveBackgroundChromeStyle(activeScreen))
         ? hubWindowFrameBackgroundStyle(activeScreen, chromeHeight, "runtime", {
-            proxyBaseUrl: ADMIN_API_URL,
+            proxyBaseUrl: getAdminApiUrl(),
           })
         : undefined,
     [activeScreen, chromeHeight]
@@ -142,7 +142,9 @@ export function LauncherShell() {
 
         <div className="shell-canvas">
           {loading && !lastSync ? (
-            <div className="center-msg">Conectando con {ADMIN_API_URL}…</div>
+            <div className="center-msg">
+              Conectando con {getAdminApiUrl()} ({getAdminApiSource()})…
+            </div>
           ) : (
             <HubRuntime />
           )}

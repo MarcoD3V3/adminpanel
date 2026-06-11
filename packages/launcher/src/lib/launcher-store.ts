@@ -53,7 +53,7 @@ import {
   type ScriptRunResult,
   type ScriptRuntimeCallbacks,
 } from "@craftlauncher/shared";
-import { ADMIN_API_URL } from "./config";
+import { getAdminApiUrl } from "./config";
 import { useAuthStore } from "./auth-store";
 import {
   launchForge,
@@ -1345,7 +1345,7 @@ export const launcherActions = {
       if (!headers) return;
 
       let result = await sendLiveOpsHeartbeat(
-        ADMIN_API_URL,
+        getAdminApiUrl(),
         headers,
         launcherActions.buildLiveOpsPayload()
       );
@@ -1354,7 +1354,7 @@ export const launcherActions = {
         headers = await useAuthStore.getState().resolveHeaders(true);
         if (headers) {
           result = await sendLiveOpsHeartbeat(
-            ADMIN_API_URL,
+            getAdminApiUrl(),
             headers,
             launcherActions.buildLiveOpsPayload()
           );
@@ -1384,12 +1384,12 @@ export const launcherActions = {
       let headers = await useAuthStore.getState().resolveHeaders(true);
       if (!headers) return;
 
-      let result = await pollLauncherNotifications(ADMIN_API_URL, headers);
+      let result = await pollLauncherNotifications(getAdminApiUrl(), headers);
 
       if (result.unauthorized) {
         headers = await useAuthStore.getState().resolveHeaders(true);
         if (headers) {
-          result = await pollLauncherNotifications(ADMIN_API_URL, headers);
+          result = await pollLauncherNotifications(getAdminApiUrl(), headers);
         }
       }
 
@@ -1413,7 +1413,7 @@ export const launcherActions = {
       }
 
       await ackLauncherNotifications(
-        ADMIN_API_URL,
+        getAdminApiUrl(),
         sessionHeaders,
         items.map((i) => i.id)
       );
@@ -1455,12 +1455,12 @@ export const launcherActions = {
 
         let layout: HubLayout | null = null;
         try {
-          layout = await fetchHubLayout(ADMIN_API_URL, headers);
+          layout = await fetchHubLayout(getAdminApiUrl(), headers);
         } catch (err) {
           if (!(err instanceof LauncherAuthError)) throw err;
           headers = await useAuthStore.getState().resolveHeaders(true);
           if (headers) {
-            layout = await fetchHubLayout(ADMIN_API_URL, headers);
+            layout = await fetchHubLayout(getAdminApiUrl(), headers);
           }
         }
 
@@ -1501,7 +1501,7 @@ export const launcherActions = {
           const headers = await useAuthStore.getState().resolveHeaders(true);
           if (headers) {
             const { verifyLauncherSession } = await import("@craftlauncher/shared");
-            const check = await verifyLauncherSession(ADMIN_API_URL, headers);
+            const check = await verifyLauncherSession(getAdminApiUrl(), headers);
             if (!check.valid && check.reason !== "network" && check.reason !== "rate") {
               useAuthStore.getState().invalidateSession(
                 "Sesión expirada o revocada. Activa de nuevo con un token nuevo."

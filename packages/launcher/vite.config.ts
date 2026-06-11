@@ -6,6 +6,8 @@ export default defineConfig({
   plugins: [react()],
   base: "./",
   clearScreen: false,
+  /** Carga VITE_* desde la raíz del monorepo (.env.local compartido con el admin). */
+  envDir: path.resolve(__dirname, "../.."),
   server: {
     port: 1420,
     strictPort: true,

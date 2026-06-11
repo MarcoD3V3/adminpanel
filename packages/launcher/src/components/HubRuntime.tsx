@@ -17,7 +17,7 @@ import {
 } from "@craftlauncher/shared";
 import { isLaunchUiActive } from "@/lib/launch-session-ui";
 import { launcherActions, useLauncherStore } from "@/lib/launcher-store";
-import { ADMIN_API_URL } from "@/lib/config";
+import { getAdminApiUrl } from "@/lib/config";
 import { useAuthStore } from "@/lib/auth-store";
 import { HubElementView } from "./HubElementView";
 
@@ -235,7 +235,7 @@ export function HubRuntime({ screenId: forcedScreenId }: HubRuntimeProps = {}) {
         style={{
           width: screen.width,
           height: contentHeight,
-          ...hubScreenContentBackgroundStyle(screen, "runtime", { proxyBaseUrl: ADMIN_API_URL }),
+          ...hubScreenContentBackgroundStyle(screen, "runtime", { proxyBaseUrl: getAdminApiUrl() }),
           ...(fixedWindow && !borderlessFullscreen
             ? { flexShrink: 0 }
             : scrollMode

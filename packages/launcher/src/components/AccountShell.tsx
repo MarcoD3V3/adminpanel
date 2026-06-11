@@ -7,7 +7,7 @@ import {
   type HubElement,
   type HubScreen,
 } from "@craftlauncher/shared";
-import { ADMIN_API_URL } from "@/lib/config";
+import { getAdminApiUrl } from "@/lib/config";
 import { launcherActions, useLauncherStore } from "@/lib/launcher-store";
 import { useAuthStore } from "@/lib/auth-store";
 import { getLauncherApi, openExternalUrl } from "@/lib/electron-api";
@@ -150,7 +150,7 @@ export function AccountShell() {
             style={{
               width: screen.width,
               height: screen.height,
-              ...hubScreenBackgroundStyle(screen, "runtime", { proxyBaseUrl: ADMIN_API_URL }),
+              ...hubScreenBackgroundStyle(screen, "runtime", { proxyBaseUrl: getAdminApiUrl() }),
               transform: `scale(${scale})`,
             }}
           >

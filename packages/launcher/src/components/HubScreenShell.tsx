@@ -8,7 +8,7 @@ import {
   resolveBackgroundChromeStyle,
   resolveLayoutChromeHeight,
 } from "@craftlauncher/shared";
-import { ADMIN_API_URL } from "@/lib/config";
+import { getAdminApiUrl } from "@/lib/config";
 import { launcherActions, useLauncherStore } from "@/lib/launcher-store";
 import { isDesktopLauncher } from "@/lib/electron-api";
 import { HubChromeBar } from "./HubChromeBar";
@@ -32,7 +32,7 @@ export function HubScreenShell() {
     if (!screen) return undefined;
     if (!backgroundExtendsIntoChrome(resolveBackgroundChromeStyle(screen))) return undefined;
     return hubWindowFrameBackgroundStyle(screen, chromeHeight, "runtime", {
-      proxyBaseUrl: ADMIN_API_URL,
+      proxyBaseUrl: getAdminApiUrl(),
     });
   }, [screen, chromeHeight]);
 
