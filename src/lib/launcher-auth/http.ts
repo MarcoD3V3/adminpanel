@@ -10,7 +10,10 @@ import { secureCompareSecret } from "./crypto";
 const LAUNCHER_ORIGINS = [
   "http://localhost:1420",
   "http://127.0.0.1:1420",
+  "http://localhost:3002",
+  "http://127.0.0.1:3002",
   process.env.LAUNCHER_ORIGIN,
+  process.env.WEB_ORIGIN,
 ].filter(Boolean) as string[];
 
 export function securityHeaders(): HeadersInit {

@@ -14,6 +14,8 @@
     "launcher:dev": "npm run electron:dev -w craftlauncher-desktop",
     "launcher:dev:prod": "npm run electron:dev:prod -w craftlauncher-desktop",
     "launcher:build": "npm run electron:build -w craftlauncher-desktop",
+    "web:dev": "npm run dev -w craftlauncher-web",
+    "web:build": "npm run build -w craftlauncher-web",
     "build:client-mod": "node scripts/build-loading-mod.mjs",
     "build:client-mod:all": "node scripts/build-loading-mod.mjs --all",
     "scaffold:client-mod": "node scripts/scaffold-client-mod.mjs --all",

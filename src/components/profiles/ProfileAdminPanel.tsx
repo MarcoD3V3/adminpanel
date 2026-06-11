@@ -10,6 +10,7 @@ import { StatCard } from "@/components/ui/StatCard";
 import { Tabs } from "@/components/ui/Tabs";
 import { Avatar } from "@/components/ui/Avatar";
 import { PasswordStrength } from "@/components/ui/PasswordStrength";
+import { SecurePasswordInput, SecureRevealText } from "@/components/ui/SecurePasswordInput";
 import { badgeDefault, rowItem } from "@/lib/styles";
 import { validatePassword, passwordPolicySummary, generateSecurePassword } from "@/lib/password-policy";
 import type { UserModerationIntel } from "@/lib/launcher-auth/profile-moderation";
@@ -629,11 +630,10 @@ export function ProfileAdminPanel() {
           <form className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" onSubmit={(e) => void handleCreate(e)}>
             <Input label="Usuario" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="jugador1" autoComplete="off" />
             <div className="space-y-1.5">
-              <Input
+              <SecurePasswordInput
                 label="Contraseña"
-                type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={setPassword}
                 placeholder={passwordPolicySummary()}
                 autoComplete="new-password"
               />
@@ -716,9 +716,16 @@ export function ProfileAdminPanel() {
                   (desaparece en unos segundos)
                 </span>
               </p>
-              <pre className="mt-2 max-h-40 overflow-auto rounded-lg bg-black/30 p-2 font-mono text-[11px] text-emerald-100/90">
-                {formatProfileClipboard(lastCreated)}
-              </pre>
+              <div className="mt-2 max-h-40 overflow-auto rounded-lg bg-black/30 p-2 font-mono text-[11px] text-emerald-100/90">
+                <p>
+                  Usuario: <span>{lastCreated.username}</span>
+                </p>
+                <p className="mt-1 flex flex-wrap items-center gap-1">
+                  Contraseña: <SecureRevealText text={lastCreated.password} className="text-emerald-100/90" />
+                </p>
+                {lastCreated.codigo && <p className="mt-1">Token: {lastCreated.codigo}</p>}
+                <p className="mt-1">Plan: {lastCreated.plan ?? "Gratis"}</p>
+              </div>
               <Button
                 type="button"
                 variant="outline"

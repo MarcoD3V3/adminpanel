@@ -40,3 +40,6 @@ next-env.d.ts
 packages/launcher/release/
 packages/launcher/release-out/
 packages/launcher/dist/
+
+# web
+packages/web
