@@ -669,12 +669,20 @@ export function elementTypeSnippetLabel(type: HubElementType): string {
 }
 
 export function triggerSnippetHint(trigger: LogicTrigger): string {
-  const hints: Record<LogicTrigger, string> = {
+  const hints: Partial<Record<LogicTrigger, string>> = {
     click: "Se ejecuta al pulsar",
     change: "Al cambiar valor",
     load: "Al abrir la ventana",
     interval: "Cada X ms",
     submit: "Al confirmar / enviar",
+    "any-click": "Cualquier clic en la pantalla",
+    "phase-change": "Cambia la fase de lanzamiento",
+    "launch-idle": "Sin lanzamiento activo",
+    "launch-active": "Descarga / preparación",
+    "launch-running": "Minecraft en ejecución",
+    "launch-error": "Falló el lanzamiento",
+    "launch-ended": "Juego cerrado",
+    "selector-change": "Cambió un selector",
   };
-  return hints[trigger];
+  return hints[trigger] ?? trigger;
 }

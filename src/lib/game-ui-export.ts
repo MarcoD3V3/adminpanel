@@ -747,5 +747,5 @@ export function exportGameUi(layout: HubLayout): GameUiExport {
     targetWindow
   );
 
-  return ui;
+  return ui as GameUiExport;
 }

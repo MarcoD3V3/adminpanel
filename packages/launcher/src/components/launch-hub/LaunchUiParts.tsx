@@ -144,7 +144,9 @@ export function LaunchStructuredLog({
         {entries.map((entry, i) => (
           <li key={`${i}-${entry.message.slice(0, 24)}`} className={`lh-log-${entry.level}`}>
             <span className="lh-log-msg">{entry.message}</span>
-            {entry.detail ? <span className="lh-log-detail">{entry.detail}</span> : null}
+            {"detail" in entry && entry.detail ? (
+              <span className="lh-log-detail">{entry.detail}</span>
+            ) : null}
           </li>
         ))}
       </ul>

@@ -49,7 +49,11 @@ export function InstanceAvatar({
   disabled,
 }: InstanceAvatarProps) {
   const initial = instanceAvatarInitial(instance.name);
-  const bg = resolveInstanceIconColor(instance);
+  const bg = resolveInstanceIconColor({
+    id: instance.name,
+    name: instance.name,
+    iconColor: instance.iconColor,
+  });
   const style = avatarStyle(size);
   const label = title ?? instance.name;
 

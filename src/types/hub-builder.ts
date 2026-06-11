@@ -154,6 +154,8 @@ export interface HubElementStyle {
   opacity?: number;
   contentAlignX?: HubContentAlign;
   contentAlignY?: HubContentAlign;
+  /** Texto dinámico del menú MC (Forge, logo, contador de mods…). */
+  gameMenuBinding?: string;
 }
 
 export interface HubElementLogic {
@@ -256,6 +258,8 @@ export interface HubScreen {
   backgroundChromeOpacity?: number;
   /** Si true, la ventana permite scroll vertical y NO auto-fit. */
   scroll?: boolean;
+  /** Si true, el tamaño no se sincroniza con layout.window (p. ej. menú Minecraft). */
+  independentCanvas?: boolean;
   /** Abrir en ventana de escritorio al usar «Ir a ventana». */
   desktopWindow?: boolean;
   /** Barra superior propia de esta ventana. */
@@ -296,6 +300,10 @@ export interface HubLayout {
     homeScreenId?: string;
     /** Scroll suave (solo scroll vertical). */
     smoothScroll?: boolean;
+    /** Ventana de escritorio aparte al lanzar (progreso/log). */
+    launchDesktopWindow?: boolean;
+    /** Ventana que abre la acción Perfil / Cuenta. */
+    accountScreenId?: string;
   };
   accountSurface?: HubSurfaceLayout;
   launcherChrome?: LauncherChromeLayout;
@@ -314,6 +322,9 @@ export interface PaletteItem {
   defaultAction: HubElementAction;
   /** Si true, el elemento se añade a la barra superior (launcherChrome). */
   chromeTarget?: boolean;
+  defaultExternalUrl?: string;
+  defaultServerAddress?: string;
+  defaultStyle?: Partial<HubElementStyle>;
   /** Preset opcional para preconfigurar lógica/style/value/refId. */
   preset?: Partial<HubElement>;
 }

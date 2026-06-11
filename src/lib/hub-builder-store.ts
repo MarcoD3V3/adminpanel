@@ -216,6 +216,7 @@ type ResolvedPalette = {
   defaultExternalUrl?: string;
   defaultServerAddress?: string;
   defaultStyle?: Partial<HubElement["style"]>;
+  preset?: Partial<HubElement>;
 };
 
 function resolvePaletteItem(

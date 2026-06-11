@@ -539,28 +539,18 @@ export function HubElementView({ element, allElements, onClick, onChange, flow, 
       element.style.backgroundColor,
       bg === DEFAULT_HUB_SURFACE_BG ? DEFAULT_HUB_PLAY_BG : bg
     );
-    return (
-      <button
-        type="button"
-        {...clickProps}
-        {...wrapFrame(
-          {
-            ...hubControlButtonChrome(element, {
-              background: playBg,
-              color: textColor,
-              fontSize,
-              fontWeight,
-            }),
-            cursor: "pointer",
-            width: "100%",
-            height: "100%",
-            ...cssStyle,
-          },
-          ["hub-play", "hub-play-bind"].filter(Boolean).join(" ")
-        )}
-      >
-        {element.label || "Jugar"}
-      </button>
+    return renderFillControl(
+      "hub-play hub-play-bind hub-preview-btn hub-preview-btn--play hub-preview-btn--fill",
+      {
+        background: playBg,
+        color: textColor,
+        fontSize,
+        fontWeight,
+        borderRadius: radius,
+        cursor: "pointer",
+        ...cssStyle,
+      },
+      element.label || "Jugar"
     );
   }
 

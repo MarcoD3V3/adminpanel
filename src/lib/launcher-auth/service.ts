@@ -187,7 +187,8 @@ export async function updateLauncherUser(
 
   if (!updated) return { error: "Usuario no encontrado" };
   await appendAuditLog("user_updated", ipHint, id);
-  const { passwordHash: _h, ...pub } = updated;
+  const record: LauncherUserRecord = updated;
+  const { passwordHash: _h, ...pub } = record;
   return pub;
 }
 

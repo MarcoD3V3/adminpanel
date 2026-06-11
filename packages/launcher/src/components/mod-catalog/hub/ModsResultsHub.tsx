@@ -76,7 +76,7 @@ export function ModsResultsHub({ element }: { element?: HubElement }) {
                   <button
                     type="button"
                     className="lp-btn-sm"
-                    onClick={() => void useLauncherDataStore.getState().loadModPreview(pack.curseForgeId)}
+                    onClick={() => void useLauncherDataStore.getState().loadModPreview(pack.curseForgeId!)}
                   >
                     Ver
                   </button>

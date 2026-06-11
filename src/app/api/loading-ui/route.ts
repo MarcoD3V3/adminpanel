@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { mkdir, readFile, rename, writeFile } from "fs/promises";
+import path from "path";
 import {
   legacyLoadingUiFile,
   loadingUiFileForVersion,

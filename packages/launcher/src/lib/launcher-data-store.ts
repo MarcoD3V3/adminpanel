@@ -161,20 +161,6 @@ async function loadStatsForInstance(instanceId: string | undefined) {
   }
 }
 
-async function reloadInstancesFromDisk() {
-  const api = getLauncherApi();
-  if (!api?.listInstances) return;
-  const data = await api.listInstances();
-  const activeId = data.settings.activeInstanceId ?? get().settings?.activeInstanceId ?? null;
-  const active =
-    data.instances.find((i) => i.id === activeId) ?? data.instances[0] ?? null;
-  set({
-    settings: data.settings,
-    instances: data.instances,
-    activeInstance: active,
-  });
-}
-
 async function backfillInstanceIcons(instances: LauncherInstance[]) {
   const api = getLauncherApi();
   if (!api?.getModDetails || !api?.updateInstance) return false;
@@ -194,20 +180,6 @@ async function backfillInstanceIcons(instances: LauncherInstance[]) {
     }
   }
   return updated;
-}
-
-async function resolveCurseForgeIconUrl(modId: number): Promise<string | undefined> {
-  const api = getLauncherApi();
-  if (!api?.getModDetails) return undefined;
-  try {
-    const preview = get().modPreview.mod;
-    const res = await api.getModDetails(modId, {
-      cachedMod: preview?.id === modId ? preview : undefined,
-    });
-    return res?.mod?.logoUrl;
-  } catch {
-    return undefined;
-  }
 }
 
 export const useLauncherDataStore = create<LauncherDataState>((set, get) => ({
@@ -1130,3 +1102,31 @@ export const useLauncherDataStore = create<LauncherDataState>((set, get) => ({
     }
   },
 }));
+
+async function reloadInstancesFromDisk() {
+  const api = getLauncherApi();
+  if (!api?.listInstances) return;
+  const data = await api.listInstances();
+  const activeId =
+    data.settings.activeInstanceId ?? useLauncherDataStore.getState().settings?.activeInstanceId ?? null;
+  const active = data.instances.find((i) => i.id === activeId) ?? data.instances[0] ?? null;
+  useLauncherDataStore.setState({
+    settings: data.settings,
+    instances: data.instances,
+    activeInstance: active,
+  });
+}
+
+async function resolveCurseForgeIconUrl(modId: number): Promise<string | undefined> {
+  const api = getLauncherApi();
+  if (!api?.getModDetails) return undefined;
+  try {
+    const preview = useLauncherDataStore.getState().modPreview.mod;
+    const res = await api.getModDetails(modId, {
+      cachedMod: preview?.id === modId ? preview : undefined,
+    });
+    return res?.mod?.logoUrl;
+  } catch {
+    return undefined;
+  }
+}

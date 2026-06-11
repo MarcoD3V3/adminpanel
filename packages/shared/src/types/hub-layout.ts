@@ -95,6 +95,7 @@ export type HubElementAction =
   | "select-instance"
   | "delete-instance"
   | "external"
+  | "join-server"
   | "logout"
   | "skin"
   | "sync-layout"
@@ -217,6 +218,8 @@ export interface HubElement {
   imageUrl?: string;
   action: HubElementAction;
   externalUrl?: string;
+  /** IP o dominio cuando action es join-server (ej. play.server.net:25565). */
+  serverAddress?: string;
   targetScreenId?: string;
   visible: boolean;
   locked: boolean;

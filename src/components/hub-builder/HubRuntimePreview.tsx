@@ -2,6 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import type { HubElement, HubElementType } from "@/types/hub-builder";
+import type { LauncherInstance } from "@craftlauncher/shared";
 import {
   DEFAULT_HUB_PLAY_BG,
   DEFAULT_HUB_SURFACE_BG,
@@ -280,7 +281,7 @@ function PreviewInstanceAvatarList({ element }: { element: HubElement }) {
   const avatarSize = resolveInstanceAvatarRenderSize(element, layout);
   const multiGroup = buckets.length > 1;
 
-  const renderCluster = (group: typeof mockInstances, keyPrefix: string) => (
+  const renderCluster = (group: LauncherInstance[], keyPrefix: string) => (
     <div key={keyPrefix} className="ih-instance-avatar-grid-inner" style={clusterStyle as CSSProperties}>
       {group.map((inst, i) => (
         <div key={inst.id} className="ih-instance-avatar-grid-cell">
@@ -391,8 +392,6 @@ function PreviewShell({
         <div
           className={scrollWrapClass}
           style={{
-            width: "100%",
-            height: "100%",
             boxSizing: "border-box",
             zoom: compact ? 0.72 : ui.contentScale !== 1 ? ui.contentScale : undefined,
             fontSize: element.style.fontSize ?? 13,
@@ -404,7 +403,7 @@ function PreviewShell({
                   minWidth: 0,
                   minHeight: 0,
                 }
-              : hubContentLayoutStyle(element.style, element.type)),
+              : { width: "100%", height: "100%", ...hubContentLayoutStyle(element.style, element.type) }),
             ...(hubElementUiCssVars(element) as CSSProperties),
             ...(hubTextStyleInlineCss(element) as CSSProperties),
           }}
@@ -1250,14 +1249,6 @@ export function HubRuntimePreview({ element, style, compact }: HubRuntimePreview
         <PreviewShell element={element} compact={compact} frameStyle={style}>
           <PreviewInstanceAvatarList element={element} />
         </PreviewShell>
-    );
-  }
-
-  if (element.type === "instance-name-input") {
-    return (
-      <PreviewShell element={element} compact={compact} frameStyle={style}>
-        <input className="ih-input" readOnly disabled value={label || "Nombre del perfil"} aria-hidden />
-      </PreviewShell>
     );
   }
 

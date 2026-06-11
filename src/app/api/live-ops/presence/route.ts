@@ -2,6 +2,7 @@ import {
   isLauncherAuthEnforced,
   verifyRequestSession,
 } from "@/lib/launcher-auth/service";
+import type { VerifySessionResult } from "@/lib/launcher-auth/types";
 import { clientIp, corsHeaders, jsonWithCors, optionsResponse } from "@/lib/launcher-auth/http";
 import { pollCommandsForDevice, upsertPresence } from "@/lib/live-ops/service";
 
@@ -17,7 +18,7 @@ export async function POST(request: Request) {
     return jsonWithCors({ error: "deviceId requerido" }, { status: 400 }, origin);
   }
 
-  let session = { valid: false as const };
+  let session: VerifySessionResult = { valid: false };
   if (isLauncherAuthEnforced()) {
     session = await verifyRequestSession(
       request.headers.get("authorization"),

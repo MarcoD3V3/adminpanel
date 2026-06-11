@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { FORGE_VERSIONS, resolveForgeVersion } from "@craftlauncher/shared";
+import { FORGE_VERSIONS, LAUNCH_PANEL_PARTS, resolveForgeVersion } from "@craftlauncher/shared";
 import type { HubElement, HubElementType } from "@/types/hub-builder";
 import {
   DEFAULT_SURFACE_BG,
@@ -15,6 +15,7 @@ import { useHubBuilderStore } from "@/lib/hub-builder-store";
 import {
   hubElementCssForceClasses,
   hubElementCssToStyle,
+  hubSearchFieldClassName,
   hubUsesFillControlSkin,
   hubVisualPresetActive,
   hubVisualRootProps,
@@ -438,7 +439,7 @@ export function HubElementView({
     const shellSkin = hubVisualRootProps(element, {
       style: {
         ...boxStyle,
-        background: fillSkin || !preset ? "transparent" : undefined,
+        background: fillSkin || !preset ? "transparent" : (boxStyle.background ?? "transparent"),
       },
     });
     return (

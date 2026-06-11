@@ -197,7 +197,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       if (result.reason === "network" || result.reason === "rate") {
         const tier = result.tier ?? readCachedTier();
         const profile = readCachedProfile();
-        applySessionReady(set, headers, tier, profile);
+        applySessionReady(set, headers, tier, {
+          username: profile.username ?? undefined,
+          displayName: profile.displayName ?? undefined,
+        });
         return;
       }
 

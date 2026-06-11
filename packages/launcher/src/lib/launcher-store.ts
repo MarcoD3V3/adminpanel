@@ -345,7 +345,7 @@ async function applyHubLayoutToLauncher(
 
 function useOfflineLayout(
   cache: HubLayoutCacheRecord,
-  message = OFFLINE_LAYOUT_MSG,
+  message: string | null = OFFLINE_LAYOUT_MSG,
   opts?: { preserveActiveScreen?: boolean }
 ) {
   return applyHubLayoutToLauncher(cache.layout, {
