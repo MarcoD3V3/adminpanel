@@ -38,4 +38,5 @@ next-env.d.ts
 
 # launcher
 packages/launcher/release/
+packages/launcher/release-out/
 packages/launcher/dist/
