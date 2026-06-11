@@ -116,6 +116,18 @@
   ],
   "auditLog": [
     {
+      "id": "aud_2bf7ec270ec4d3a0",
+      "action": "admin_login",
+      "at": "2026-06-11T14:15:36.988Z",
+      "ipHint": "::1"
+    },
+    {
+      "id": "aud_a8dec7bc02f42003",
+      "action": "admin_login",
+      "at": "2026-06-11T14:15:21.215Z",
+      "ipHint": "::1"
+    },
+    {
       "id": "aud_2e1cc3b33e0eafc3",
       "action": "session_verify_failed",
       "at": "2026-06-09T18:28:28.519Z",

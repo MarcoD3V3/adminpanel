@@ -21,59 +21,70 @@ type ProfileLiveMonitorProps = {
   selectedId: string | null;
 };
 
+export function ProfileLiveSummary({ items }: { items: UserModerationIntel[] }) {
+  const online = items.filter((m) => m.launcherOpen);
+  const offline = items.filter((m) => !m.launcherOpen && m.activeSessionCount > 0);
+
+  return (
+    <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--color-muted)]">
+      <span className="inline-flex items-center gap-1 text-emerald-300">
+        <Wifi className="h-3.5 w-3.5" />
+        {online.length} launcher(es) abierto(s) ahora
+      </span>
+      <span>·</span>
+      <span>{offline.length} con sesión pero sin heartbeat reciente</span>
+    </div>
+  );
+}
+
 export function ProfileLiveMonitor({ items, onSelectUser, selectedId }: ProfileLiveMonitorProps) {
   const online = items.filter((m) => m.launcherOpen);
   const offline = items.filter((m) => !m.launcherOpen && m.activeSessionCount > 0);
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--color-muted)]">
-        <span className="inline-flex items-center gap-1 text-emerald-300">
-          <Wifi className="h-3.5 w-3.5" />
-          {online.length} launcher(es) abierto(s) ahora
-        </span>
-        <span>·</span>
-        <span>{offline.length} con sesión pero sin heartbeat reciente</span>
-      </div>
+    <div className="flex h-full min-h-0 flex-col gap-3">
+      <ProfileLiveSummary items={items} />
 
-      {online.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[var(--color-border-subtle)] px-4 py-10 text-center text-sm text-[var(--color-muted)]">
-          <WifiOff className="mx-auto mb-2 h-8 w-8 opacity-40" />
-          Ningún launcher reportando actividad en los últimos 45 segundos.
-        </div>
-      ) : (
-        <div className="grid gap-3 lg:grid-cols-2">
-          {online.map((intel) => (
-            <LiveUserCard
-              key={intel.userId}
-              intel={intel}
-              selected={selectedId === intel.userId}
-              onSelect={() => onSelectUser(intel.userId)}
-            />
-          ))}
-        </div>
-      )}
-
-      {offline.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-xs font-medium uppercase tracking-wider text-[var(--color-muted)]">
-            Sesión activa sin launcher visible
-          </p>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {offline.map((intel) => (
-              <button
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
+        {online.length === 0 ? (
+          <div className="flex h-full min-h-[7rem] flex-col items-center justify-center rounded-xl border border-dashed border-[var(--color-border-subtle)] px-4 text-center text-sm text-[var(--color-muted)]">
+            <WifiOff className="mb-2 h-8 w-8 opacity-40" />
+            Ningún launcher reportando actividad en los últimos 45 segundos.
+          </div>
+        ) : (
+          <div className="grid gap-3 lg:grid-cols-2">
+            {online.map((intel) => (
+              <LiveUserCard
                 key={intel.userId}
-                type="button"
-                onClick={() => onSelectUser(intel.userId)}
-                className="flex items-center justify-between rounded-lg border border-[var(--color-border-subtle)] px-3 py-2 text-left text-sm hover:bg-[var(--color-surface-hover)]"
-              >
-                <span>@{intel.username}</span>
-                <span className="text-xs text-[var(--color-muted)]">{intel.activeSessionCount} sesión</span>
-              </button>
+                intel={intel}
+                selected={selectedId === intel.userId}
+                onSelect={() => onSelectUser(intel.userId)}
+              />
             ))}
           </div>
-        </div>
-      )}
+        )}
+
+        {offline.length > 0 && (
+          <div className="mt-3 space-y-2">
+            <p className="text-xs font-medium uppercase tracking-wider text-[var(--color-muted)]">
+              Sesión activa sin launcher visible
+            </p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {offline.map((intel) => (
+                <button
+                  key={intel.userId}
+                  type="button"
+                  onClick={() => onSelectUser(intel.userId)}
+                  className="flex items-center justify-between rounded-lg border border-[var(--color-border-subtle)] px-3 py-2 text-left text-sm hover:bg-[var(--color-surface-hover)]"
+                >
+                  <span>@{intel.username}</span>
+                  <span className="text-xs text-[var(--color-muted)]">{intel.activeSessionCount} sesión</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -124,18 +135,10 @@ function LiveUserCard({
         </dl>
       )}
 
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-3">
         <Button size="sm" variant="outline" onClick={onSelect}>
           <Monitor className="h-3.5 w-3.5" />
-          Ver ficha
-        </Button>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => void navigator.clipboard.writeText(formatModerationReport(intel))}
-        >
-          <Copy className="h-3.5 w-3.5" />
-          Copiar informe
+          Ver ficha de moderación
         </Button>
       </div>
     </div>

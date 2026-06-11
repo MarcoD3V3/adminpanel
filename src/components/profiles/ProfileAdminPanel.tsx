@@ -13,7 +13,16 @@ import { PasswordStrength } from "@/components/ui/PasswordStrength";
 import { badgeDefault, rowItem } from "@/lib/styles";
 import { validatePassword, passwordPolicySummary, generateSecurePassword } from "@/lib/password-policy";
 import type { UserModerationIntel } from "@/lib/launcher-auth/profile-moderation";
-import { ProfileLiveMonitor, ProfileModerationDetail } from "@/components/profiles/ProfileLiveMonitor";
+import {
+  ProfileLiveSummary,
+  ProfileModerationDetail,
+} from "@/components/profiles/ProfileLiveMonitor";
+import {
+  AUDIT_PANEL_HEIGHT,
+  PROFILE_DETAIL_BODY_MIN,
+  PROFILE_SCROLL,
+  PROFILE_WORKSPACE_HEIGHT,
+} from "@/components/profiles/profile-layout";
 import {
   expiresWithin,
   formatExpiresIn,
@@ -140,7 +149,7 @@ export function ProfileAdminPanel() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [detailTab, setDetailTab] = useState("general");
+  const [detailTab, setDetailTab] = useState("moderation");
   const [skinPreview, setSkinPreview] = useState<string | null>(null);
   const [skinLoading, setSkinLoading] = useState(false);
 
@@ -222,10 +231,16 @@ export function ProfileAdminPanel() {
     return list;
   }, [users, filter, search, moderationByUserId]);
 
-  const selected = useMemo(
-    () => users.find((u) => u.id === selectedId) ?? filtered[0] ?? null,
-    [users, selectedId, filtered]
-  );
+  const selected = useMemo(() => {
+    if (!selectedId) return null;
+    return filtered.find((u) => u.id === selectedId) ?? null;
+  }, [filtered, selectedId]);
+
+  useEffect(() => {
+    if (selectedId && !filtered.some((u) => u.id === selectedId)) {
+      setSelectedId(null);
+    }
+  }, [filtered, selectedId]);
 
   const selectedIntel = useMemo(
     () => (selected ? moderationByUserId.get(selected.id) ?? null : null),
@@ -238,6 +253,16 @@ export function ProfileAdminPanel() {
       .filter((s) => s.userId === selected.id)
       .sort((a, b) => Date.parse(b.lastSeenAt) - Date.parse(a.lastSeenAt));
   }, [sessions, selected]);
+
+  const liveModerationItems = useMemo(
+    () => moderation.filter((m) => m.launcherOpen || m.activeSessionCount > 0),
+    [moderation]
+  );
+
+  const selectUser = (id: string) => {
+    setSelectedId(id);
+    setDetailTab("moderation");
+  };
 
   useEffect(() => {
     if (!selected?.hasSkin) {
@@ -369,54 +394,44 @@ export function ProfileAdminPanel() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-[var(--color-muted)]">
-          Control total de cuentas, sesiones activas, skins y seguridad del launcher.
+          Control de cuentas, moderación en vivo y sesiones del launcher.
         </p>
-        <Button variant="outline" size="sm" onClick={() => void refresh()} disabled={loading}>
-          <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
-          Actualizar
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={moderation.length === 0}
+            onClick={() => {
+              const text = moderation.map((m) => formatModerationReport(m)).join("\n\n---\n\n");
+              void navigator.clipboard.writeText(text);
+            }}
+          >
+            <Copy className="h-3.5 w-3.5" />
+            Exportar informes
+          </Button>
+          <Link href="/live-ops">
+            <Button variant="outline" size="sm">
+              <Monitor className="h-3.5 w-3.5" />
+              Live Ops
+            </Button>
+          </Link>
+          <Button variant="outline" size="sm" onClick={() => void refresh()} disabled={loading}>
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
+            Actualizar
+          </Button>
+        </div>
       </div>
 
       {error && <p className="text-sm text-red-400">{error}</p>}
 
-      <Card className="border-[var(--color-border-subtle)]">
-        <CardContent className="flex flex-wrap items-center justify-between gap-3 py-3">
-          <p className="text-xs text-[var(--color-muted)]">
-            Herramientas: exportar informes, Live Ops remoto y contraseñas generadas al crear cuentas.
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={moderation.length === 0}
-              onClick={() => {
-                const text = moderation.map((m) => formatModerationReport(m)).join("\n\n---\n\n");
-                void navigator.clipboard.writeText(text);
-              }}
-            >
-              <Copy className="h-3.5 w-3.5" />
-              Copiar informes (todos)
-            </Button>
-            <Link href="/live-ops">
-              <Button variant="outline" size="sm">
-                <Monitor className="h-3.5 w-3.5" />
-                Abrir Live Ops
-              </Button>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-
-      {stats && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
-          <StatCard title="Cuentas" value={stats.totalUsers} icon={Users} />
-          <StatCard title="Activas" value={stats.activeUsers} icon={Shield} />
-          <StatCard title="Launchers en vivo" value={stats.launchersOnline ?? 0} icon={Wifi} />
-          <StatCard title="Sesiones vivas" value={stats.activeSessions} icon={Monitor} />
-          <StatCard title="Con skin" value={stats.usersWithSkin} icon={ImageIcon} />
-          <StatCard title="Revocadas" value={stats.revokedUsers} icon={ShieldOff} />
-        </div>
-      )}
+      <div className="grid min-h-[5.5rem] shrink-0 gap-4 sm:grid-cols-2 lg:grid-cols-6">
+        <StatCard title="Cuentas" value={stats?.totalUsers ?? "—"} icon={Users} />
+        <StatCard title="Activas" value={stats?.activeUsers ?? "—"} icon={Shield} />
+        <StatCard title="Launchers en vivo" value={stats?.launchersOnline ?? 0} icon={Wifi} />
+        <StatCard title="Sesiones vivas" value={stats?.activeSessions ?? "—"} icon={Monitor} />
+        <StatCard title="Con skin" value={stats?.usersWithSkin ?? "—"} icon={ImageIcon} />
+        <StatCard title="Revocadas" value={stats?.revokedUsers ?? "—"} icon={ShieldOff} />
+      </div>
 
       <Card>
         <CardHeader>
@@ -513,104 +528,122 @@ export function ProfileAdminPanel() {
         <FilterPills options={FILTER_OPTIONS} active={filter} onChange={setFilter} />
       </div>
 
-      {filter === "live" && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Wifi className="h-4 w-4 text-emerald-400" />
-              Monitoreo en vivo
-            </CardTitle>
-            <CardDescription>
-              Launchers con heartbeat activo (últimos 45 s). Se actualiza cada 12 s.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ProfileLiveMonitor
-              items={moderation}
-              selectedId={selected?.id ?? null}
-              onSelectUser={(id) => {
-                setSelectedId(id);
-                setDetailTab("moderation");
-              }}
-            />
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="grid gap-6 lg:grid-cols-5">
-        <div className="space-y-2 lg:col-span-2">
-          {filtered.length === 0 ? (
-            <p className="text-sm text-[var(--color-muted)]">Ningún perfil coincide con el filtro.</p>
-          ) : (
-            filtered.map((user) => (
-              <button
-                key={user.id}
-                type="button"
-                onClick={() => {
-                  setSelectedId(user.id);
-                  setDetailTab("moderation");
-                }}
-                className={`w-full text-left ${rowItem} ${
-                  selected?.id === user.id ? "border-[var(--color-accent-muted)] bg-[var(--color-accent-soft)]/20" : ""
-                } ${user.revoked ? "opacity-60" : ""}`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="relative shrink-0">
-                    <Avatar name={user.displayName ?? user.username} size="md" />
-                    {moderationByUserId.get(user.id)?.launcherOpen && (
-                      <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--color-surface)] bg-emerald-400" />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-sm text-[var(--color-text)]">@{user.username}</p>
-                      {user.tier === "premium" && <Badge className={badgeDefault}>Premium</Badge>}
-                      {user.revoked && <Badge className="bg-red-500/20 text-red-300">Revocado</Badge>}
-                      {moderationByUserId.get(user.id)?.launcherOpen && (
-                        <Badge className="bg-emerald-500/15 text-emerald-300">En vivo</Badge>
-                      )}
-                      {user.activeSessionCount > 0 && (
-                        <Badge className="bg-sky-500/15 text-sky-200">{user.activeSessionCount} sesión</Badge>
-                      )}
-                    </div>
-                    <p className="mt-0.5 truncate text-xs text-[var(--color-text-soft)]">
-                      {moderationByUserId.get(user.id)?.primaryIp
-                        ? `IP ${moderationByUserId.get(user.id)?.primaryIp}`
-                        : user.displayName ?? user.username}
-                    </p>
-                    <p className="mt-1 text-[11px] text-[var(--color-muted)]">
-                      {moderationByUserId.get(user.id)?.launcherStatusLabel ??
-                        (user.lastLoginAt ? `Visto ${formatRelativeTime(user.lastLoginAt)}` : "Sin actividad reciente")}
-                    </p>
-                  </div>
-                </div>
-              </button>
-            ))
+      <div className="shrink-0 space-y-4">
+      <div
+        className={`grid items-stretch gap-4 lg:grid-cols-5 ${PROFILE_WORKSPACE_HEIGHT}`}
+      >
+        <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-[var(--color-border-subtle)] lg:col-span-2">
+          {filter === "live" && (
+            <div className="shrink-0 space-y-1 border-b border-[var(--color-border-subtle)] px-3 py-2.5">
+              <p className="flex items-center gap-2 text-sm font-medium text-[var(--color-text)]">
+                <Wifi className="h-4 w-4 text-emerald-400" />
+                Monitoreo en vivo
+              </p>
+              <ProfileLiveSummary items={liveModerationItems} />
+              <p className="text-[10px] text-[var(--color-muted)]">
+                Heartbeat 45 s · actualiza cada 12 s
+              </p>
+            </div>
           )}
+          <div className={`min-h-0 flex-1 space-y-2 p-2 ${PROFILE_SCROLL}`}>
+            {filtered.length === 0 ? (
+              <div className="flex h-full min-h-[20rem] items-center justify-center p-4 text-center text-sm text-[var(--color-muted)]">
+                Ningún perfil coincide con el filtro.
+              </div>
+            ) : (
+              filtered.map((user) => {
+                const intel = moderationByUserId.get(user.id);
+                return (
+                  <button
+                    key={user.id}
+                    type="button"
+                    onClick={() => selectUser(user.id)}
+                    className={`w-full text-left ${rowItem} ${
+                      selected?.id === user.id
+                        ? "border-[var(--color-accent-muted)] bg-[var(--color-accent-soft)]/20"
+                        : ""
+                    } ${user.revoked ? "opacity-60" : ""}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="relative shrink-0">
+                        <Avatar name={user.displayName ?? user.username} size="md" />
+                        {intel?.launcherOpen && (
+                          <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--color-surface)] bg-emerald-400" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="text-sm text-[var(--color-text)]">@{user.username}</p>
+                          {user.tier === "premium" && <Badge className={badgeDefault}>Premium</Badge>}
+                          {user.revoked && <Badge className="bg-red-500/20 text-red-300">Revocado</Badge>}
+                          {intel?.launcherOpen && (
+                            <Badge className="bg-emerald-500/15 text-emerald-300">En vivo</Badge>
+                          )}
+                          {user.activeSessionCount > 0 && (
+                            <Badge className="bg-sky-500/15 text-sky-200">
+                              {user.activeSessionCount} sesión
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="mt-0.5 truncate text-xs text-[var(--color-text-soft)]">
+                          {intel?.primaryIp ? `IP ${intel.primaryIp}` : user.displayName ?? user.username}
+                        </p>
+                        <p className="mt-1 text-[11px] text-[var(--color-muted)]">
+                          {intel?.launcherStatusLabel ??
+                            (user.lastLoginAt
+                              ? `Visto ${formatRelativeTime(user.lastLoginAt)}`
+                              : "Sin actividad reciente")}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })
+            )}
+          </div>
         </div>
 
-        {selected && (
-          <Card className="lg:col-span-3">
-            <CardHeader>
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="flex items-center gap-3">
+        <Card className="flex h-full min-h-0 flex-col overflow-hidden lg:col-span-3">
+          <CardHeader className="shrink-0">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                {selected ? (
                   <Avatar name={selected.displayName ?? selected.username} size="lg" />
-                  <div>
-                    <CardTitle>@{selected.username}</CardTitle>
-                    <CardDescription>
-                      {selectedIntel?.launcherOpen
-                        ? `${selectedIntel.launcherStatusLabel} · ${selectedIntel.primaryIp ?? "IP —"}`
-                        : selected.revoked
-                          ? "Cuenta revocada"
-                          : "Launcher cerrado"}{" "}
-                      · ID {selected.id.slice(0, 16)}…
-                    </CardDescription>
+                ) : (
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border border-dashed border-[var(--color-border-subtle)]">
+                    <Users className="h-5 w-5 text-[var(--color-muted)] opacity-50" />
                   </div>
+                )}
+                <div>
+                  <CardTitle>{selected ? `@${selected.username}` : "Ficha de usuario"}</CardTitle>
+                  <CardDescription>
+                    {selected
+                      ? `${selectedIntel?.launcherOpen
+                          ? `${selectedIntel.launcherStatusLabel} · ${selectedIntel.primaryIp ?? "IP —"}`
+                          : selected.revoked
+                            ? "Cuenta revocada"
+                            : "Launcher cerrado"} · ID ${selected.id.slice(0, 16)}…`
+                      : "Selecciona un perfil de la lista para ver todos los datos"}
+                  </CardDescription>
                 </div>
-                <Tabs tabs={DETAIL_TABS} active={detailTab} onChange={setDetailTab} />
               </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
+              <Tabs tabs={DETAIL_TABS} active={detailTab} onChange={setDetailTab} />
+            </div>
+          </CardHeader>
+          <CardContent className="flex min-h-0 flex-1 flex-col p-0">
+            <div className={`min-h-0 flex-1 p-6 ${PROFILE_SCROLL}`}>
+              <div className={PROFILE_DETAIL_BODY_MIN}>
+              {!selected ? (
+                <div className="flex h-full min-h-[24rem] flex-col items-center justify-center text-center">
+                  <Users className="mb-3 h-10 w-10 text-[var(--color-muted)] opacity-40" />
+                  <p className="text-sm text-[var(--color-text-soft)]">
+                    {filtered.length === 0
+                      ? "Ningún usuario en este filtro. Elige otro o crea una cuenta."
+                      : "Haz clic en un usuario de la lista para ver moderación, sesiones y seguridad."}
+                  </p>
+                </div>
+              ) : (
+              <>
               {detailTab === "moderation" && selectedIntel && (
                 <ProfileModerationDetail intel={selectedIntel} />
               )}
@@ -619,22 +652,82 @@ export function ProfileAdminPanel() {
               )}
 
               {detailTab === "general" && (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Input label="Nombre visible" value={selected.displayName ?? selected.username} onChange={(e) => setUsers((prev) => prev.map((u) => (u.id === selected.id ? { ...u, displayName: e.target.value } : u)))} onBlur={() => void saveUser(selected)} />
-                  <Select
-                    label="Plan"
-                    value={selected.tier ?? "free"}
-                    onChange={(e) => {
-                      const next = e.target.value as "free" | "premium";
-                      const updated = { ...selected, tier: next };
-                      setUsers((prev) => prev.map((u) => (u.id === selected.id ? updated : u)));
-                      void saveUser(updated);
-                    }}
-                    options={[
-                      { value: "free", label: "Free" },
-                      { value: "premium", label: "Premium" },
-                    ]}
-                  />
+                <div className="space-y-4">
+                  <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {[
+                      { label: "Usuario", value: `@${selected.username}` },
+                      { label: "ID cuenta", value: selected.id },
+                      { label: "Estado", value: selected.revoked ? "Revocada" : "Activa" },
+                      {
+                        label: "Launcher",
+                        value: selectedIntel?.launcherOpen
+                          ? (selectedIntel.launcherStatusLabel ?? "Abierto")
+                          : "Cerrado",
+                      },
+                      { label: "IP principal", value: selectedIntel?.primaryIp ?? "—" },
+                      {
+                        label: "Ubicación",
+                        value:
+                          selectedIntel?.primaryCity && selectedIntel?.primaryCountry
+                            ? `${selectedIntel.primaryCity}, ${selectedIntel.primaryCountry}`
+                            : "—",
+                      },
+                      { label: "Sesiones activas", value: String(selected.activeSessionCount) },
+                      { label: "Sesiones totales", value: String(selected.totalSessionCount) },
+                      { label: "Dispositivos", value: String(selectedIntel?.uniqueDeviceCount ?? "—") },
+                      { label: "Skin", value: selected.hasSkin ? "Personalizada" : "Predeterminada" },
+                      {
+                        label: "Último acceso",
+                        value: selected.lastLoginAt
+                          ? formatRelativeTime(selected.lastLoginAt)
+                          : "—",
+                      },
+                      {
+                        label: "Riesgo",
+                        value: selectedIntel?.riskLevel?.toUpperCase() ?? "—",
+                      },
+                      {
+                        label: "IPs conocidas",
+                        value: selectedIntel?.knownIps?.join(" · ") || "—",
+                      },
+                    ].map((row) => (
+                      <div
+                        key={row.label}
+                        className="rounded-lg border border-[var(--color-border-subtle)] px-3 py-2"
+                      >
+                        <p className="text-[10px] uppercase text-[var(--color-muted)]">{row.label}</p>
+                        <p className="mt-0.5 break-all text-xs text-[var(--color-text)]">{row.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <Input
+                      label="Nombre visible"
+                      value={selected.displayName ?? selected.username}
+                      onChange={(e) =>
+                        setUsers((prev) =>
+                          prev.map((u) =>
+                            u.id === selected.id ? { ...u, displayName: e.target.value } : u
+                          )
+                        )
+                      }
+                      onBlur={() => void saveUser(selected)}
+                    />
+                    <Select
+                      label="Plan"
+                      value={selected.tier ?? "free"}
+                      onChange={(e) => {
+                        const next = e.target.value as "free" | "premium";
+                        const updated = { ...selected, tier: next };
+                        setUsers((prev) => prev.map((u) => (u.id === selected.id ? updated : u)));
+                        void saveUser(updated);
+                      }}
+                      options={[
+                        { value: "free", label: "Free" },
+                        { value: "premium", label: "Premium" },
+                      ]}
+                    />
+                  </div>
                 </div>
               )}
 
@@ -773,18 +866,9 @@ export function ProfileAdminPanel() {
                     <KeyRound className="h-3.5 w-3.5" />
                     Resetear contraseña
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={selected.activeSessionCount === 0}
-                    onClick={async () => {
-                      await profileAction({ action: "revoke-sessions", userId: selected.id });
-                      await refresh();
-                    }}
-                  >
-                    <LogOut className="h-3.5 w-3.5" />
-                    Forzar cierre de sesión en todos los dispositivos
-                  </Button>
+                  <p className="text-[11px] text-[var(--color-muted)]">
+                    Para cerrar sesiones en dispositivos usa la pestaña <strong>Sesiones</strong>.
+                  </p>
                   {selected.revoked ? (
                     <Button
                       variant="outline"
@@ -814,19 +898,24 @@ export function ProfileAdminPanel() {
                   )}
                 </div>
               )}
-            </CardContent>
-          </Card>
-        )}
+              </>
+              )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {auditLog.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Auditoría reciente</CardTitle>
-            <CardDescription>Eventos de seguridad relacionados con cuentas y sesiones</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="max-h-48 space-y-1 overflow-y-auto text-xs">
+      <Card className={`flex flex-col ${AUDIT_PANEL_HEIGHT}`}>
+        <CardHeader className="shrink-0 py-3">
+          <CardTitle>Auditoría reciente</CardTitle>
+          <CardDescription>Eventos de seguridad relacionados con cuentas y sesiones</CardDescription>
+        </CardHeader>
+        <CardContent className={`min-h-0 flex-1 pt-0 ${PROFILE_SCROLL}`}>
+          {auditLog.length === 0 ? (
+            <p className="text-xs text-[var(--color-muted)]">Sin eventos recientes.</p>
+          ) : (
+            <ul className="space-y-1 text-xs">
               {auditLog.map((entry) => (
                 <li key={entry.id} className="flex flex-wrap gap-2 text-[var(--color-text-soft)]">
                   <span className="text-[var(--color-muted)]">{formatRelativeTime(entry.at)}</span>
@@ -836,9 +925,10 @@ export function ProfileAdminPanel() {
                 </li>
               ))}
             </ul>
-          </CardContent>
-        </Card>
-      )}
+          )}
+        </CardContent>
+      </Card>
+      </div>
     </div>
   );
 }
