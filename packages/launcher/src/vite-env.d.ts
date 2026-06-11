@@ -7,6 +7,8 @@ interface ImportMetaEnv {
   readonly VITE_ADMIN_API_URL?: string;
   /** Admin local si producción no responde. */
   readonly VITE_ADMIN_API_URL_LOCAL?: string;
+  /** "true" = priorizar admin local aunque producción responda */
+  readonly VITE_ADMIN_API_PREFER_LOCAL?: string;
   readonly VITE_WS_URL?: string;
 }
 

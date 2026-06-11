@@ -6,7 +6,8 @@ const nextConfig: NextConfig = {
     return [{ source: "/hub_builder", destination: "/hub-builder", permanent: true }];
   },
   experimental: {
-    optimizePackageImports: ["lucide-react", "date-fns", "@craftlauncher/shared"],
+    // Sin @craftlauncher/shared: el barrel local pierde exports con optimizePackageImports.
+    optimizePackageImports: ["lucide-react", "date-fns"],
     staleTimes: {
       dynamic: 60,
       static: 300,

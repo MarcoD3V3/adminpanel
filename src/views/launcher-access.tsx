@@ -9,7 +9,7 @@ export default function LauncherAccessPage() {
     <>
       <Header
         title="Acceso Launcher"
-        description="Tokens de un solo uso, sesiones activas y auditoría de seguridad"
+        description="Modo testeo, tokens de un solo uso, sesiones activas y auditoría de seguridad"
       />
       <PageContent>
         <LauncherAccessPanel />

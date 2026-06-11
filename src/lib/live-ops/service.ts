@@ -1,7 +1,7 @@
 import { randomBytes } from "node:crypto";
 import type { RemoteCommand } from "@craftlauncher/shared";
 import type { LiveOpsSession } from "@/types";
-import { resolveGeoFromClient, resolveHealth } from "./geo";
+import { resolveGeo, resolveHealth } from "./geo";
 import {
   loadLiveOpsStore,
   mutateLiveOpsStore,
@@ -27,6 +27,7 @@ export type PresenceHeartbeatInput = {
   username: string;
   displayName?: string;
   premium: boolean;
+  tester?: boolean;
   deviceId: string;
   status: LivePresenceRecord["status"];
   launcherVersion: string;
@@ -40,7 +41,11 @@ export type PresenceHeartbeatInput = {
 };
 
 export async function upsertPresence(input: PresenceHeartbeatInput): Promise<LivePresenceRecord> {
-  const geo = resolveGeoFromClient(input.timezone, input.locale);
+  const geo = await resolveGeo({
+    ip: input.ip,
+    timezone: input.timezone,
+    locale: input.locale,
+  });
   const now = new Date().toISOString();
   const health = resolveHealth(input.ramUsage, input.cpuUsage);
 
@@ -54,6 +59,7 @@ export async function upsertPresence(input: PresenceHeartbeatInput): Promise<Liv
       username: input.username,
       displayName: input.displayName,
       premium: input.premium,
+      tester: input.tester,
       deviceId: input.deviceId,
       status: input.status,
       launcherVersion: input.launcherVersion,
@@ -91,6 +97,7 @@ export async function listLiveSessions(): Promise<LiveOpsSession[]> {
       username: p.username,
       status: p.status,
       premium: p.premium,
+      tester: p.tester,
       country: p.country,
       countryCode: p.countryCode,
       city: p.city,

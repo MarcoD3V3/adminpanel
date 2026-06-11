@@ -15,6 +15,7 @@ async function readStore(): Promise<LauncherAuthStore> {
       sessions: Array.isArray(parsed.sessions) ? parsed.sessions : [],
       users: Array.isArray(parsed.users) ? parsed.users : [],
       auditLog: Array.isArray(parsed.auditLog) ? parsed.auditLog : undefined,
+      testerModeEnabled: parsed.testerModeEnabled === true,
     };
   } catch {
     return { ...EMPTY };

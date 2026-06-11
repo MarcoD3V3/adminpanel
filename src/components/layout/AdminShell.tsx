@@ -6,6 +6,7 @@ import { AdminWarmCache } from "./AdminWarmCache";
 import { AdminSessionProvider } from "@/lib/admin-session-context";
 import { AdminAuthGate } from "@/components/layout/AdminAuthGate";
 import { AdminSessionModal } from "@/components/layout/AdminSessionModal";
+import { FloatingErrorBubble } from "@/components/ui/FloatingErrorBubble";
 
 export function AdminShell({ children }: { children: ReactNode }) {
   return (
@@ -14,6 +15,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         <AdminWarmCache />
         <AdminLayout>{children}</AdminLayout>
         <AdminSessionModal />
+        <FloatingErrorBubble />
       </AdminAuthGate>
     </AdminSessionProvider>
   );

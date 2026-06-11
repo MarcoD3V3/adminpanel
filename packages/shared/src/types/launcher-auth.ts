@@ -1,7 +1,12 @@
+import type { LauncherTier } from "../constants/launcher-tiers";
+
+export type { LauncherTier };
+
 export type ActivationTokenPublic = {
   id: string;
   label: string;
-  tier?: "free" | "premium";
+  tier?: LauncherTier;
+  minecraftUsername?: string;
   createdAt: string;
   expiresAt: string;
   usedAt?: string;
@@ -13,15 +18,14 @@ export type DeviceSessionPublic = {
   id: string;
   deviceId: string;
   label?: string;
-  tier?: "free" | "premium";
+  username?: string;
+  tier?: LauncherTier;
   createdAt: string;
   expiresAt: string;
   lastSeenAt: string;
   revoked: boolean;
   ipHint?: string;
 };
-
-export type LauncherTier = "free" | "premium";
 
 export type ActivateResponse = {
   success: boolean;
@@ -31,6 +35,9 @@ export type ActivateResponse = {
   deviceId?: string;
   tier?: LauncherTier;
   premium?: boolean;
+  tester?: boolean;
+  username?: string;
+  displayName?: string;
   error?: string;
 };
 
@@ -41,6 +48,7 @@ export type VerifyResponse = {
   expiresAt?: string;
   tier?: LauncherTier;
   premium?: boolean;
+  tester?: boolean;
   username?: string;
   displayName?: string;
   reason?: string;

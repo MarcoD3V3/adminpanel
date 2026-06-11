@@ -149,10 +149,10 @@ export async function setSession(
   await saveToDisk({ sessionToken, deviceId, fingerprint, username });
 }
 
-export function clearSession(): void {
+export async function clearSession(): Promise<void> {
   localStorage.removeItem(SESSION_STORAGE);
   document.cookie = `${SESSION_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
-  void clearDisk();
+  await clearDisk();
 }
 
 export async function buildAuthHeaders() {

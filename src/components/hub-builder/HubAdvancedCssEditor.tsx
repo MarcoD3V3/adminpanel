@@ -491,9 +491,6 @@ function CssEditorPane({
         </div>
       </div>
 
-      {error && (
-        <div className="border-t border-[#f87171]/20 px-2.5 py-1.5 font-mono text-[9px] text-[#f87171]">{error}</div>
-      )}
       {!error && warnings.length > 0 && (
         <div className="border-t border-[#fbbf24]/20 px-2.5 py-1.5 font-mono text-[9px] text-[#fbbf24]">
           {warnings.join(" · ")}

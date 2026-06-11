@@ -1,5 +1,7 @@
+import { isTesterTier } from "../constants/launcher-tiers";
 import type { HubElement } from "../types/hub-layout";
 import type { LauncherTier } from "../types/launcher-auth";
+import { resolveSessionDisplayName } from "./session-display";
 
 export type AccountSessionPreview = {
   displayName: string;
@@ -18,25 +20,33 @@ export function bindAccountHubElement(
   session: AccountSessionPreview
 ): HubElement {
   const bind = accountBindKey(element);
-  const tierLabel = session.tier === "premium" ? "Premium" : "Free";
+  const who = resolveSessionDisplayName(session.displayName, session.username) ?? "Sin sesión";
+  const tierLabel = isTesterTier(session.tier)
+    ? "Tester"
+    : session.tier === "premium"
+      ? "Premium"
+      : "Free";
 
   if (element.type === "profile-widget" || bind === "profile") {
     return {
       ...element,
-      label: session.displayName,
+      label: who,
       value: tierLabel,
     };
   }
 
   if (bind === "username") {
-    const who = session.username ?? session.displayName ?? "Sin sesión";
     return { ...element, label: who };
   }
 
   if (bind === "tier" || bind === "tier-chip") {
     return {
       ...element,
-      label: session.tier === "premium" ? "★ Premium" : "Cuenta Free",
+      label: isTesterTier(session.tier)
+        ? "◆ Tester"
+        : session.tier === "premium"
+          ? "★ Premium"
+          : "Cuenta Free",
     };
   }
 
@@ -49,8 +59,7 @@ export function bindAccountHubElement(
   }
 
   if (bind === "display-greeting") {
-    const who = session.displayName || session.username || "jugador";
-    return { ...element, label: `Hola, ${who}` };
+    return { ...element, label: `Hola, ${who === "Sin sesión" ? "jugador" : who}` };
   }
 
   return element;

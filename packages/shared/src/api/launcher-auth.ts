@@ -51,6 +51,33 @@ export async function loginLauncherAccount(
   }
 }
 
+export type LauncherAccessSettingsResult = {
+  testerModeEnabled: boolean;
+  ok: boolean;
+  status?: number;
+};
+
+export async function fetchLauncherAccessSettings(
+  apiBase: string
+): Promise<LauncherAccessSettingsResult> {
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+    const res = await fetch(apiUrl(apiBase, "/api/launcher-auth/access-settings"), {
+      signal: ctrl.signal,
+      cache: "no-store",
+    });
+    clearTimeout(timer);
+    if (!res.ok) {
+      return { testerModeEnabled: false, ok: false, status: res.status };
+    }
+    const data = (await res.json()) as { testerModeEnabled?: boolean };
+    return { testerModeEnabled: data.testerModeEnabled === true, ok: true, status: res.status };
+  } catch {
+    return { testerModeEnabled: false, ok: false };
+  }
+}
+
 export async function activateLauncherToken(
   apiBase: string,
   activationToken: string,

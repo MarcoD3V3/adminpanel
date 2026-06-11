@@ -5,6 +5,7 @@ import { KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { DEV_ADMIN_FALLBACK_KEY } from "@/lib/admin-session-client";
+import { reportAppError } from "@/lib/app-errors-store";
 
 type AdminLoginFormProps = {
   configured: boolean;
@@ -25,16 +26,13 @@ export function AdminLoginForm({
 }: AdminLoginFormProps) {
   const [key, setKey] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     if (!key.trim()) return;
     setSubmitting(true);
-    setError(null);
     const result = await onLogin(key);
     if (!result.ok) {
-      setError(
+      reportAppError(
         result.error === "Clave incorrecta"
           ? `${result.error}. Usa LAUNCHER_ADMIN_SECRET (en Railway o .env.local) y reinicia el servidor si acabas de cambiarla.`
           : (result.error ?? "No se pudo iniciar sesión")
@@ -79,8 +77,6 @@ export function AdminLoginForm({
           />
           Mantener sesión (30 días o hasta cerrar sesión)
         </label>
-
-        {error && <p className="text-xs text-red-400">{error}</p>}
 
         <Button type="submit" className="w-full" disabled={submitting || !key.trim()}>
           <KeyRound className="h-3.5 w-3.5" />

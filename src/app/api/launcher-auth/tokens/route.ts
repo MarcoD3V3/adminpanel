@@ -1,3 +1,4 @@
+import { normalizeLauncherTier } from "@craftlauncher/shared";
 import {
   createActivationToken,
   listActivationTokens,
@@ -29,7 +30,13 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const origin = request.headers.get("origin");
-  const body = (await request.json()) as { label?: string; action?: string; id?: string; tier?: string };
+  const body = (await request.json()) as {
+    label?: string;
+    action?: string;
+    id?: string;
+    tier?: string;
+    minecraftUsername?: string;
+  };
 
   if (!(await assertAdminAccess(request))) {
     return jsonWithCors({ error: "No autorizado" }, { status: 401 }, origin);
@@ -47,8 +54,11 @@ export async function POST(request: Request) {
     return jsonWithCors({ success: ok }, { status: ok ? 200 : 404 }, origin);
   }
 
-  const tier = body.tier === "premium" ? "premium" : "free";
-  const created = await createActivationToken(body.label, ip, tier);
+  const tier = normalizeLauncherTier(body.tier);
+  const created = await createActivationToken(body.label, ip, tier, body.minecraftUsername);
+  if ("error" in created) {
+    return jsonWithCors({ success: false, error: created.error }, { status: 400 }, origin);
+  }
   return jsonWithCors(
     {
       success: true,

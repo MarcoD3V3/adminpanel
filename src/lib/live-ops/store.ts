@@ -11,6 +11,7 @@ export type LivePresenceRecord = {
   username: string;
   displayName?: string;
   premium: boolean;
+  tester?: boolean;
   deviceId: string;
   status: "online" | "playing" | "launching" | "updating" | "idle";
   launcherVersion: string;

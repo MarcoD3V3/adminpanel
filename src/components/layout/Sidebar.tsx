@@ -63,6 +63,7 @@ import {
 import { cn } from "@/lib/utils";
 
 import { useAdminStore } from "@/lib/store";
+import { useTesterModeEnabled } from "@/lib/use-tester-mode-enabled";
 
 import { type AdminRoute } from "@/lib/page-registry-types";
 
@@ -179,6 +180,7 @@ export function Sidebar() {
   const { sidebarOpen, toggleSidebar } = useAdminStore();
 
   const [, startTransition] = useTransition();
+  const testerModeEnabled = useTesterModeEnabled();
 
 
 
@@ -295,7 +297,28 @@ export function Sidebar() {
 
                     <Icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
 
-                    {sidebarOpen && <span>{label}</span>}
+                    {sidebarOpen && (
+                      <span className="flex min-w-0 flex-1 items-center justify-between gap-2">
+                        <span className="truncate">{label}</span>
+                        {href === "/launcher-access" && testerModeEnabled !== null && (
+                          <span
+                            className={cn(
+                              "shrink-0 rounded px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide",
+                              testerModeEnabled
+                                ? "bg-violet-500/20 text-violet-300"
+                                : "bg-[var(--color-surface-hover)] text-[var(--color-muted)]"
+                            )}
+                            title={
+                              testerModeEnabled
+                                ? "Modo testeo activo en el launcher"
+                                : "Modo testeo desactivado"
+                            }
+                          >
+                            {testerModeEnabled ? "Test" : "Off"}
+                          </span>
+                        )}
+                      </span>
+                    )}
 
                   </Link>
 

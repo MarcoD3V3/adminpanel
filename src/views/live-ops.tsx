@@ -15,6 +15,7 @@ import { formatRelativeTime, cn } from "@/lib/utils";
 import { useAdminPageActive } from "@/lib/use-admin-page-active";
 import { rowItem, badgeDefault, badgeDanger, badgeWarning } from "@/lib/styles";
 import type { LiveOpsSession } from "@/types";
+import { reportAppError } from "@/lib/app-errors-store";
 import {
   Radio,
   RefreshCw,
@@ -31,6 +32,7 @@ const filters = [
   { id: "all", label: "Todos" },
   { id: "playing", label: "Jugando" },
   { id: "online", label: "Online" },
+  { id: "testers", label: "Testers" },
   { id: "alerts", label: "Alertas" },
 ];
 
@@ -66,12 +68,10 @@ export default function LiveOpsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [live, setLive] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [actionMsg, setActionMsg] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
       const res = await fetch("/api/live-ops", { credentials: "include" });
       const data = (await res.json()) as {
@@ -83,14 +83,14 @@ export default function LiveOpsPage() {
       const list = data.sessions ?? [];
       setSessions(list);
       if (!data.authenticated) {
-        setError("Inicia sesión en Acceso Launcher para ver sesiones en vivo.");
+        reportAppError("Inicia sesión en Acceso Launcher para ver sesiones en vivo.");
       }
       setSelectedId((prev) => {
         if (prev && list.some((s) => s.id === prev)) return prev;
         return list[0]?.id ?? null;
       });
     } catch {
-      setError("Error de red al cargar Live Ops");
+      reportAppError("Error de red al cargar Live Ops");
     } finally {
       setLoading(false);
     }
@@ -112,6 +112,8 @@ export default function LiveOpsPage() {
         return sessions.filter((s) => s.status === "playing");
       case "online":
         return sessions.filter((s) => s.status === "online" || s.status === "idle");
+      case "testers":
+        return sessions.filter((s) => s.tester);
       case "alerts":
         return sessions.filter((s) => s.health !== "healthy");
       default:
@@ -127,6 +129,7 @@ export default function LiveOpsPage() {
       playing: sessions.filter((s) => s.status === "playing").length,
       countries: new Set(sessions.map((s) => s.countryCode)).size,
       alerts: sessions.filter((s) => s.health !== "healthy").length,
+      testers: sessions.filter((s) => s.tester).length,
     }),
     [sessions]
   );
@@ -134,13 +137,12 @@ export default function LiveOpsPage() {
   const runAction = useCallback(
     async (action: string, session: LiveOpsSession) => {
       setActionMsg(null);
-      setError(null);
 
       if (action === "message") {
         const msg = window.prompt(`Mensaje para ${session.username}:`);
         if (!msg?.trim()) return;
         const data = await liveOpsAction(session.id, "message", { message: msg.trim() });
-        if (!data.success) setError(data.error ?? "No se pudo enviar el mensaje");
+        if (!data.success) reportAppError(data.error ?? "No se pudo enviar el mensaje");
         else setActionMsg(data.message ?? "Mensaje enviado");
         return;
       }
@@ -148,7 +150,7 @@ export default function LiveOpsPage() {
       if (action === "ban") {
         if (!confirm(`¿Banear a ${session.username}? Revocará su cuenta y sesiones.`)) return;
         const data = await liveOpsAction(session.id, "ban");
-        if (!data.success) setError(data.error ?? "No se pudo banear");
+        if (!data.success) reportAppError(data.error ?? "No se pudo banear");
         else {
           setActionMsg(data.message ?? "Usuario baneado");
           await refresh();
@@ -157,7 +159,7 @@ export default function LiveOpsPage() {
       }
 
       const data = await liveOpsAction(session.id, action);
-      if (!data.success) setError(data.error ?? `No se pudo ejecutar ${action}`);
+      if (!data.success) reportAppError(data.error ?? `No se pudo ejecutar ${action}`);
       else setActionMsg(data.message ?? `Acción ${action} encolada`);
     },
     [refresh]
@@ -207,13 +209,13 @@ export default function LiveOpsPage() {
       />
 
       <PageContent>
-        {error && <p className="text-sm text-red-400">{error}</p>}
         {actionMsg && <p className="text-sm text-emerald-300">{actionMsg}</p>}
 
-        <div className="grid gap-3 sm:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {[
             { label: "Sesiones activas", value: stats.total },
             { label: "Jugando MC", value: stats.playing },
+            { label: "Testers", value: stats.testers },
             { label: "Países", value: stats.countries },
             { label: "Alertas", value: stats.alerts },
           ].map((s) => (
@@ -255,6 +257,9 @@ export default function LiveOpsPage() {
                         <div>
                           <CardTitle className="flex items-center gap-2">
                             {selected.username}
+                            {selected.tester && (
+                              <Badge className="bg-violet-500/20 text-violet-200">Tester</Badge>
+                            )}
                             {selected.premium && (
                               <Crown className="h-3.5 w-3.5 text-[var(--color-accent)]" strokeWidth={1.5} />
                             )}
@@ -373,12 +378,21 @@ export default function LiveOpsPage() {
                         <span
                           className={cn(
                             "h-1.5 w-1.5 shrink-0 rounded-full",
-                            session.health === "critical"
-                              ? "bg-[var(--color-danger-text)]"
-                              : "bg-[var(--color-accent)]"
+                            session.tester
+                              ? "bg-violet-400"
+                              : session.health === "critical"
+                                ? "bg-[var(--color-danger-text)]"
+                                : "bg-[var(--color-accent)]"
                           )}
                         />
-                        <span className="truncate text-sm text-[var(--color-text)]">{session.username}</span>
+                        <span
+                          className={cn(
+                            "truncate text-sm",
+                            session.tester ? "text-violet-200" : "text-[var(--color-text)]"
+                          )}
+                        >
+                          {session.username}
+                        </span>
                       </div>
                       <span className="shrink-0 text-[10px] text-[var(--color-muted)]">
                         {session.countryCode}

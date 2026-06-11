@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Input, Select } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { formatRelativeTime } from "@/lib/utils";
+import { reportAppError } from "@/lib/app-errors-store";
 
 type LauncherUserPublic = {
   id: string;
@@ -25,7 +26,6 @@ export function LauncherUsersSection() {
   const [displayName, setDisplayName] = useState("");
   const [tier, setTier] = useState<"free" | "premium">("free");
   const [creating, setCreating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [lastCreated, setLastCreated] = useState<{ username: string; password: string } | null>(null);
 
   const refresh = useCallback(async () => {
@@ -42,7 +42,6 @@ export function LauncherUsersSection() {
   const handleCreate = async (e: FormEvent) => {
     e.preventDefault();
     setCreating(true);
-    setError(null);
     setLastCreated(null);
     try {
       const res = await fetch("/api/launcher-auth/admin/users", {
@@ -53,7 +52,7 @@ export function LauncherUsersSection() {
       });
       const data = (await res.json()) as { success?: boolean; user?: LauncherUserPublic; error?: string };
       if (!res.ok || !data.success || !data.user) {
-        setError(data.error ?? "No se pudo crear el usuario");
+        reportAppError(data.error ?? "No se pudo crear el usuario");
         return;
       }
       setLastCreated({ username: data.user.username, password });
@@ -62,7 +61,7 @@ export function LauncherUsersSection() {
       setDisplayName("");
       await refresh();
     } catch {
-      setError("Error de red");
+      reportAppError("Error de red");
     } finally {
       setCreating(false);
     }
@@ -130,7 +129,6 @@ export function LauncherUsersSection() {
               <Button type="submit" disabled={creating || !username.trim() || password.length < 6}>
                 {creating ? "Creando…" : "Crear cuenta"}
               </Button>
-              {error && <p className="text-sm text-red-400">{error}</p>}
             </div>
           </form>
 

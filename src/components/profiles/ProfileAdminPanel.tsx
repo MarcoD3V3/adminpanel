@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -49,12 +49,25 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { formatModerationReport } from "@/lib/launcher-auth/profile-moderation";
+import {
+  PROFILE_PLANS,
+  formatProfileClipboard,
+  isPremiumPlan,
+  profilePlanLabel,
+  type ProfileClipboardData,
+  type ProfilePlanId,
+} from "@craftlauncher/shared";
+import { copyTextToClipboard } from "@/lib/clipboard";
+import { reportAppError } from "@/lib/app-errors-store";
 
 type ProfileUser = {
   id: string;
   username: string;
   displayName?: string;
-  tier?: "free" | "premium";
+  tier?: ProfilePlanId | string;
+  email?: string;
+  notes?: string;
+  referralCode?: string;
   createdAt: string;
   revoked: boolean;
   lastLoginAt?: string;
@@ -64,13 +77,39 @@ type ProfileUser = {
   skinUpdatedAt?: string;
 };
 
+type CreatedProfileBundle = ProfileClipboardData & {
+  username: string;
+  password: string;
+};
+
+function buildClipboardPayload(
+  user: ProfileUser,
+  extras?: { password?: string; activationToken?: string }
+): ProfileClipboardData {
+  return {
+    nombre: user.username,
+    contraseña: extras?.password,
+    nombre_visible: user.displayName ?? user.username,
+    plan: profilePlanLabel(user.tier ?? "free"),
+    codigo: extras?.activationToken,
+    id: user.id,
+    email: user.email,
+    notas: user.notes,
+    referido: user.referralCode,
+  };
+}
+
+async function copyProfileData(data: ProfileClipboardData): Promise<boolean> {
+  return copyTextToClipboard(formatProfileClipboard(data));
+}
+
 type ProfileSession = {
   id: string;
   deviceId: string;
   label?: string;
   userId?: string;
   username?: string;
-  tier?: "free" | "premium";
+  tier?: string;
   createdAt: string;
   expiresAt: string;
   lastSeenAt: string;
@@ -105,6 +144,8 @@ const FILTER_OPTIONS = [
   { id: "revoked", label: "Revocados" },
 ];
 
+const CREATED_SUMMARY_MS = 10_000;
+
 const DETAIL_TABS = [
   { id: "moderation", label: "Moderación" },
   { id: "general", label: "General" },
@@ -116,6 +157,7 @@ const DETAIL_TABS = [
 const AUDIT_LABELS: Record<string, string> = {
   user_created: "Cuenta creada",
   user_revoked: "Cuenta revocada",
+  user_deleted: "Perfil eliminado",
   user_restored: "Cuenta restaurada",
   user_updated: "Perfil actualizado",
   user_password_reset: "Contraseña reseteada",
@@ -134,7 +176,24 @@ async function profileAction(body: Record<string, unknown>) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  return res.json() as Promise<{ success?: boolean; error?: string; count?: number }>;
+  const raw = await res.text();
+  let data: { success?: boolean; error?: string; count?: number; user?: ProfileUser } = {};
+  if (raw.trim()) {
+    try {
+      data = JSON.parse(raw) as typeof data;
+    } catch {
+      return {
+        success: false,
+        error: `Respuesta inválida del servidor (${res.status}). Revisa variables en Railway.`,
+      };
+    }
+  } else if (!res.ok) {
+    return { success: false, error: `Error del servidor (${res.status}) sin detalle.` };
+  }
+  if (!res.ok) {
+    return { success: false, error: data.error ?? `Error ${res.status}` };
+  }
+  return { ...data, success: data.success ?? true };
 }
 
 export function ProfileAdminPanel() {
@@ -144,8 +203,6 @@ export function ProfileAdminPanel() {
   const [stats, setStats] = useState<OverviewStats | null>(null);
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -156,14 +213,36 @@ export function ProfileAdminPanel() {
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
-  const [tier, setTier] = useState<"free" | "premium">("free");
+  const [tier, setTier] = useState<ProfilePlanId>("free");
+  const [email, setEmail] = useState("");
+  const [notes, setNotes] = useState("");
+  const [referralCode, setReferralCode] = useState("");
+  const [generateTokenOnCreate, setGenerateTokenOnCreate] = useState(true);
   const [creating, setCreating] = useState(false);
-  const [lastCreated, setLastCreated] = useState<{ username: string; password: string } | null>(null);
+  const [lastCreated, setLastCreated] = useState<CreatedProfileBundle | null>(null);
+  const [copyHint, setCopyHint] = useState<string | null>(null);
   const [moderation, setModeration] = useState<UserModerationIntel[]>([]);
+  const [deletingProfile, setDeletingProfile] = useState(false);
+  const createdSummaryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const scheduleCreatedSummaryDismiss = useCallback(() => {
+    if (createdSummaryTimer.current) clearTimeout(createdSummaryTimer.current);
+    createdSummaryTimer.current = setTimeout(() => {
+      setLastCreated(null);
+      setCopyHint(null);
+      createdSummaryTimer.current = null;
+    }, CREATED_SUMMARY_MS);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (createdSummaryTimer.current) clearTimeout(createdSummaryTimer.current);
+    },
+    []
+  );
 
   const refresh = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
       const res = await fetch("/api/launcher-auth/admin/profiles", { credentials: "include" });
       const data = (await res.json()) as {
@@ -182,10 +261,10 @@ export function ProfileAdminPanel() {
       setModeration(data.moderation ?? []);
       setStats(data.stats ?? null);
       if (!data.authenticated) {
-        setError("Inicia sesión en Acceso Launcher para gestionar perfiles.");
+        reportAppError("Inicia sesión en Acceso Launcher para gestionar perfiles.");
       }
     } catch {
-      setError("Error de red al cargar perfiles");
+      reportAppError("Error de red al cargar perfiles");
     } finally {
       setLoading(false);
     }
@@ -296,38 +375,119 @@ export function ProfileAdminPanel() {
       displayName: (displayName || username).trim(),
     });
     if (!username.trim() || !policy.valid) return;
+
+    const trimmedUsername = username.trim();
+    const trimmedDisplayName = (displayName || username).trim();
+    const savedPassword = password;
+    const savedTier = tier;
+    const savedEmail = email.trim() || undefined;
+    const savedNotes = notes.trim() || undefined;
+    const savedReferral = referralCode.trim() || undefined;
+
     setCreating(true);
-    setError(null);
     setLastCreated(null);
-    const data = await profileAction({
-      username: username.trim(),
-      displayName: (displayName || username).trim(),
-      password,
-      tier,
-    });
-    if (!data.success) {
-      setError(data.error ?? "No se pudo crear la cuenta");
+    setCopyHint(null);
+    if (createdSummaryTimer.current) clearTimeout(createdSummaryTimer.current);
+
+    try {
+      const data = await profileAction({
+        username: trimmedUsername,
+        displayName: trimmedDisplayName,
+        password: savedPassword,
+        tier: savedTier,
+        email: savedEmail,
+        notes: savedNotes,
+        referralCode: savedReferral,
+      });
+      if (!data.success) {
+        reportAppError(data.error ?? "No se pudo crear la cuenta");
+        return;
+      }
+
+      setUsername("");
+      setDisplayName("");
+      setPassword("");
+      setEmail("");
+      setNotes("");
+      setReferralCode("");
+      setTier("free");
+
+      let activationToken: string | undefined;
+      if (generateTokenOnCreate) {
+        try {
+          const tokenRes = await fetch("/api/launcher-auth/admin/tokens", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              label: trimmedDisplayName,
+              tier: isPremiumPlan(savedTier) ? "premium" : "free",
+            }),
+          });
+          const tokenRaw = await tokenRes.text();
+          const tokenData = tokenRaw.trim()
+            ? (JSON.parse(tokenRaw) as { token?: { token: string }; error?: string })
+            : {};
+          if (tokenRes.ok && tokenData.token?.token) {
+            activationToken = tokenData.token.token;
+          } else if (!tokenRes.ok) {
+            setCopyHint(
+              `Cuenta creada, pero no se generó el token: ${tokenData.error ?? `error ${tokenRes.status}`}`
+            );
+          }
+        } catch {
+          setCopyHint("Cuenta creada, pero falló la generación del token de activación.");
+        }
+      }
+
+      const createdUser: ProfileUser = data.user ?? {
+        id: "",
+        username: trimmedUsername,
+        displayName: trimmedDisplayName,
+        tier: savedTier,
+        email: savedEmail,
+        notes: savedNotes,
+        referralCode: savedReferral,
+        createdAt: new Date().toISOString(),
+        revoked: false,
+        activeSessionCount: 0,
+        totalSessionCount: 0,
+        hasSkin: false,
+      };
+
+      const bundle: CreatedProfileBundle = {
+        ...buildClipboardPayload(createdUser, { password: savedPassword, activationToken }),
+        username: trimmedUsername,
+        password: savedPassword,
+      };
+      setLastCreated(bundle);
+      scheduleCreatedSummaryDismiss();
+      const copied = await copyProfileData(bundle);
+      setCopyHint(
+        copied
+          ? "Datos copiados al portapapeles — pégalos en el launcher con «Importar credenciales»."
+          : "Cuenta creada. Selecciona y copia manualmente el bloque de abajo (Ctrl+C)."
+      );
+
+      await refresh();
+    } catch {
+      reportAppError("Error de red al crear la cuenta");
+    } finally {
       setCreating(false);
-      return;
     }
-    setLastCreated({ username: username.trim(), password });
-    setUsername("");
-    setDisplayName("");
-    setPassword("");
-    setTier("free");
-    await refresh();
-    setCreating(false);
   };
 
   const saveUser = async (u: ProfileUser) => {
-    setError(null);
     const data = await profileAction({
       action: "update",
       id: u.id,
       displayName: (u.displayName || u.username).trim(),
       tier: u.tier ?? "free",
+      email: u.email,
+      notes: u.notes,
+      referralCode: u.referralCode,
     });
-    if (!data.success) setError(data.error ?? "No se pudo guardar");
+    if (!data.success) reportAppError(data.error ?? "No se pudo guardar");
     await refresh();
   };
 
@@ -349,13 +509,37 @@ export function ProfileAdminPanel() {
           body: JSON.stringify({ userId, image }),
         });
         const data = (await res.json()) as { success?: boolean; error?: string };
-        if (!data.success) setError(data.error ?? "No se pudo subir la skin");
+        if (!data.success) reportAppError(data.error ?? "No se pudo subir la skin");
         await refresh();
         setSkinLoading(false);
       };
       reader.readAsDataURL(file);
     };
     input.click();
+  };
+
+  const deleteProfile = async (user: ProfileUser) => {
+    const confirmText = prompt(
+      `Eliminar permanentemente a @${user.username}.\n\nSe borrarán sesiones y skin. Escribe el usuario para confirmar:`
+    );
+    if (confirmText?.trim().toLowerCase() !== user.username.toLowerCase()) {
+      if (confirmText !== null) reportAppError("Confirmación incorrecta — no se eliminó el perfil.");
+      return;
+    }
+    setDeletingProfile(true);
+    try {
+      const data = await profileAction({ action: "delete", id: user.id });
+      if (!data.success) {
+        reportAppError(data.error ?? "No se pudo eliminar el perfil");
+        return;
+      }
+      if (selectedId === user.id) setSelectedId(null);
+      await refresh();
+    } catch {
+      reportAppError("Error de red al eliminar el perfil");
+    } finally {
+      setDeletingProfile(false);
+    }
   };
 
   const deleteSkin = async (userId: string) => {
@@ -368,7 +552,7 @@ export function ProfileAdminPanel() {
       body: JSON.stringify({ action: "delete", userId }),
     });
     const data = (await res.json()) as { success?: boolean };
-    if (!data.success) setError("No se pudo eliminar la skin");
+    if (!data.success) reportAppError("No se pudo eliminar la skin");
     setSkinPreview(null);
     await refresh();
     setSkinLoading(false);
@@ -403,7 +587,7 @@ export function ProfileAdminPanel() {
             disabled={moderation.length === 0}
             onClick={() => {
               const text = moderation.map((m) => formatModerationReport(m)).join("\n\n---\n\n");
-              void navigator.clipboard.writeText(text);
+              void copyTextToClipboard(text);
             }}
           >
             <Copy className="h-3.5 w-3.5" />
@@ -422,7 +606,7 @@ export function ProfileAdminPanel() {
         </div>
       </div>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {copyHint && !lastCreated && <p className="text-sm text-emerald-300">{copyHint}</p>}
 
       <div className="grid min-h-[5.5rem] shrink-0 gap-4 sm:grid-cols-2 lg:grid-cols-6">
         <StatCard title="Cuentas" value={stats?.totalUsers ?? "—"} icon={Users} />
@@ -463,12 +647,40 @@ export function ProfileAdminPanel() {
             <Select
               label="Plan"
               value={tier}
-              onChange={(e) => setTier(e.target.value as "free" | "premium")}
-              options={[
-                { value: "free", label: "Free" },
-                { value: "premium", label: "Premium" },
-              ]}
+              onChange={(e) => setTier(e.target.value as ProfilePlanId)}
+              options={PROFILE_PLANS.map((p) => ({ value: p.id, label: p.label }))}
             />
+            <Input
+              label="Email (opcional)"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="jugador@email.com"
+              autoComplete="off"
+            />
+            <Input
+              label="Código referido (opcional)"
+              value={referralCode}
+              onChange={(e) => setReferralCode(e.target.value)}
+              placeholder="REF-2026"
+              autoComplete="off"
+            />
+            <Input
+              label="Notas internas (opcional)"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Moderación, origen, etc."
+              className="sm:col-span-2"
+            />
+            <label className="flex items-center gap-2 text-xs text-[var(--color-text-soft)] sm:col-span-2 lg:col-span-4">
+              <input
+                type="checkbox"
+                checked={generateTokenOnCreate}
+                onChange={(e) => setGenerateTokenOnCreate(e.target.checked)}
+                className="rounded border-[var(--color-border)]"
+              />
+              Generar token de activación y copiarlo en el bloque de credenciales
+            </label>
             <div className="flex flex-wrap gap-2 sm:col-span-2 lg:col-span-4">
               <Button
                 type="submit"
@@ -495,25 +707,35 @@ export function ProfileAdminPanel() {
               </Button>
             </div>
           </form>
+          {copyHint && <p className="mt-3 text-xs text-emerald-300">{copyHint}</p>}
           {lastCreated && (
             <div className="mt-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm">
-              <p className="font-medium text-emerald-200">Cuenta creada</p>
-              <p className="mt-1 font-mono text-xs">
-                {lastCreated.username} / {lastCreated.password}
+              <p className="font-medium text-emerald-200">
+                Cuenta creada
+                <span className="ml-2 text-xs font-normal text-emerald-300/70">
+                  (desaparece en unos segundos)
+                </span>
               </p>
+              <pre className="mt-2 max-h-40 overflow-auto rounded-lg bg-black/30 p-2 font-mono text-[11px] text-emerald-100/90">
+                {formatProfileClipboard(lastCreated)}
+              </pre>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 className="mt-2"
-                onClick={() =>
-                  void navigator.clipboard.writeText(
-                    `Usuario: ${lastCreated.username}\nContraseña: ${lastCreated.password}`
-                  )
-                }
+                onClick={() => {
+                  void copyProfileData(lastCreated).then((ok) =>
+                    setCopyHint(
+                      ok
+                        ? "Datos copiados al portapapeles."
+                        : "No se pudo copiar automáticamente. Selecciona el texto del bloque y usa Ctrl+C."
+                    )
+                  );
+                }}
               >
                 <Copy className="h-3.5 w-3.5" />
-                Copiar credenciales
+                Copiar datos para el launcher
               </Button>
             </div>
           )}
@@ -574,7 +796,9 @@ export function ProfileAdminPanel() {
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                           <p className="text-sm text-[var(--color-text)]">@{user.username}</p>
-                          {user.tier === "premium" && <Badge className={badgeDefault}>Premium</Badge>}
+                          {user.tier && user.tier !== "free" && (
+                            <Badge className={badgeDefault}>{profilePlanLabel(user.tier)}</Badge>
+                          )}
                           {user.revoked && <Badge className="bg-red-500/20 text-red-300">Revocado</Badge>}
                           {intel?.launcherOpen && (
                             <Badge className="bg-emerald-500/15 text-emerald-300">En vivo</Badge>
@@ -627,7 +851,27 @@ export function ProfileAdminPanel() {
                   </CardDescription>
                 </div>
               </div>
-              <Tabs tabs={DETAIL_TABS} active={detailTab} onChange={setDetailTab} />
+              <div className="flex flex-wrap items-center gap-2">
+                {selected && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      void copyProfileData(buildClipboardPayload(selected)).then((ok) =>
+                        setCopyHint(
+                          ok
+                            ? "Datos del perfil copiados (sin contraseña)."
+                            : "No se pudo copiar automáticamente. Usa Ctrl+C sobre el texto."
+                        )
+                      );
+                    }}
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                    Copiar datos
+                  </Button>
+                )}
+                <Tabs tabs={DETAIL_TABS} active={detailTab} onChange={setDetailTab} />
+              </div>
             </div>
           </CardHeader>
           <CardContent className="flex min-h-0 flex-1 flex-col p-0">
@@ -717,15 +961,48 @@ export function ProfileAdminPanel() {
                       label="Plan"
                       value={selected.tier ?? "free"}
                       onChange={(e) => {
-                        const next = e.target.value as "free" | "premium";
+                        const next = e.target.value as ProfilePlanId;
                         const updated = { ...selected, tier: next };
                         setUsers((prev) => prev.map((u) => (u.id === selected.id ? updated : u)));
                         void saveUser(updated);
                       }}
-                      options={[
-                        { value: "free", label: "Free" },
-                        { value: "premium", label: "Premium" },
-                      ]}
+                      options={PROFILE_PLANS.map((p) => ({ value: p.id, label: p.label }))}
+                    />
+                    <Input
+                      label="Email"
+                      value={selected.email ?? ""}
+                      onChange={(e) =>
+                        setUsers((prev) =>
+                          prev.map((u) =>
+                            u.id === selected.id ? { ...u, email: e.target.value } : u
+                          )
+                        )
+                      }
+                      onBlur={() => void saveUser(selected)}
+                    />
+                    <Input
+                      label="Código referido"
+                      value={selected.referralCode ?? ""}
+                      onChange={(e) =>
+                        setUsers((prev) =>
+                          prev.map((u) =>
+                            u.id === selected.id ? { ...u, referralCode: e.target.value } : u
+                          )
+                        )
+                      }
+                      onBlur={() => void saveUser(selected)}
+                    />
+                    <Input
+                      label="Notas internas"
+                      value={selected.notes ?? ""}
+                      onChange={(e) =>
+                        setUsers((prev) =>
+                          prev.map((u) =>
+                            u.id === selected.id ? { ...u, notes: e.target.value } : u
+                          )
+                        )
+                      }
+                      onBlur={() => void saveUser(selected)}
                     />
                   </div>
                 </div>
@@ -740,7 +1017,7 @@ export function ProfileAdminPanel() {
                       disabled={selected.activeSessionCount === 0}
                       onClick={async () => {
                         const data = await profileAction({ action: "revoke-sessions", userId: selected.id });
-                        if (!data.success) setError("No había sesiones activas");
+                        if (!data.success) reportAppError("No había sesiones activas");
                         await refresh();
                       }}
                     >
@@ -852,7 +1129,7 @@ export function ProfileAdminPanel() {
                         displayName: selected.displayName,
                       });
                       if (!policy.valid) {
-                        setError(policy.errors.join(" · "));
+                        reportAppError(policy.errors.join(" · "));
                         return;
                       }
                       const data = await profileAction({
@@ -860,7 +1137,7 @@ export function ProfileAdminPanel() {
                         id: selected.id,
                         password: next,
                       });
-                      if (!data.success) setError(data.error ?? "No se pudo resetear");
+                      if (!data.success) reportAppError(data.error ?? "No se pudo resetear");
                     }}
                   >
                     <KeyRound className="h-3.5 w-3.5" />
@@ -885,7 +1162,7 @@ export function ProfileAdminPanel() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-red-400 hover:text-red-300"
+                      className="text-amber-400 hover:text-amber-300"
                       onClick={async () => {
                         if (!confirm(`¿Revocar la cuenta @${selected.username}? Cerrará acceso al launcher.`)) return;
                         await profileAction({ action: "revoke", id: selected.id });
@@ -893,9 +1170,19 @@ export function ProfileAdminPanel() {
                       }}
                     >
                       <ShieldOff className="h-3.5 w-3.5" />
-                      Revocar cuenta permanentemente
+                      Revocar cuenta
                     </Button>
                   )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-400 hover:text-red-300"
+                    disabled={deletingProfile}
+                    onClick={() => void deleteProfile(selected)}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    {deletingProfile ? "Eliminando…" : "Eliminar perfil"}
+                  </Button>
                 </div>
               )}
               </>

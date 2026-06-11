@@ -5,7 +5,7 @@ export function latLngToMapPercent(lat: number, lng: number): { x: number; y: nu
   };
 }
 
-type GeoPlace = {
+export type GeoPlace = {
   country: string;
   countryCode: string;
   city: string;
@@ -15,6 +15,9 @@ type GeoPlace = {
 
 const TZ_GEO: Record<string, GeoPlace> = {
   "Europe/Madrid": { country: "España", countryCode: "ES", city: "Madrid", lat: 40.42, lng: -3.7 },
+  "America/Lima": { country: "Perú", countryCode: "PE", city: "Lima", lat: -12.05, lng: -77.05 },
+  "America/Bogota": { country: "Colombia", countryCode: "CO", city: "Bogotá", lat: 4.71, lng: -74.07 },
+  "America/Santiago": { country: "Chile", countryCode: "CL", city: "Santiago", lat: -33.45, lng: -70.67 },
   "America/Mexico_City": { country: "México", countryCode: "MX", city: "CDMX", lat: 19.43, lng: -99.13 },
   "America/New_York": { country: "Estados Unidos", countryCode: "US", city: "New York", lat: 40.71, lng: -74.01 },
   "America/Los_Angeles": { country: "Estados Unidos", countryCode: "US", city: "Los Angeles", lat: 34.05, lng: -118.24 },
@@ -32,9 +35,12 @@ const TZ_GEO: Record<string, GeoPlace> = {
 };
 
 const LOCALE_GEO: Record<string, GeoPlace> = {
-  es: { country: "España", countryCode: "ES", city: "Madrid", lat: 40.42, lng: -3.7 },
   "es-es": { country: "España", countryCode: "ES", city: "Madrid", lat: 40.42, lng: -3.7 },
+  "es-pe": { country: "Perú", countryCode: "PE", city: "Lima", lat: -12.05, lng: -77.05 },
   "es-mx": { country: "México", countryCode: "MX", city: "CDMX", lat: 19.43, lng: -99.13 },
+  "es-ar": { country: "Argentina", countryCode: "AR", city: "Buenos Aires", lat: -34.6, lng: -58.38 },
+  "es-co": { country: "Colombia", countryCode: "CO", city: "Bogotá", lat: 4.71, lng: -74.07 },
+  "es-cl": { country: "Chile", countryCode: "CL", city: "Santiago", lat: -33.45, lng: -70.67 },
   en: { country: "Estados Unidos", countryCode: "US", city: "New York", lat: 40.71, lng: -74.01 },
   "en-us": { country: "Estados Unidos", countryCode: "US", city: "New York", lat: 40.71, lng: -74.01 },
   "en-gb": { country: "Reino Unido", countryCode: "GB", city: "London", lat: 51.51, lng: -0.13 },
@@ -55,12 +61,20 @@ const DEFAULT_GEO: GeoPlace = {
 export function resolveGeoFromClient(timezone?: string, locale?: string): GeoPlace {
   if (timezone && TZ_GEO[timezone]) return TZ_GEO[timezone];
   const loc = locale?.trim().toLowerCase();
-  if (loc) {
-    if (LOCALE_GEO[loc]) return LOCALE_GEO[loc];
-    const base = loc.split("-")[0];
-    if (base && LOCALE_GEO[base]) return LOCALE_GEO[base];
-  }
+  if (loc && LOCALE_GEO[loc]) return LOCALE_GEO[loc];
   return DEFAULT_GEO;
+}
+
+/** IP (API) → zona horaria → locale específico (es-pe, es-mx…). */
+export async function resolveGeo(input: {
+  ip?: string;
+  timezone?: string;
+  locale?: string;
+}): Promise<GeoPlace> {
+  const { resolveGeoFromIp } = await import("./ip-geo");
+  const fromIp = await resolveGeoFromIp(input.ip);
+  if (fromIp) return fromIp;
+  return resolveGeoFromClient(input.timezone, input.locale);
 }
 
 export function resolveHealth(ramUsage: number, cpuUsage: number): "healthy" | "warning" | "critical" {

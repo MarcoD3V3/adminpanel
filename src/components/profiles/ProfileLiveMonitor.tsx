@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
 import { badgeDefault } from "@/lib/styles";
+import { profilePlanLabel } from "@craftlauncher/shared";
 import type { UserModerationIntel } from "@/lib/launcher-auth/profile-moderation";
 import { formatModerationReport } from "@/lib/launcher-auth/profile-moderation";
 import { formatRelativeTime } from "@/lib/utils";
@@ -194,7 +195,7 @@ export function ProfileModerationDetail({ intel }: { intel: UserModerationIntel 
     },
     {
       label: "Plan",
-      value: intel.tier === "premium" ? "Premium" : "Free",
+      value: profilePlanLabel(intel.tier ?? "free"),
     },
   ];
 

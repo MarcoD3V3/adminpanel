@@ -1,5 +1,7 @@
+import { normalizeProfilePlan } from "@craftlauncher/shared";
 import {
   createLauncherUser,
+  deleteLauncherUser,
   getAdminProfilesOverview,
   listAuditLog,
   resetLauncherUserPassword,
@@ -12,6 +14,7 @@ import {
 import { buildUserModerationIntel } from "@/lib/launcher-auth/profile-moderation";
 import { listPresenceRecords } from "@/lib/live-ops/service";
 import {
+  apiErrorMessage,
   assertAdminSession,
   clientIp,
   isSameOriginAdminRequest,
@@ -51,15 +54,16 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  try {
   if (!isSameOriginAdminRequest(request)) {
-    return jsonSecure({ error: "Origen no permitido" }, { status: 403 });
+    return jsonSecure({ success: false, error: "Origen no permitido" }, { status: 403 });
   }
   if (!(await assertAdminSession())) {
-    return jsonSecure({ error: "Sesión admin requerida" }, { status: 401 });
+    return jsonSecure({ success: false, error: "Sesión admin requerida" }, { status: 401 });
   }
 
   const ip = clientIp(request);
-  const body = (await request.json()) as {
+  let body: {
     action?: string;
     id?: string;
     userId?: string;
@@ -67,12 +71,25 @@ export async function POST(request: Request) {
     password?: string;
     displayName?: string;
     tier?: string;
+    email?: string;
+    notes?: string;
+    referralCode?: string;
     sessionId?: string;
   };
+  try {
+    body = (await request.json()) as typeof body;
+  } catch {
+    return jsonSecure({ success: false, error: "JSON inválido en la petición" }, { status: 400 });
+  }
 
   if (body.action === "revoke" && body.id) {
     const ok = await revokeLauncherUser(body.id, ip);
     return jsonSecure({ success: ok }, { status: ok ? 200 : 404 });
+  }
+
+  if (body.action === "delete" && body.id) {
+    const result = await deleteLauncherUser(body.id, ip);
+    return jsonSecure(result, { status: result.success ? 200 : 400 });
   }
 
   if (body.action === "restore" && body.id) {
@@ -91,10 +108,16 @@ export async function POST(request: Request) {
   }
 
   if (body.action === "update" && body.id) {
-    const tier = body.tier === "premium" ? "premium" : body.tier === "free" ? "free" : undefined;
+    const tier = body.tier ? normalizeProfilePlan(body.tier) : undefined;
     const updated = await updateLauncherUser(
       body.id,
-      { displayName: body.displayName, tier },
+      {
+        displayName: body.displayName,
+        tier,
+        email: body.email,
+        notes: body.notes,
+        referralCode: body.referralCode,
+      },
       ip
     );
     if ("error" in updated) {
@@ -112,16 +135,21 @@ export async function POST(request: Request) {
   }
 
   if (!body.username?.trim() || !body.password) {
-    return jsonSecure({ error: "Usuario y contraseña requeridos" }, { status: 400 });
+    return jsonSecure({ success: false, error: "Usuario y contraseña requeridos" }, { status: 400 });
   }
 
-  const tier = body.tier === "premium" ? "premium" : "free";
+  const tier = normalizeProfilePlan(body.tier);
   const created = await createLauncherUser(
     body.username,
     body.password,
     tier,
     body.displayName,
-    ip
+    ip,
+    {
+      email: body.email,
+      notes: body.notes,
+      referralCode: body.referralCode,
+    }
   );
 
   if ("error" in created) {
@@ -129,4 +157,8 @@ export async function POST(request: Request) {
   }
 
   return jsonSecure({ success: true, user: created }, { status: 201 });
+  } catch (err) {
+    console.error("[profiles POST]", err);
+    return jsonSecure({ success: false, error: apiErrorMessage(err) }, { status: 500 });
+  }
 }

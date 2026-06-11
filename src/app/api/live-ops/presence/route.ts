@@ -62,6 +62,7 @@ export async function POST(request: Request) {
     username: session.username ?? "usuario",
     displayName: session.displayName,
     premium: session.premium ?? session.tier === "premium",
+    tester: session.tester ?? session.tier === "tester",
     deviceId,
     status,
     launcherVersion: body.launcherVersion ?? "1.0.0",

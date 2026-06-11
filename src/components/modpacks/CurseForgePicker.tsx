@@ -10,6 +10,7 @@ import {
   type CurseForgeBrowseKind,
   type CurseForgeSearchHit,
 } from "@/lib/curseforge-admin";
+import { reportAppError } from "@/lib/app-errors-store";
 
 type Props = {
   /** Solo guarda en el catálogo del admin — no descarga archivos */
@@ -32,24 +33,22 @@ export function CurseForgePicker({ onAdd, existingIds = [] }: Props) {
   const [loading, setLoading] = useState(false);
   const [addingId, setAddingId] = useState<number | null>(null);
   const [highlightId, setHighlightId] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const skipDebounceRef = useRef(false);
 
   const runSearch = useCallback(async (browseKind: CurseForgeBrowseKind, term: string) => {
     setLoading(true);
-    setError(null);
     setSearched(true);
     setActiveTerm(term);
     try {
       const list = await searchCurseForgeCatalog(browseKind, term);
       setResults(list);
       if (!list.length) {
-        setError(`Sin resultados para «${term}». Prueba otro nombre.`);
+        reportAppError(`Sin resultados para «${term}». Prueba otro nombre.`);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error CurseForge");
+      reportAppError(err instanceof Error ? err.message : "Error CurseForge");
       setResults([]);
     } finally {
       setLoading(false);
@@ -63,7 +62,6 @@ export function CurseForgePicker({ onAdd, existingIds = [] }: Props) {
     setResults([]);
     setHighlightId(null);
     setSearched(false);
-    setError(null);
     void runSearch(kind, DEFAULT_QUERY[kind]);
   }, [kind, runSearch]);
 
@@ -93,16 +91,15 @@ export function CurseForgePicker({ onAdd, existingIds = [] }: Props) {
 
   const addHit = async (hit: CurseForgeSearchHit) => {
     if (existingIds.includes(hit.id)) {
-      setError(`«${hit.name}» ya está en el catálogo.`);
+      reportAppError(`«${hit.name}» ya está en el catálogo.`);
       return;
     }
     setAddingId(hit.id);
-    setError(null);
     try {
       onAdd(hit, kind);
       setHighlightId(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo añadir");
+      reportAppError(err instanceof Error ? err.message : "No se pudo añadir");
     } finally {
       setAddingId(null);
     }
@@ -182,8 +179,6 @@ export function CurseForgePicker({ onAdd, existingIds = [] }: Props) {
           Buscar
         </Button>
       </form>
-
-      {error && <p className="mt-2 text-[11px] text-[var(--color-danger)]">{error}</p>}
 
       {loading && (
         <p className="mt-3 flex items-center gap-2 text-[11px] text-[var(--color-muted)]">
@@ -276,7 +271,7 @@ export function CurseForgePicker({ onAdd, existingIds = [] }: Props) {
         })}
       </div>
 
-      {!loading && searched && results.length === 0 && !error && (
+      {!loading && searched && results.length === 0 && (
         <p className="mt-3 text-center text-[11px] text-[var(--color-muted)]">
           No hay resultados para esta búsqueda.
         </p>

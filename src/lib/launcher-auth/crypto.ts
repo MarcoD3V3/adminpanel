@@ -73,8 +73,16 @@ export function maskToken(token: string): string {
   return `${token.slice(0, 8)}…${token.slice(-4)}`;
 }
 
-const SCRYPT_V1_OPTS = { N: 16384, r: 8, p: 1 } as const;
-const SCRYPT_V2_OPTS = { N: 32768, r: 8, p: 2 } as const;
+type ScryptOpts = { N: number; r: number; p: number; maxmem: number };
+
+/** OpenSSL 3 rejects scrypt when maxmem is below 128*r*(N+p); Node defaults to 32 MiB. */
+function scryptOpts(N: number, r: number, p: number): ScryptOpts {
+  const minMem = 128 * r * (N + p);
+  return { N, r, p, maxmem: Math.max(minMem * 2, 64 * 1024 * 1024) };
+}
+
+const SCRYPT_V1_OPTS = scryptOpts(16384, 8, 1);
+const SCRYPT_V2_OPTS = scryptOpts(32768, 8, 2);
 
 export function hashPassword(password: string): string {
   const salt = randomBytes(16).toString("hex");
@@ -86,7 +94,7 @@ function verifyScryptHash(
   password: string,
   salt: string,
   expected: string,
-  opts: { N: number; r: number; p: number }
+  opts: ScryptOpts
 ): boolean {
   const actual = scryptSync(`${pepper()}:${password}`, salt, 64, opts).toString("hex");
   const a = Buffer.from(actual);

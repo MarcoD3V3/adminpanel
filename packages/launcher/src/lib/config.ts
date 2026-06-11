@@ -39,9 +39,17 @@ async function pingAdmin(base: string): Promise<boolean> {
   }
 }
 
+function preferLocalAdmin(): boolean {
+  const pref = import.meta.env.VITE_ADMIN_API_PREFER_LOCAL;
+  if (pref === "false") return false;
+  if (pref === "true") return true;
+  return import.meta.env.DEV;
+}
+
 /**
- * Elige el admin activo: primero producción, si no responde → local.
- * Llamar una vez al arrancar el launcher (antes de auth/sync).
+ * Elige el admin activo.
+ * En desarrollo: local primero (tokens creados en tu PC no están en Railway).
+ * En producción: producción primero, luego local como respaldo.
  */
 export async function resolveAdminApiUrl(): Promise<string> {
   if (resolvePromise) return resolvePromise;
@@ -49,19 +57,23 @@ export async function resolveAdminApiUrl(): Promise<string> {
   resolvePromise = (async () => {
     const prod = ADMIN_API_URL_PRODUCTION;
     const local = ADMIN_API_URL_LOCAL;
+    const order: Array<{ url: string; source: "production" | "local" }> = preferLocalAdmin()
+      ? [
+          ...(local ? [{ url: local, source: "local" as const }] : []),
+          ...(prod && prod !== local ? [{ url: prod, source: "production" as const }] : []),
+        ]
+      : [
+          ...(prod ? [{ url: prod, source: "production" as const }] : []),
+          ...(local && local !== prod ? [{ url: local, source: "local" as const }] : []),
+        ];
 
-    if (prod && (await pingAdmin(prod))) {
-      activeAdminApiUrl = prod;
-      activeSource = "production";
-      console.info("[CraftLauncher] API admin → producción:", prod);
-      return prod;
-    }
-
-    if (local && local !== prod && (await pingAdmin(local))) {
-      activeAdminApiUrl = local;
-      activeSource = "local";
-      console.info("[CraftLauncher] API admin → local:", local);
-      return local;
+    for (const candidate of order) {
+      if (await pingAdmin(candidate.url)) {
+        activeAdminApiUrl = candidate.url;
+        activeSource = candidate.source;
+        console.info(`[CraftLauncher] API admin → ${candidate.source}:`, candidate.url);
+        return candidate.url;
+      }
     }
 
     activeAdminApiUrl = prod || local;

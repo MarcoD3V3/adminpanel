@@ -12,6 +12,7 @@
     "start": "next start",
     "lint": "next lint",
     "launcher:dev": "npm run electron:dev -w craftlauncher-desktop",
+    "launcher:dev:prod": "npm run electron:dev:prod -w craftlauncher-desktop",
     "launcher:build": "npm run electron:build -w craftlauncher-desktop",
     "build:client-mod": "node scripts/build-loading-mod.mjs",
     "build:client-mod:all": "node scripts/build-loading-mod.mjs --all",

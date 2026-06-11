@@ -6,6 +6,8 @@ import {
   CheckCircle2,
   Clock,
   Copy,
+  FlaskConical,
+  FlaskConicalOff,
   KeyRound,
   Lock,
   LogOut,
@@ -17,7 +19,18 @@ import {
   XCircle,
   Zap,
 } from "lucide-react";
-import type { ActivationTokenPublic, DeviceSessionPublic } from "@craftlauncher/shared";
+import {
+  isTesterTier,
+  type ActivationTokenPublic,
+  type DeviceSessionPublic,
+  type LauncherTokenTierId,
+} from "@craftlauncher/shared";
+
+const TOKEN_TIER_OPTIONS: { value: LauncherTokenTierId; label: string }[] = [
+  { value: "free", label: "Free (mods CurseForge)" },
+  { value: "premium", label: "Premium (todo)" },
+  { value: "tester", label: "Tester (solo nombre MC)" },
+];
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input, Select } from "@/components/ui/Input";
@@ -28,6 +41,9 @@ import {
   readAdminRememberPreference,
   writeAdminRememberPreference,
 } from "@/lib/admin-session-client";
+import { reportAppError } from "@/lib/app-errors-store";
+import { copyTextToClipboard } from "@/lib/clipboard";
+import { Toggle } from "@/components/ui/Toggle";
 
 const REFRESH_MS = 30_000;
 const TOKEN_EXPIRING_MS = 48 * 60 * 60 * 1000;
@@ -67,6 +83,8 @@ const AUDIT_LABELS: Record<string, string> = {
   skin_deleted_admin: "Skin eliminada (admin)",
   user_login_success: "Login OK",
   user_login_failed: "Login fallido",
+  tester_mode_enabled: "Modo testeo activado",
+  tester_mode_disabled: "Modo testeo desactivado",
 };
 
 const SECURITY_FEATURES = [
@@ -181,6 +199,7 @@ async function fetchAdminState() {
     tokens: ActivationTokenPublic[];
     sessions: DeviceSessionPublic[];
     auditLog: AuditEntry[];
+    testerModeEnabled?: boolean;
   }>;
 }
 
@@ -194,13 +213,16 @@ export function LauncherAccessPanel() {
   const [sessions, setSessions] = useState<DeviceSessionPublic[]>([]);
   const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [loginKey, setLoginKey] = useState("");
   const [rememberSession, setRememberSession] = useState(true);
   const [loggingIn, setLoggingIn] = useState(false);
   const [oneTime, setOneTime] = useState<OneTimeToken | null>(null);
   const [generating, setGenerating] = useState(false);
-  const [tokenTier, setTokenTier] = useState<"free" | "premium">("free");
+  const [tokenTier, setTokenTier] = useState<LauncherTokenTierId>("tester");
+  const [testerUsername, setTesterUsername] = useState("");
+  const [copyTokenHint, setCopyTokenHint] = useState<string | null>(null);
+  const [testerModeEnabled, setTesterModeEnabled] = useState(false);
+  const [togglingTesterMode, setTogglingTesterMode] = useState(false);
 
   const tokenGroups = useMemo(() => categorizeTokens(tokens), [tokens]);
   const sessionGroups = useMemo(() => categorizeSessions(sessions), [sessions]);
@@ -209,20 +231,20 @@ export function LauncherAccessPanel() {
     const silent = options?.silent ?? false;
     if (!silent) {
       setLoading(true);
-      setError(null);
     }
     try {
       const data = await fetchAdminState();
       setAuthenticated(data.authenticated);
       setConfigured(data.configured);
       setDevFallbackActive(Boolean(data.devFallbackActive));
+      setTesterModeEnabled(data.testerModeEnabled === true);
       if (data.authenticated) {
         setTokens(data.tokens);
         setSessions(data.sessions);
         setAuditLog(data.auditLog);
       }
     } catch {
-      if (!silent) setError("No se pudo conectar con el servidor.");
+      if (!silent) reportAppError("No se pudo conectar con el servidor.");
     } finally {
       if (!silent) setLoading(false);
     }
@@ -239,10 +261,19 @@ export function LauncherAccessPanel() {
     return () => clearInterval(timer);
   }, [authenticated, refresh]);
 
+  useEffect(() => {
+    if (testerModeEnabled && !isTesterTier(tokenTier)) {
+      setTokenTier("tester");
+      return;
+    }
+    if (!testerModeEnabled && isTesterTier(tokenTier)) {
+      setTokenTier("free");
+    }
+  }, [testerModeEnabled, tokenTier]);
+
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setLoggingIn(true);
-    setError(null);
     try {
       const res = await fetch("/api/launcher-auth/admin/login", {
         method: "POST",
@@ -253,7 +284,7 @@ export function LauncherAccessPanel() {
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
         const base = data.error ?? "Acceso denegado";
-        setError(
+        reportAppError(
           base === "Clave incorrecta"
             ? `${base}. Usa exactamente LAUNCHER_ADMIN_SECRET de .env.local y reinicia npm run dev si acabas de crearlo.`
             : base
@@ -263,9 +294,36 @@ export function LauncherAccessPanel() {
       setLoginKey("");
       await refresh();
     } catch {
-      setError("Error de red");
+      reportAppError("Error de red");
     } finally {
       setLoggingIn(false);
+    }
+  };
+
+  const handleToggleTesterMode = async (enabled: boolean) => {
+    setTogglingTesterMode(true);
+    try {
+      const res = await fetch("/api/launcher-auth/access-settings", {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled }),
+      });
+      const data = (await res.json()) as { success?: boolean; testerModeEnabled?: boolean; error?: string };
+      if (!res.ok || !data.success) {
+        reportAppError(data.error ?? "No se pudo cambiar el modo testeo.");
+        return;
+      }
+      setTesterModeEnabled(data.testerModeEnabled === true);
+      if (!enabled) {
+        setOneTime(null);
+        if (isTesterTier(tokenTier)) setTokenTier("free");
+      }
+      await refresh({ silent: true });
+    } catch {
+      reportAppError("Error de red al cambiar modo testeo.");
+    } finally {
+      setTogglingTesterMode(false);
     }
   };
 
@@ -279,24 +337,32 @@ export function LauncherAccessPanel() {
   };
 
   const handleGenerate = async () => {
+    if (isTesterTier(tokenTier) && !testerUsername.trim()) {
+      reportAppError("Escribe el nombre de Minecraft para el token tester.");
+      return;
+    }
     setGenerating(true);
-    setError(null);
     try {
       const res = await fetch("/api/launcher-auth/admin/tokens", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tier: tokenTier }),
+        body: JSON.stringify({
+          tier: tokenTier,
+          minecraftUsername: isTesterTier(tokenTier) ? testerUsername.trim() : undefined,
+        }),
       });
       const data = (await res.json()) as { success?: boolean; token?: OneTimeToken; error?: string };
       if (!res.ok || !data.success || !data.token) {
-        setError(data.error ?? "No se pudo generar el token.");
+        reportAppError(data.error ?? "No se pudo generar el token.");
         return;
       }
       setOneTime(data.token);
+      setCopyTokenHint(null);
+      if (isTesterTier(tokenTier)) setTesterUsername("");
       await refresh();
     } catch {
-      setError("Error de red");
+      reportAppError("Error de red");
     } finally {
       setGenerating(false);
     }
@@ -322,9 +388,43 @@ export function LauncherAccessPanel() {
     );
   }
 
+  const testerModeStatusCard = (
+    <Card
+      className={
+        testerModeEnabled
+          ? "border-violet-500/30 bg-violet-500/5"
+          : "border-[var(--color-border-subtle)] bg-[var(--color-surface-raised)]/40"
+      }
+    >
+      <CardContent className="flex items-start gap-3 py-4">
+        {testerModeEnabled ? (
+          <FlaskConical className="mt-0.5 h-5 w-5 shrink-0 text-violet-300" />
+        ) : (
+          <FlaskConicalOff className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-muted)]" />
+        )}
+        <div>
+          <p className="text-sm font-medium text-[var(--color-text)]">
+            Modo testeo:{" "}
+            <span className={testerModeEnabled ? "text-violet-300" : "text-[var(--color-muted)]"}>
+              {testerModeEnabled ? "Activado" : "Desactivado"}
+            </span>
+          </p>
+          <p className="mt-1 text-xs text-[var(--color-text-soft)]">
+            {authenticated
+              ? testerModeEnabled
+                ? "El launcher muestra «Modo testeo» + «Cuenta» y acepta tokens tester."
+                : "El launcher solo muestra inicio de sesión. Los tokens tester no funcionan."
+              : "Inicia sesión como admin para activar o desactivar el acceso de prueba en el launcher."}
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   if (!authenticated) {
     return (
       <div className="mx-auto max-w-lg space-y-6">
+        {testerModeStatusCard}
         <Card className="border-[var(--color-accent-muted)]/30">
           <CardHeader>
             <div className="flex items-center gap-2">
@@ -379,7 +479,6 @@ export function LauncherAccessPanel() {
                 />
                 Mantener sesión (30 días o hasta cerrar sesión)
               </label>
-              {error && <p className="text-sm text-red-400">{error}</p>}
               <Button type="submit" disabled={loggingIn || !loginKey.trim() || !configured}>
                 <ShieldCheck className="h-3.5 w-3.5" />
                 {loggingIn ? "Verificando…" : "Entrar"}
@@ -409,6 +508,45 @@ export function LauncherAccessPanel() {
 
   return (
     <div className="space-y-8">
+      <Card
+        className={
+          testerModeEnabled
+            ? "border-violet-500/30 bg-violet-500/5"
+            : "border-[var(--color-border-subtle)] bg-[var(--color-surface-raised)]/40"
+        }
+      >
+        <CardContent className="flex flex-wrap items-center justify-between gap-4 py-4">
+          <div className="flex items-start gap-3 min-w-0 flex-1">
+            {testerModeEnabled ? (
+              <FlaskConical className="mt-0.5 h-5 w-5 shrink-0 text-violet-300" />
+            ) : (
+              <FlaskConicalOff className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-muted)]" />
+            )}
+            <div>
+              <p className="text-sm font-medium text-[var(--color-text)]">
+                Modo testeo:{" "}
+                <span className={testerModeEnabled ? "text-violet-300" : "text-[var(--color-muted)]"}>
+                  {testerModeEnabled ? "Activado" : "Desactivado"}
+                </span>
+              </p>
+              <p className="mt-1 text-xs text-[var(--color-text-soft)]">
+                {testerModeEnabled
+                  ? "El launcher muestra «Modo testeo» + «Cuenta» y acepta tokens tester."
+                  : "El launcher solo muestra inicio de sesión normal. Los tokens tester no funcionan."}
+              </p>
+            </div>
+          </div>
+          <div className={togglingTesterMode ? "pointer-events-none opacity-50" : ""}>
+            <Toggle
+              checked={testerModeEnabled}
+              onChange={(v) => void handleToggleTesterMode(v)}
+              label={testerModeEnabled ? "Desactivar" : "Activar"}
+              compact
+            />
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm text-emerald-400">
           <ShieldCheck className="h-4 w-4" />
@@ -424,7 +562,6 @@ export function LauncherAccessPanel() {
         </div>
       </div>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
 
       <section className="space-y-4">
         <h2 className="text-xs font-medium uppercase tracking-wide text-[var(--color-muted)]">
@@ -436,9 +573,13 @@ export function LauncherAccessPanel() {
               <div className="flex items-start gap-2.5">
                 <Zap className="mt-0.5 h-4 w-4 text-[var(--color-accent)]" />
                 <div>
-                  <CardTitle>Nuevo token</CardTitle>
+                  <CardTitle>
+                    {isTesterTier(tokenTier) ? "Token modo testeo" : "Nuevo token"}
+                  </CardTitle>
                   <CardDescription>
-                    Free = jugar + mods CurseForge · Premium = modpacks destacados premium
+                    {isTesterTier(tokenTier)
+                      ? "Solo para pruebas: acceso al launcher con token + nombre MC (sin cuenta ni contraseña)."
+                      : "Free / Premium = acceso completo al hub con token de activación."}
                   </CardDescription>
                 </div>
               </div>
@@ -447,13 +588,31 @@ export function LauncherAccessPanel() {
                   compact
                   label="Tipo"
                   value={tokenTier}
-                  onChange={(e) => setTokenTier(e.target.value === "premium" ? "premium" : "free")}
-                  options={[
-                    { value: "free", label: "Free (mods CurseForge)" },
-                    { value: "premium", label: "Premium (todo)" },
-                  ]}
+                  onChange={(e) => setTokenTier(e.target.value as LauncherTokenTierId)}
+                  options={
+                    testerModeEnabled
+                      ? TOKEN_TIER_OPTIONS.filter((o) => isTesterTier(o.value))
+                      : TOKEN_TIER_OPTIONS.filter((o) => !isTesterTier(o.value))
+                  }
                 />
-                <Button onClick={() => void handleGenerate()} disabled={generating}>
+                {isTesterTier(tokenTier) && testerModeEnabled && (
+                  <Input
+                    compact
+                    label="Nombre en Minecraft"
+                    value={testerUsername}
+                    onChange={(e) => setTesterUsername(e.target.value)}
+                    placeholder="Steve"
+                    autoComplete="off"
+                    className="min-w-[10rem]"
+                  />
+                )}
+                <Button
+                  onClick={() => void handleGenerate()}
+                  disabled={
+                    generating ||
+                    (isTesterTier(tokenTier) && (!testerModeEnabled || !testerUsername.trim()))
+                  }
+                >
                 <KeyRound className="h-3.5 w-3.5" />
                 {generating ? "Generando…" : "Generar token"}
               </Button>
@@ -466,18 +625,44 @@ export function LauncherAccessPanel() {
                 <p className="text-sm font-medium text-amber-200">
                   {oneTime.label} — copia ahora, no se volverá a mostrar
                 </p>
-                <code className="block break-all rounded-lg bg-black/40 px-3 py-2 text-xs text-amber-100">
-                  {oneTime.token}
-                </code>
+                {oneTime.label.startsWith("Tester:") && (
+                  <p className="text-xs text-amber-100/80">
+                    En el launcher: «Tengo un token» → pegar → Activar. Sin contraseña. El nombre MC ya
+                    está en el token.
+                  </p>
+                )}
+                <textarea
+                  readOnly
+                  rows={2}
+                  className="block w-full resize-none break-all rounded-lg border border-amber-500/20 bg-black/40 px-3 py-2 font-mono text-xs text-amber-100"
+                  value={oneTime.token}
+                  onFocus={(e) => e.currentTarget.select()}
+                />
+                {copyTokenHint && <p className="text-xs text-emerald-300">{copyTokenHint}</p>}
                 <div className="flex gap-2">
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => void navigator.clipboard.writeText(oneTime.token)}
+                    onClick={() => {
+                      void copyTextToClipboard(oneTime.token).then((ok) =>
+                        setCopyTokenHint(
+                          ok
+                            ? "Token copiado al portapapeles."
+                            : "Selecciona el texto del token y usa Ctrl+C."
+                        )
+                      );
+                    }}
                   >
                     <Copy className="h-3.5 w-3.5" /> Copiar
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => setOneTime(null)}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setOneTime(null);
+                      setCopyTokenHint(null);
+                    }}
+                  >
                     Ocultar
                   </Button>
                 </div>
@@ -640,10 +825,14 @@ function TokenRow({
         <p className="truncate font-medium">{token.label}</p>
         <p className="text-[11px] text-[var(--color-muted)]">
           Creado {formatDate(token.createdAt)}
+          {token.minecraftUsername ? ` · MC: ${token.minecraftUsername}` : ""}
           {token.usedAt ? ` · Usado ${formatRelativeTime(token.usedAt)}` : ` · ${formatExpiresIn(token.expiresAt)}`}
         </p>
       </div>
       <div className="flex items-center gap-1.5 shrink-0">
+        {isTesterTier(token.tier) && (
+          <Badge className="bg-violet-500/20 text-violet-200">Tester</Badge>
+        )}
         {urgent && <Badge className="bg-amber-500/20 text-amber-300">Por expirar</Badge>}
         {onRevoke && (
           <Button size="sm" variant="ghost" onClick={() => onRevoke(token.id)}>
@@ -667,12 +856,17 @@ function SessionRow({
   return (
     <li className="flex items-center justify-between gap-3 rounded-xl border border-[var(--color-border)] px-3 py-2.5 text-sm">
       <div className="min-w-0">
-        <p className="truncate font-medium">{session.label ?? session.deviceId.slice(0, 14)}</p>
+        <p className="truncate font-medium">
+          {session.username ?? session.label ?? session.deviceId.slice(0, 14)}
+        </p>
         <p className="text-[11px] text-[var(--color-muted)]">
           Visto {formatRelativeTime(session.lastSeenAt)} · {formatExpiresIn(session.expiresAt)}
         </p>
       </div>
       <div className="flex items-center gap-1.5 shrink-0">
+        {isTesterTier(session.tier) && (
+          <Badge className="bg-violet-500/20 text-violet-200">Tester</Badge>
+        )}
         {urgent && <Badge className="bg-amber-500/20 text-amber-300">Por expirar</Badge>}
         {onRevoke && (
           <Button size="sm" variant="ghost" onClick={() => onRevoke(session.id)}>

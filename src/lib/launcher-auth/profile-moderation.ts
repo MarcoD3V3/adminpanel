@@ -27,7 +27,7 @@ export type UserModerationIntel = {
   userId: string;
   username: string;
   displayName: string;
-  tier: "free" | "premium";
+  tier: string;
   accountRevoked: boolean;
   launcherOpen: boolean;
   launcherStatus?: LivePresenceRecord["status"];

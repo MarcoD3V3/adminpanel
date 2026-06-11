@@ -9,6 +9,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "electron:dev": "node scripts/free-port.mjs 1420 && concurrently -k \"vite\" \"wait-on http://localhost:1420 && nodemon --watch electron --ext mjs --exec electron .\"",
+    "electron:dev:prod": "node scripts/run-electron-dev.mjs --prod-api",
     "electron:build": "npm run build && electron-builder --win"
   },
   "dependencies": {
@@ -25,7 +26,7 @@
     "@types/react-dom": "^19.1.5",
     "@vitejs/plugin-react": "^4.5.0",
     "concurrently": "^9.1.2",
-    "electron": "^35.1.2",
+    "electron": "35.7.5",
     "electron-builder": "^25.1.8",
     "nodemon": "^3.1.14",
     "typescript": "^5.8.3",
@@ -33,6 +34,7 @@
     "wait-on": "^8.0.3"
   },
   "build": {
+    "electronVersion": "35.7.5",
     "appId": "com.craftlauncher.app",
     "productName": "CraftLauncher",
     "directories": {
@@ -48,7 +50,8 @@
       "target": [
         "nsis"
       ],
-      "icon": "electron/icon.ico"
+      "icon": "electron/icon.ico",
+      "signAndEditExecutable": false
     },
     "nsis": {
       "oneClick": false,

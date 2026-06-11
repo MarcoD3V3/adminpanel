@@ -10,6 +10,7 @@ import { Input, Select } from "@/components/ui/Input";
 import { formatRelativeTime } from "@/lib/utils";
 import { tableHead, tableRow } from "@/lib/styles";
 import { Copy, RefreshCw, UserPlus, UserX, KeyRound } from "lucide-react";
+import { reportAppError } from "@/lib/app-errors-store";
 
 type LauncherUser = {
   id: string;
@@ -24,8 +25,6 @@ type LauncherUser = {
 export default function UsersPage() {
   const [users, setUsers] = useState<LauncherUser[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
@@ -35,17 +34,16 @@ export default function UsersPage() {
 
   const refresh = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
       const res = await fetch("/api/launcher-auth/admin/users", { credentials: "include" });
       const data = (await res.json()) as { authenticated?: boolean; users?: LauncherUser[]; error?: string };
       if (!res.ok) {
-        setError(data.error ?? "No se pudo cargar usuarios (¿sesión admin?)");
+        reportAppError(data.error ?? "No se pudo cargar usuarios (¿sesión admin?)");
         return;
       }
       setUsers((data.users ?? []).filter((u) => !u.revoked));
     } catch {
-      setError("Error de red");
+      reportAppError("Error de red");
     } finally {
       setLoading(false);
     }
@@ -59,7 +57,6 @@ export default function UsersPage() {
     e.preventDefault();
     if (!username.trim() || password.length < 6) return;
     setCreating(true);
-    setError(null);
     setLastCreated(null);
     try {
       const res = await fetch("/api/launcher-auth/admin/users", {
@@ -75,7 +72,7 @@ export default function UsersPage() {
       });
       const data = (await res.json()) as { success?: boolean; user?: LauncherUser; error?: string };
       if (!res.ok || !data.success || !data.user) {
-        setError(data.error ?? "No se pudo crear la cuenta");
+        reportAppError(data.error ?? "No se pudo crear la cuenta");
         return;
       }
       setLastCreated({ username: data.user.username, password });
@@ -85,14 +82,13 @@ export default function UsersPage() {
       setTier("free");
       await refresh();
     } catch {
-      setError("Error de red");
+      reportAppError("Error de red");
     } finally {
       setCreating(false);
     }
   };
 
   const saveUser = async (u: LauncherUser) => {
-    setError(null);
     await fetch("/api/launcher-auth/admin/users", {
       method: "POST",
       credentials: "include",
@@ -110,18 +106,16 @@ export default function UsersPage() {
   const resetPass = async (id: string) => {
     const next = prompt("Nueva contraseña (mín. 6 caracteres):");
     if (!next || next.length < 6) return;
-    setError(null);
     const res = await fetch("/api/launcher-auth/admin/users", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "reset-password", id, password: next }),
     });
-    if (!res.ok) setError("No se pudo resetear la contraseña");
+    if (!res.ok) reportAppError("No se pudo resetear la contraseña");
   };
 
   const revoke = async (id: string) => {
-    setError(null);
     await fetch("/api/launcher-auth/admin/users", {
       method: "POST",
       credentials: "include",
@@ -145,8 +139,6 @@ export default function UsersPage() {
             Actualizar
           </Button>
         </div>
-
-        {error && <p className="text-sm text-red-400">{error}</p>}
 
         <Card className="border-[var(--color-border-subtle)]">
           <CardHeader>

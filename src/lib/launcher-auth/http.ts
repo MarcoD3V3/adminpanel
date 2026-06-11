@@ -80,16 +80,46 @@ export async function assertAdminAccess(request: Request): Promise<boolean> {
 }
 
 export function isSameOriginAdminRequest(request: Request): boolean {
-  const origin = request.headers.get("origin");
   const host = request.headers.get("host");
   if (!host) return false;
-  if (!origin) return true;
-  try {
-    const url = new URL(origin);
-    return url.host === host;
-  } catch {
-    return false;
+  const hostKey = host.toLowerCase();
+
+  const origin = request.headers.get("origin");
+  if (origin) {
+    try {
+      const url = new URL(origin);
+      if (url.host.toLowerCase() === hostKey) return true;
+    } catch {
+      /* ignore */
+    }
+  } else {
+    return true;
   }
+
+  const referer = request.headers.get("referer");
+  if (referer) {
+    try {
+      const url = new URL(referer);
+      if (url.host.toLowerCase() === hostKey) return true;
+    } catch {
+      /* ignore */
+    }
+  }
+
+  return false;
+}
+
+export function apiErrorMessage(err: unknown): string {
+  if (err instanceof Error) {
+    if (err.message.includes("LAUNCHER_TOKEN_PEPPER")) {
+      return "Falta LAUNCHER_TOKEN_PEPPER en Railway (mín. 16 caracteres, distinto de LAUNCHER_ADMIN_SECRET).";
+    }
+    if (err.message.includes("LAUNCHER_ADMIN_SECRET")) {
+      return "Falta o es inválido LAUNCHER_ADMIN_SECRET en las variables de entorno.";
+    }
+    return err.message;
+  }
+  return "Error interno del servidor";
 }
 
 export function rejectActivationResponse(origin: string | null) {

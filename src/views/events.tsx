@@ -13,21 +13,19 @@ import { formatDate } from "@/lib/utils";
 import { rowItem } from "@/lib/styles";
 import { Play } from "lucide-react";
 import type { RemoteEventType } from "@/types";
+import { reportAppError } from "@/lib/app-errors-store";
 
 export default function EventsPage() {
   const { events, addEvent } = useAdminStore();
   const [eventType, setEventType] = useState<RemoteEventType>("broadcast_event");
   const [target, setTarget] = useState<"all" | "specific" | "online">("online");
   const [payload, setPayload] = useState('{"eventName": "double_xp", "multiplier": 2}');
-  const [error, setError] = useState("");
-
   const handleTrigger = () => {
     try {
       const parsed = JSON.parse(payload) as Record<string, unknown>;
       addEvent({ type: eventType, payload: parsed, target });
-      setError("");
     } catch {
-      setError("JSON inválido. Revisa la sintaxis del payload.");
+      reportAppError("JSON inválido. Revisa la sintaxis del payload.");
     }
   };
 
@@ -71,7 +69,6 @@ export default function EventsPage() {
               onChange={(e) => setPayload(e.target.value)}
               className="font-mono text-xs"
             />
-            {error && <p className="text-xs text-[var(--color-danger-text)]">{error}</p>}
           </CardContent>
         </Card>
 

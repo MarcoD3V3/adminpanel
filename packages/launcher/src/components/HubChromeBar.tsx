@@ -5,6 +5,7 @@ import {
   backgroundExtendsIntoChrome,
   bindAccountHubElements,
   ensureScreenChrome,
+  resolveAccountLabel,
   getActiveScreen,
   hasScreenChromeContent,
   hubChromeBarSurfaceStyle,
@@ -212,7 +213,7 @@ export function HubChromeBar({ screenId }: HubChromeBarProps = {}) {
   const username = useAuthStore((s) => s.username);
   const displayName = useAuthStore((s) => s.displayName);
   const tier = useAuthStore((s) => s.tier);
-  const accountLabel = username ?? displayName;
+  const accountLabel = resolveAccountLabel(username, displayName);
   const api = getLauncherApi();
   const desktop = isDesktopLauncher();
   const hasChrome = hasScreenChromeContent(chromeScreen);

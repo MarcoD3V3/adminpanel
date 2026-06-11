@@ -44,6 +44,9 @@ export async function POST(request: Request) {
       deviceId: result.deviceId,
       tier: result.tier,
       premium: result.tier === "premium",
+      tester: result.tier === "tester",
+      username: result.username,
+      displayName: result.displayName,
     },
     { status: 200 },
     origin

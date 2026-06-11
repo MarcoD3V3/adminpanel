@@ -154,6 +154,7 @@ export interface LiveOpsSession {
   username: string;
   status: "online" | "playing" | "launching" | "updating" | "idle";
   premium: boolean;
+  tester?: boolean;
   country: string;
   countryCode: string;
   city: string;

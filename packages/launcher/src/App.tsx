@@ -35,7 +35,9 @@ export default function App() {
   if (isAccountWindow) {
     return (
       <ErrorBoundary>
-        <AccountShell />
+        <AuthGate>
+          <AccountShell />
+        </AuthGate>
       </ErrorBoundary>
     );
   }

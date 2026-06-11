@@ -3,6 +3,7 @@ import { contextBridge, ipcRenderer } from "electron";
 /** No pasar callbacks renderer→preload: contextBridge usa structuredClone y falla con funciones. */
 export const MINECRAFT_PROGRESS_EVENT = "craftlauncher:minecraft-progress";
 export const HUB_NAVIGATE_EVENT = "craftlauncher:hub-navigate";
+export const AUTH_LOGGED_OUT_EVENT = "craftlauncher:auth-logged-out";
 
 function sanitizeProgressPayload(payload) {
   try {
@@ -20,6 +21,10 @@ ipcRenderer.on("minecraft:progress", (_event, payload) => {
 
 ipcRenderer.on("hub:navigate", (_event, payload) => {
   window.dispatchEvent(new CustomEvent(HUB_NAVIGATE_EVENT, { detail: payload ?? {} }));
+});
+
+ipcRenderer.on("auth:loggedOut", () => {
+  window.dispatchEvent(new CustomEvent(AUTH_LOGGED_OUT_EVENT));
 });
 
 contextBridge.exposeInMainWorld("launcher", {
@@ -52,6 +57,12 @@ contextBridge.exposeInMainWorld("launcher", {
   loadAuth: () => ipcRenderer.invoke("auth:load"),
   saveAuth: (data) => ipcRenderer.invoke("auth:save", data),
   clearAuth: () => ipcRenderer.invoke("auth:clear"),
+  broadcastLogout: () => ipcRenderer.invoke("auth:broadcastLogout"),
+  onAuthLoggedOut: (callback) => {
+    const handler = () => callback();
+    window.addEventListener(AUTH_LOGGED_OUT_EVENT, handler);
+    return () => window.removeEventListener(AUTH_LOGGED_OUT_EVENT, handler);
+  },
   getSettings: () => ipcRenderer.invoke("launcher:getSettings"),
   getDisplayWorkArea: () => ipcRenderer.invoke("launcher:getDisplayWorkArea"),
   saveSettings: (patch) => ipcRenderer.invoke("launcher:saveSettings", patch),

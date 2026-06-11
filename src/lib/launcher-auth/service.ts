@@ -1,3 +1,13 @@
+import {
+  isPremiumPlan,
+  isTesterTier,
+  normalizeLauncherTier,
+  normalizeMinecraftUsername,
+  normalizeProfilePlan,
+  resolveSessionDisplayName,
+  usernameFromCuentaLabel,
+  type LauncherTier,
+} from "@craftlauncher/shared";
 import { validatePassword } from "@/lib/password-policy";
 import { appendAuditLog } from "./audit";
 import {
@@ -14,7 +24,8 @@ import {
   verifyPassword,
 } from "./crypto";
 import { checkRateLimit, resetRateLimit } from "./rate-limit";
-import { getSkinMeta, skinExists } from "./skin-store";
+import { deleteUserSkin, getSkinMeta, skinExists } from "./skin-store";
+import { isTesterModeEnabled } from "./access-settings";
 import { mutateAuthStore, loadAuthStore } from "./store";
 import { isValidDeviceId, isValidFingerprint, isValidRecordId, sanitizeIpHint } from "./validation";
 import type {
@@ -30,6 +41,8 @@ import type {
 const ACTIVATION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const SESSION_TTL_MS = 90 * 24 * 60 * 60 * 1000;
 const ACTIVATION_FAIL_MSG = "Activación rechazada. Comprueba el token o solicita uno nuevo.";
+const TESTER_DISABLED_MSG =
+  "El modo testeo está desactivado. Inicia sesión con tu cuenta o pide al admin que lo active.";
 const LOGIN_FAIL_MSG = "Usuario o contraseña incorrectos.";
 
 function nowIso(): string {
@@ -43,12 +56,31 @@ function isExpired(iso: string): boolean {
 export async function createActivationToken(
   label?: string,
   ipHint?: string,
-  tier: "free" | "premium" = "free"
-): Promise<GeneratedActivationToken> {
+  tier: LauncherTier = "free",
+  minecraftUsername?: string
+): Promise<GeneratedActivationToken | { error: string }> {
+  const normalizedTier = normalizeLauncherTier(tier);
+  let mcName: string | undefined;
+
+  if (isTesterTier(normalizedTier)) {
+    if (!(await isTesterModeEnabled())) {
+      return { error: "El modo testeo está desactivado. Actívalo en Admin → Acceso Launcher." };
+    }
+    const resolved = normalizeMinecraftUsername(minecraftUsername ?? "");
+    if (!resolved) {
+      return {
+        error: "Nombre de Minecraft inválido (3–16 caracteres: letras, números y _)",
+      };
+    }
+    mcName = resolved;
+  }
+
   const store = await loadAuthStore();
   const seq = store.activationTokens.length + 1;
   const stamp = new Date().toISOString().slice(0, 10);
-  const autoLabel = label?.trim() || `Token-${stamp}-${String(seq).padStart(3, "0")}`;
+  const autoLabel = isTesterTier(normalizedTier)
+    ? `Tester: ${mcName}`
+    : label?.trim() || `Token-${stamp}-${String(seq).padStart(3, "0")}`;
   const token = generateActivationToken();
   const id = generateId("atk");
   const createdAt = nowIso();
@@ -59,7 +91,8 @@ export async function createActivationToken(
       id,
       label: autoLabel,
       tokenHash: hashToken(token),
-      tier,
+      tier: normalizedTier,
+      minecraftUsername: mcName,
       createdAt,
       expiresAt,
       revoked: false,
@@ -90,9 +123,10 @@ export async function listLauncherUsers(): Promise<LauncherUserPublic[]> {
 export async function createLauncherUser(
   username: string,
   password: string,
-  tier: "free" | "premium" = "free",
+  tier: string = "free",
   displayName?: string,
-  ipHint?: string
+  ipHint?: string,
+  extras?: { email?: string; notes?: string; referralCode?: string }
 ): Promise<LauncherUserPublic | { error: string }> {
   const normalized = username.trim().toLowerCase();
   if (!isValidUsername(normalized)) {
@@ -115,7 +149,10 @@ export async function createLauncherUser(
     username: normalized,
     displayName: displayName?.trim() || normalized,
     passwordHash: hashPassword(password),
-    tier,
+    tier: normalizeProfilePlan(tier),
+    email: extras?.email?.trim() || undefined,
+    notes: extras?.notes?.trim() || undefined,
+    referralCode: extras?.referralCode?.trim() || undefined,
     createdAt,
     revoked: false,
   };
@@ -140,6 +177,38 @@ export async function revokeLauncherUser(id: string, ipHint?: string): Promise<b
   });
   if (found) await appendAuditLog("user_revoked", ipHint, id);
   return found;
+}
+
+export async function deleteLauncherUser(
+  id: string,
+  ipHint?: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!isValidRecordId(id)) {
+    return { success: false, error: "ID de perfil inválido" };
+  }
+
+  let username: string | undefined;
+  let removed = false;
+  await mutateAuthStore((s) => {
+    const index = s.users.findIndex((x) => x.id === id);
+    if (index === -1) return;
+    username = s.users[index]!.username;
+    s.users.splice(index, 1);
+    s.sessions = s.sessions.filter((session) => session.userId !== id);
+    removed = true;
+  });
+
+  if (!removed) {
+    return { success: true };
+  }
+
+  try {
+    await deleteUserSkin(id);
+  } catch {
+    // El perfil ya se eliminó del store; la skin es limpieza secundaria.
+  }
+  await appendAuditLog("user_deleted", ipHint, `${username}:${id}`);
+  return { success: true };
 }
 
 export async function restoreLauncherUser(id: string, ipHint?: string): Promise<boolean> {
@@ -173,7 +242,7 @@ export async function revokeSessionsForUser(userId: string, ipHint?: string): Pr
 
 export async function updateLauncherUser(
   id: string,
-  patch: { displayName?: string; tier?: "free" | "premium" },
+  patch: { displayName?: string; tier?: string; email?: string; notes?: string; referralCode?: string },
   ipHint?: string
 ): Promise<LauncherUserPublic | { error: string }> {
   if (!isValidRecordId(id)) return { error: "ID inválido" };
@@ -183,7 +252,12 @@ export async function updateLauncherUser(
     const user = store.users.find((x) => x.id === id);
     if (!user || user.revoked) return;
     if (typeof patch.displayName === "string") user.displayName = patch.displayName.trim() || user.username;
-    if (patch.tier === "premium" || patch.tier === "free") user.tier = patch.tier;
+    if (typeof patch.tier === "string") user.tier = normalizeProfilePlan(patch.tier);
+    if (typeof patch.email === "string") user.email = patch.email.trim() || undefined;
+    if (typeof patch.notes === "string") user.notes = patch.notes.trim() || undefined;
+    if (typeof patch.referralCode === "string") {
+      user.referralCode = patch.referralCode.trim() || undefined;
+    }
     updated = { ...user };
   });
 
@@ -230,7 +304,7 @@ async function createSessionForDevice(
   deviceId: string,
   fingerprint: string,
   ip: string | undefined,
-  meta: { label?: string; tier?: "free" | "premium"; userId?: string; username?: string }
+  meta: { label?: string; tier?: string; userId?: string; username?: string }
 ): Promise<ActivationResult> {
   const fpHash = hashFingerprint(`${deviceId}:${fingerprint}`);
   const sessionToken = generateSessionToken();
@@ -256,12 +330,16 @@ async function createSessionForDevice(
     });
   });
 
+  const tier = normalizeLauncherTier(meta.tier);
+  const username = meta.username?.trim() || undefined;
   return {
     sessionToken,
     sessionId,
     expiresAt,
     deviceId,
-    tier: meta.tier ?? "free",
+    tier,
+    username,
+    displayName: resolveSessionDisplayName(meta.label, username),
   };
 }
 
@@ -377,9 +455,24 @@ export async function activateLauncherToken(
     return { error: ACTIVATION_FAIL_MSG, status: 401 };
   }
 
+  const tier = normalizeLauncherTier(record.tier);
+  if (isTesterTier(tier) && !(await isTesterModeEnabled())) {
+    await appendAuditLog("activation_failed", ip, "tester_disabled");
+    return { error: TESTER_DISABLED_MSG, status: 403 };
+  }
+  const mcName = isTesterTier(tier)
+    ? normalizeMinecraftUsername(record.minecraftUsername ?? "")
+    : null;
+  if (isTesterTier(tier) && !mcName) {
+    await appendAuditLog("activation_failed", ip, "tester_invalid");
+    return { error: ACTIVATION_FAIL_MSG, status: 401 };
+  }
+
+  const inferredUsername = !mcName ? usernameFromCuentaLabel(record.label) : undefined;
   const activated = await createSessionForDevice(deviceId, fingerprint, ip, {
-    label: record.label,
-    tier: record.tier ?? "free",
+    label: mcName ?? record.label,
+    tier,
+    username: mcName ?? inferredUsername,
   });
 
   const ts = nowIso();
@@ -391,7 +484,11 @@ export async function activateLauncherToken(
   });
 
   resetRateLimit(rateKey);
-  await appendAuditLog("activation_success", ip, activated.sessionId);
+  await appendAuditLog(
+    "activation_success",
+    ip,
+    isTesterTier(tier) ? `tester:${mcName}:${activated.sessionId}` : activated.sessionId
+  );
   return activated;
 }
 
@@ -443,22 +540,27 @@ export async function verifySessionToken(
   });
 
   let username = session.username;
-  let displayName = session.label;
+  let displayName: string | undefined;
   if (session.userId) {
     const user = store.users.find((u) => u.id === session.userId && !u.revoked);
     if (user) {
       username = username ?? user.username;
-      displayName = displayName ?? user.displayName ?? user.username;
+      displayName = resolveSessionDisplayName(user.displayName ?? user.username, user.username);
     }
   }
+  if (!displayName) {
+    displayName = resolveSessionDisplayName(session.label, username);
+  }
 
+  const tier = normalizeLauncherTier(session.tier);
   return {
     valid: true,
     sessionId: session.id,
     userId: session.userId,
     expiresAt: session.expiresAt,
-    tier: session.tier ?? "free",
-    premium: (session.tier ?? "free") === "premium",
+    tier,
+    premium: tier === "premium",
+    tester: isTesterTier(tier),
     username,
     displayName,
   };

@@ -536,6 +536,12 @@ function createWindow() {
   mainWindow.once("ready-to-show", () => mainWindow?.show());
   applyWindowSettings(mainWindow, settings);
 
+  if (isDev && process.env.CRAFTLAUNCHER_OPEN_DEVTOOLS === "1") {
+    mainWindow.webContents.once("did-finish-load", () => {
+      mainWindow?.webContents.openDevTools({ mode: "detach" });
+    });
+  }
+
   if (isDev) {
     mainWindow.webContents.on("did-fail-load", (_event, code, desc) => {
       console.error("[CraftLauncher] did-fail-load", code, desc);
@@ -685,6 +691,38 @@ ipcMain.handle("auth:clear", () => {
   }
   return true;
 });
+
+function broadcastAuthLoggedOut() {
+  try {
+    fs.unlinkSync(authFilePath());
+  } catch {
+    /* no file */
+  }
+
+  if (accountWindow && !accountWindow.isDestroyed()) {
+    accountWindow.close();
+    accountWindow = null;
+  }
+  for (const [id, win] of hubScreenWindows) {
+    if (!win.isDestroyed()) win.close();
+    hubScreenWindows.delete(id);
+  }
+
+  for (const win of BrowserWindow.getAllWindows()) {
+    if (!win.isDestroyed()) {
+      win.webContents.send("auth:loggedOut");
+    }
+  }
+
+  if (!mainWindow || mainWindow.isDestroyed()) {
+    createWindow();
+  }
+  mainWindow?.show();
+  mainWindow?.focus();
+  return true;
+}
+
+ipcMain.handle("auth:broadcastLogout", () => broadcastAuthLoggedOut());
 
 // —— Settings & paths ——
 ipcMain.handle("launcher:getSettings", () => ipcJson(loadSettings()));

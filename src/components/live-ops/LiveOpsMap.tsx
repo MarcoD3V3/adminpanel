@@ -16,6 +16,8 @@ const statusDot: Record<string, string> = {
   updating: "bg-[var(--color-danger-text)]",
 };
 
+const testerDot = "bg-violet-400";
+
 const healthRing: Record<string, string> = {
   healthy: "ring-[var(--color-accent-muted)]",
   warning: "ring-[var(--color-warning-text)]",
@@ -57,7 +59,7 @@ export function LiveOpsMap({ sessions, selectedId, onSelect }: LiveOpsMapProps) 
           <button
             key={session.id}
             type="button"
-            title={`${session.username} · ${session.city}, ${session.country}`}
+            title={`${session.username}${session.tester ? " (tester)" : ""} · ${session.city}, ${session.country}`}
             onClick={() => onSelect(session.id)}
             className="absolute -translate-x-1/2 -translate-y-1/2"
             style={{ left: `${x}%`, top: `${y}%` }}
@@ -65,8 +67,8 @@ export function LiveOpsMap({ sessions, selectedId, onSelect }: LiveOpsMapProps) 
             <span
               className={cn(
                 "block h-3 w-3 rounded-full ring-2 ring-offset-1 ring-offset-[var(--color-surface)] transition-transform",
-                statusDot[session.status],
-                healthRing[session.health],
+                session.tester ? testerDot : statusDot[session.status],
+                session.tester ? "ring-violet-400/60" : healthRing[session.health],
                 active && "scale-150"
               )}
             />
@@ -77,6 +79,7 @@ export function LiveOpsMap({ sessions, selectedId, onSelect }: LiveOpsMapProps) 
       <div className="absolute bottom-3 left-3 flex flex-wrap gap-3 rounded-xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-raised)]/90 px-3 py-2 text-[10px] text-[var(--color-text-soft)]">
         <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[var(--color-accent)]" /> Jugando</span>
         <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[var(--color-text-soft)]" /> Online</span>
+        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-violet-400" /> Tester</span>
         <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full ring-2 ring-[var(--color-danger-text)]" /> Alerta</span>
       </div>
     </div>

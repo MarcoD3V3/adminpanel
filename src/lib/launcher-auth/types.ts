@@ -1,11 +1,14 @@
-export type LauncherTier = "free" | "premium";
+import type { LauncherTier } from "@craftlauncher/shared";
+
+export type { LauncherTier };
 
 export type ActivationTokenRecord = {
   id: string;
   label: string;
   tokenHash: string;
-  /** free = mods CurseForge + jugar; premium = modpacks destacados premium */
+  /** free | premium | tester (nombre MC fijo en el token) */
   tier?: LauncherTier;
+  minecraftUsername?: string;
   createdAt: string;
   expiresAt: string;
   usedAt?: string;
@@ -35,6 +38,9 @@ export type LauncherUserRecord = {
   displayName?: string;
   passwordHash: string;
   tier: LauncherTier;
+  email?: string;
+  notes?: string;
+  referralCode?: string;
   createdAt: string;
   revoked: boolean;
   lastLoginAt?: string;
@@ -45,6 +51,8 @@ export type LauncherAuthStore = {
   sessions: DeviceSessionRecord[];
   users: LauncherUserRecord[];
   auditLog?: AuditLogEntry[];
+  /** Si true, el launcher muestra modo testeo y acepta tokens tester. */
+  testerModeEnabled?: boolean;
 };
 
 export type AuditLogEntry = {
@@ -60,6 +68,7 @@ export type AuditLogEntry = {
     | "session_verify_failed"
     | "user_created"
     | "user_revoked"
+    | "user_deleted"
     | "user_restored"
     | "user_updated"
     | "user_password_reset"
@@ -67,7 +76,9 @@ export type AuditLogEntry = {
     | "skin_uploaded_admin"
     | "skin_deleted_admin"
     | "user_login_success"
-    | "user_login_failed";
+    | "user_login_failed"
+    | "tester_mode_enabled"
+    | "tester_mode_disabled";
   at: string;
   ipHint?: string;
   meta?: string;
@@ -87,6 +98,8 @@ export type ActivationResult = {
   expiresAt: string;
   deviceId: string;
   tier: LauncherTier;
+  username?: string;
+  displayName?: string;
 };
 
 export type VerifySessionResult = {
@@ -96,6 +109,7 @@ export type VerifySessionResult = {
   expiresAt?: string;
   tier?: LauncherTier;
   premium?: boolean;
+  tester?: boolean;
   username?: string;
   displayName?: string;
   reason?: string;

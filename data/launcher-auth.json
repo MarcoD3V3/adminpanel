@@ -19,6 +19,139 @@
       "revoked": false,
       "usedAt": "2026-05-30T01:12:29.041Z",
       "usedByDeviceId": "e71ca041-64a7-40ec-846d-d1687617e99f"
+    },
+    {
+      "id": "atk_75beec3f60d49e18",
+      "label": "Cuenta marco",
+      "tokenHash": "48cc74debaa47eab0c11a5c99b7267a488b83ef76aa95bb2bdc8f72db50b7b84",
+      "tier": "premium",
+      "createdAt": "2026-06-11T15:51:22.660Z",
+      "expiresAt": "2026-06-18T15:51:22.660Z",
+      "revoked": false
+    },
+    {
+      "id": "atk_32f055475943c7be",
+      "label": "Tester: tsasdadasd",
+      "tokenHash": "03e8dc90d330f44ad337127f965b74dd52eebefc8aacde3c550cb7a1a917750a",
+      "tier": "tester",
+      "minecraftUsername": "tsasdadasd",
+      "createdAt": "2026-06-11T16:28:52.592Z",
+      "expiresAt": "2026-06-18T16:28:52.592Z",
+      "revoked": true
+    },
+    {
+      "id": "atk_33f439c252bdbb00",
+      "label": "Tester: m4rc0c3l4",
+      "tokenHash": "135b3cf7cf90d5862d564b082d602e74bdd886a184935f5696592446c18e78d7",
+      "tier": "tester",
+      "minecraftUsername": "m4rc0c3l4",
+      "createdAt": "2026-06-11T16:29:19.496Z",
+      "expiresAt": "2026-06-18T16:29:19.496Z",
+      "revoked": true
+    },
+    {
+      "id": "atk_c4a5254d27d49c75",
+      "label": "Tester: steve",
+      "tokenHash": "db2af12a5c995ed45c126cd32dc92496332ee78481938fddd3452fd948d1b9de",
+      "tier": "tester",
+      "minecraftUsername": "steve",
+      "createdAt": "2026-06-11T16:35:55.644Z",
+      "expiresAt": "2026-06-18T16:35:55.644Z",
+      "revoked": true
+    },
+    {
+      "id": "atk_c6c5f6388673ed2f",
+      "label": "Tester: aaaa",
+      "tokenHash": "ab4c9759d96cf8da9cb736d58c3e13ac1b44d2c3cbcc5aacde57b269cbd9e990",
+      "tier": "tester",
+      "minecraftUsername": "aaaa",
+      "createdAt": "2026-06-11T16:36:57.844Z",
+      "expiresAt": "2026-06-18T16:36:57.844Z",
+      "revoked": true
+    },
+    {
+      "id": "atk_2dd5d9f12c5f48d8",
+      "label": "Tester: tester",
+      "tokenHash": "ca1de6ea77e3b6e286d4d63f832a7c1157a0e979e534a985a0f63aade965035c",
+      "tier": "tester",
+      "minecraftUsername": "tester",
+      "createdAt": "2026-06-11T17:03:31.509Z",
+      "expiresAt": "2026-06-18T17:03:31.509Z",
+      "revoked": true
+    },
+    {
+      "id": "atk_7cd8f95a5f263a16",
+      "label": "Tester: test",
+      "tokenHash": "cab687ccdf5a773cef31aec37e08d3c3ca3ff6e5c3f0565be2fc9b884e58bc8d",
+      "tier": "tester",
+      "minecraftUsername": "test",
+      "createdAt": "2026-06-11T17:09:23.424Z",
+      "expiresAt": "2026-06-18T17:09:23.424Z",
+      "revoked": false
+    },
+    {
+      "id": "atk_23e10f616be0e0f6",
+      "label": "Tester: aaaaaa",
+      "tokenHash": "db94616b5e9044994ea382d3f3bdde6204fe154b71e9f0c6c0777f1dcd005aed",
+      "tier": "tester",
+      "minecraftUsername": "aaaaaa",
+      "createdAt": "2026-06-11T17:09:45.666Z",
+      "expiresAt": "2026-06-18T17:09:45.666Z",
+      "revoked": false
+    },
+    {
+      "id": "atk_d59cc8226620ecd3",
+      "label": "Tester: ssssssssssss",
+      "tokenHash": "63e136da16882d658617862aa5a35f29b460f5b04b7751f298e9f87cd6686e5c",
+      "tier": "tester",
+      "minecraftUsername": "ssssssssssss",
+      "createdAt": "2026-06-11T17:10:38.777Z",
+      "expiresAt": "2026-06-18T17:10:38.777Z",
+      "revoked": false
+    },
+    {
+      "id": "atk_db224fbf2eb23bbf",
+      "label": "Tester: asdaadasd",
+      "tokenHash": "011fd1c24df53a553c08d4b7a80173c9335b8de42d67f117f7f3e529eafd3754",
+      "tier": "tester",
+      "minecraftUsername": "asdaadasd",
+      "createdAt": "2026-06-11T17:18:43.520Z",
+      "expiresAt": "2026-06-18T17:18:43.520Z",
+      "revoked": false,
+      "usedAt": "2026-06-11T17:18:54.769Z",
+      "usedByDeviceId": "e71ca041-64a7-40ec-846d-d1687617e99f"
+    },
+    {
+      "id": "atk_eb5b4dff803e621e",
+      "label": "Cuenta asdasdasdasd",
+      "tokenHash": "d1506d4639f2dc72fa4a7444443dcae2257f335b987415ddb670afdf128bb985",
+      "tier": "free",
+      "createdAt": "2026-06-11T17:21:49.130Z",
+      "expiresAt": "2026-06-18T17:21:49.130Z",
+      "revoked": false
+    },
+    {
+      "id": "atk_40f322434d1d4b91",
+      "label": "Cuenta asdadadasdadadassd",
+      "tokenHash": "bafd49a1eeb04ab6dbf08573901c5f2b72a8fc5d082e24638dfa1225e2c0cb3e",
+      "tier": "premium",
+      "createdAt": "2026-06-11T17:25:05.024Z",
+      "expiresAt": "2026-06-18T17:25:05.024Z",
+      "revoked": false,
+      "usedAt": "2026-06-11T17:25:31.982Z",
+      "usedByDeviceId": "e71ca041-64a7-40ec-846d-d1687617e99f"
+    },
+    {
+      "id": "atk_23072d733f2fbac3",
+      "label": "Tester: aaaaaaaaaa",
+      "tokenHash": "39bb06b8bfe2cbf3eba4fa4b4476bddf4947be03476992de33dc4f22a0be6859",
+      "tier": "tester",
+      "minecraftUsername": "aaaaaaaaaa",
+      "createdAt": "2026-06-11T17:37:04.704Z",
+      "expiresAt": "2026-06-18T17:37:04.704Z",
+      "revoked": false,
+      "usedAt": "2026-06-11T17:38:00.384Z",
+      "usedByDeviceId": "e71ca041-64a7-40ec-846d-d1687617e99f"
     }
   ],
   "sessions": [
@@ -47,74 +180,454 @@
       "ipHint": "::1"
     },
     {
-      "id": "ses_b2517542507a821d",
-      "tokenHash": "3311cb284918b780fd202864d04ff496f5a269e74944a0a57ee902d7c86077e2",
+      "id": "ses_f9898af02e261e8f",
+      "tokenHash": "0ac8a8dafe718262b2b7a73d2c27387a474a9a4ec84d0a55dc3518c74491d23f",
       "deviceId": "e71ca041-64a7-40ec-846d-d1687617e99f",
       "deviceFingerprintHash": "9e2114e32bbca1d3399859ec818140956bd72d39552fa34188b5c0871bd8c437",
-      "label": "papapapa",
-      "userId": "usr_bc31221c521524b8",
-      "username": "papa",
-      "tier": "free",
-      "createdAt": "2026-06-02T06:45:40.991Z",
-      "expiresAt": "2026-08-31T06:45:40.991Z",
-      "lastSeenAt": "2026-06-02T06:48:46.595Z",
-      "revoked": true,
-      "ipHint": "::1"
-    },
-    {
-      "id": "ses_e327f229be4b357a",
-      "tokenHash": "9480214149581c247532c377dd7235034cac0faeca2786814a741a807ab869be",
-      "deviceId": "e71ca041-64a7-40ec-846d-d1687617e99f",
-      "deviceFingerprintHash": "9e2114e32bbca1d3399859ec818140956bd72d39552fa34188b5c0871bd8c437",
-      "label": "papapapa",
-      "userId": "usr_bc31221c521524b8",
-      "username": "papa",
-      "tier": "free",
-      "createdAt": "2026-06-02T06:52:30.638Z",
-      "expiresAt": "2026-08-31T06:52:30.638Z",
-      "lastSeenAt": "2026-06-09T17:41:30.436Z",
+      "label": "asdaadasd",
+      "username": "asdaadasd",
+      "tier": "tester",
+      "createdAt": "2026-06-11T17:18:54.733Z",
+      "expiresAt": "2026-09-09T17:18:54.733Z",
+      "lastSeenAt": "2026-06-11T17:20:52.827Z",
       "revoked": false,
       "ipHint": "::1"
     },
     {
-      "id": "ses_f74d9b1f9628fe26",
-      "tokenHash": "15ca4244e15dc5fbcab72df9e3ba60f5cf13b4d59e41c40eeb550b888829e586",
+      "id": "ses_9a0c46357d49bd6d",
+      "tokenHash": "90753d6682968c8fb6fc3c1a3ea5857ed0b07c7a34769cb5186e4df206633055",
+      "deviceId": "e71ca041-64a7-40ec-846d-d1687617e99f",
+      "deviceFingerprintHash": "9e2114e32bbca1d3399859ec818140956bd72d39552fa34188b5c0871bd8c437",
+      "label": "Cuenta asdadadasdadadassd",
+      "tier": "premium",
+      "createdAt": "2026-06-11T17:25:31.970Z",
+      "expiresAt": "2026-09-09T17:25:31.970Z",
+      "lastSeenAt": "2026-06-11T17:37:29.170Z",
+      "revoked": false,
+      "ipHint": "::1"
+    },
+    {
+      "id": "ses_1ce0a383dba6b9ce",
+      "tokenHash": "04b2e8d455bddd0cd954e74b446a8d400ad5209461fd2059d1e7d354884f3ee8",
+      "deviceId": "e71ca041-64a7-40ec-846d-d1687617e99f",
+      "deviceFingerprintHash": "9e2114e32bbca1d3399859ec818140956bd72d39552fa34188b5c0871bd8c437",
+      "label": "aaaaaaaaaa",
+      "username": "aaaaaaaaaa",
+      "tier": "tester",
+      "createdAt": "2026-06-11T17:38:00.373Z",
+      "expiresAt": "2026-09-09T17:38:00.373Z",
+      "lastSeenAt": "2026-06-11T17:40:57.179Z",
+      "revoked": false,
+      "ipHint": "::1"
+    },
+    {
+      "id": "ses_a086d6f8077a64cd",
+      "tokenHash": "034235c7212e5c4f7feaf80223c8d13721267cf2ce64584c915476f298a22420",
       "deviceId": "e71ca041-64a7-40ec-846d-d1687617e99f",
       "deviceFingerprintHash": "9e2114e32bbca1d3399859ec818140956bd72d39552fa34188b5c0871bd8c437",
       "label": "celada",
-      "userId": "usr_805d31d1ee7a482b",
+      "userId": "usr_0da8176d6722f8cf",
       "username": "celada",
-      "tier": "premium",
-      "createdAt": "2026-06-09T18:14:52.503Z",
-      "expiresAt": "2026-09-07T18:14:52.503Z",
-      "lastSeenAt": "2026-06-11T12:19:57.090Z",
+      "tier": "beta",
+      "createdAt": "2026-06-11T17:43:23.880Z",
+      "expiresAt": "2026-09-09T17:43:23.880Z",
+      "lastSeenAt": "2026-06-11T18:07:37.267Z",
       "revoked": false,
       "ipHint": "::1"
     }
   ],
   "users": [
     {
-      "id": "usr_bc31221c521524b8",
-      "username": "papa",
-      "displayName": "papa",
-      "passwordHash": "scrypt:cbb8644ff0a81fa0252fccfc20c201cc:b512d0f23ad3525e6985936bb8d2beaca84ecc47d42aa37539b7138c426825d92810c73f2a8862a896e407372c254a5cb884c009c13666899e4be36e88c6285d",
-      "tier": "free",
-      "createdAt": "2026-06-02T06:43:04.842Z",
-      "revoked": false,
-      "lastLoginAt": "2026-06-02T06:52:30.606Z"
+      "id": "usr_765df2fe8dffcf66",
+      "username": "marco",
+      "displayName": "marco",
+      "passwordHash": "scrypt2:57234aa6067cd4daae21785a9ca45743:cd1dcb9f0124afbf7a7119a8273f687636192eb168be0107e11d8a5ffc4c136bda598074730dd85b85c9d86d198833b85ce1efae9a352c22f83ce90e670b9f2c",
+      "tier": "vip",
+      "email": "sinister.good.222@gmail.com",
+      "notes": "para hacer pruebas",
+      "referralCode": "EEEC",
+      "createdAt": "2026-06-11T15:51:18.820Z",
+      "revoked": false
     },
     {
-      "id": "usr_805d31d1ee7a482b",
+      "id": "usr_244ce8a44783b1f0",
+      "username": "asdasdasdasd",
+      "displayName": "asd",
+      "passwordHash": "scrypt2:dbecca294df2519c25ac7f3c7e803fa6:20f91facb22f8b8bb816f34b10303f8bc003e56a39d34686acdbd107b1c8a892776b3e532b1c81f8838d01f595b9c45b82099993c48f8a58faf8d52914b1f102",
+      "tier": "free",
+      "email": "sd@asd",
+      "notes": "asd",
+      "createdAt": "2026-06-11T17:21:43.946Z",
+      "revoked": false
+    },
+    {
+      "id": "usr_0c0601aa7fdc54fb",
+      "username": "asdadasdasd",
+      "displayName": "marco",
+      "passwordHash": "scrypt2:e31a2c55d56c0266dbc394424da309a9:a260c511255b4d373e2f5109764fda46bceac73211948c4f8571cb90da47f415cf8a4b43d5be1f7059fc9a5249849a15123903a260d5fc1bab8d1e41a0a06fee",
+      "tier": "free",
+      "email": "sinister.good.222@gmail.com",
+      "notes": "para hacer pruebas",
+      "referralCode": "asdasdasd",
+      "createdAt": "2026-06-11T17:24:24.248Z",
+      "revoked": false
+    },
+    {
+      "id": "usr_c6f75654a9840ebf",
+      "username": "asdadadasdadadassd",
+      "displayName": "asdasdad",
+      "passwordHash": "scrypt2:cbcc65e4010032ee834d8fa0cd163ab5:3d1f253c48f35ddf9863549281f23a9ce7f4883865abba11ab985299e9189154d1dc0bc6a275fe9f818694181b0c225d2d7b4b7793f96d0d9b132dd61209b3d3",
+      "tier": "pro",
+      "email": "sinister.good.222@gmail.com",
+      "notes": "asdasdad",
+      "referralCode": "asdasdas",
+      "createdAt": "2026-06-11T17:25:02.621Z",
+      "revoked": false
+    },
+    {
+      "id": "usr_47cfd73f0aaf7a0d",
+      "username": "marcoss",
+      "displayName": "asdasdasd",
+      "passwordHash": "scrypt2:0bc14212a26483a7e8a8988035e6357d:da2f4c808f186dcc59d3d9be043c04f312cf1b2a1bae563a83acde377d717a8fe20ebd018af430b034b916f57948c686521d237d0146f38c37c461918ae07469",
+      "tier": "partner",
+      "email": "4thtru97ct@ozsaip.com",
+      "notes": "asd",
+      "referralCode": "sdd",
+      "createdAt": "2026-06-11T17:27:00.040Z",
+      "revoked": false
+    },
+    {
+      "id": "usr_0da8176d6722f8cf",
       "username": "celada",
       "displayName": "celada",
-      "passwordHash": "scrypt:198ca52e9db7b62be917663f257b940a:c65d3915f53c39146aa4a941f4c0db063be5a8fe6f01d70a3225b2fe720c565f534feaa20af5593eedcb8ff45e6ffc5f69ef605cdc75c7d680aad16e9185a52e",
-      "tier": "premium",
-      "createdAt": "2026-06-09T18:14:20.722Z",
+      "passwordHash": "scrypt2:bfc5a5b926760f7da0da23082222c35f:5ccb440a18c7c53a4b6f5ac69a609ba972d042a069d081396d52a71f2e6205814b5a5971324a6e17d8925a4a74d074ccd8a65870ba06a49496fec36fda48482b",
+      "tier": "beta",
+      "email": "sinister.good.222.2.0@gmail.com",
+      "notes": "para hacer pruebas",
+      "referralCode": "EEEX",
+      "createdAt": "2026-06-11T17:42:38.019Z",
       "revoked": false,
-      "lastLoginAt": "2026-06-09T18:14:52.453Z"
+      "lastLoginAt": "2026-06-11T17:43:23.800Z"
     }
   ],
   "auditLog": [
+    {
+      "id": "aud_99080ba8c9ae3b74",
+      "action": "user_login_success",
+      "at": "2026-06-11T17:43:23.846Z",
+      "ipHint": "::1",
+      "meta": "celada"
+    },
+    {
+      "id": "aud_9536e4a8a57daeb8",
+      "action": "user_created",
+      "at": "2026-06-11T17:42:38.360Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "celada"
+    },
+    {
+      "id": "aud_78d8df8389454192",
+      "action": "tester_mode_disabled",
+      "at": "2026-06-11T17:41:17.337Z",
+      "ipHint": "::ffff:192.168.100.69"
+    },
+    {
+      "id": "aud_9170e60487eafda9",
+      "action": "session_verify_failed",
+      "at": "2026-06-11T17:39:21.852Z",
+      "ipHint": "::1",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_8875232d0ec569b8",
+      "action": "activation_success",
+      "at": "2026-06-11T17:38:00.412Z",
+      "ipHint": "::1",
+      "meta": "tester:aaaaaaaaaa:ses_1ce0a383dba6b9ce"
+    },
+    {
+      "id": "aud_34b1fc1505c9ea5a",
+      "action": "token_created",
+      "at": "2026-06-11T17:37:04.716Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "Tester: aaaaaaaaaa"
+    },
+    {
+      "id": "aud_8d9432999c76d8ee",
+      "action": "user_created",
+      "at": "2026-06-11T17:27:00.385Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "marcoss"
+    },
+    {
+      "id": "aud_729e858582a0decb",
+      "action": "activation_failed",
+      "at": "2026-06-11T17:25:54.511Z",
+      "ipHint": "::1",
+      "meta": "not_found"
+    },
+    {
+      "id": "aud_4762b54bacbcefa4",
+      "action": "activation_success",
+      "at": "2026-06-11T17:25:32.010Z",
+      "ipHint": "::1",
+      "meta": "ses_9a0c46357d49bd6d"
+    },
+    {
+      "id": "aud_97230b55ac9ffbb5",
+      "action": "token_created",
+      "at": "2026-06-11T17:25:05.187Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "Cuenta asdadadasdadadassd"
+    },
+    {
+      "id": "aud_26b13bda035e6986",
+      "action": "user_created",
+      "at": "2026-06-11T17:25:02.948Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "asdadadasdadadassd"
+    },
+    {
+      "id": "aud_ad519737bf953661",
+      "action": "user_created",
+      "at": "2026-06-11T17:24:24.611Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "asdadasdasd"
+    },
+    {
+      "id": "aud_c9184fb0a31a1b86",
+      "action": "token_created",
+      "at": "2026-06-11T17:21:49.198Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "Cuenta asdasdasdasd"
+    },
+    {
+      "id": "aud_9d4b381dcd32c3a9",
+      "action": "user_created",
+      "at": "2026-06-11T17:21:44.280Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "asdasdasdasd"
+    },
+    {
+      "id": "aud_f361f02ce0d534cf",
+      "action": "activation_success",
+      "at": "2026-06-11T17:18:54.826Z",
+      "ipHint": "::1",
+      "meta": "tester:asdaadasd:ses_f9898af02e261e8f"
+    },
+    {
+      "id": "aud_c1bb9f6c250c4d95",
+      "action": "token_created",
+      "at": "2026-06-11T17:18:43.534Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "Tester: asdaadasd"
+    },
+    {
+      "id": "aud_89b18aadfb77c02f",
+      "action": "token_created",
+      "at": "2026-06-11T17:10:38.787Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "Tester: ssssssssssss"
+    },
+    {
+      "id": "aud_dcec6108f12047b3",
+      "action": "token_created",
+      "at": "2026-06-11T17:09:45.679Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "Tester: aaaaaa"
+    },
+    {
+      "id": "aud_6003a0839c87bbb3",
+      "action": "token_created",
+      "at": "2026-06-11T17:09:23.450Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "Tester: test"
+    },
+    {
+      "id": "aud_a1a70a7271cfa98c",
+      "action": "token_revoked",
+      "at": "2026-06-11T17:08:56.138Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "atk_2dd5d9f12c5f48d8"
+    },
+    {
+      "id": "aud_54e04b9ac3f28b31",
+      "action": "token_revoked",
+      "at": "2026-06-11T17:08:54.887Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "atk_2dd5d9f12c5f48d8"
+    },
+    {
+      "id": "aud_a4256b75c28b2c75",
+      "action": "tester_mode_enabled",
+      "at": "2026-06-11T17:08:44.673Z",
+      "ipHint": "::ffff:192.168.100.69"
+    },
+    {
+      "id": "aud_fe74812d9b7a5042",
+      "action": "tester_mode_disabled",
+      "at": "2026-06-11T17:08:37.919Z",
+      "ipHint": "::ffff:192.168.100.69"
+    },
+    {
+      "id": "aud_c8f5f5a3383f0b2f",
+      "action": "token_created",
+      "at": "2026-06-11T17:03:31.520Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "Tester: tester"
+    },
+    {
+      "id": "aud_52617bb4469ce2e5",
+      "action": "tester_mode_enabled",
+      "at": "2026-06-11T17:01:43.744Z",
+      "ipHint": "::ffff:192.168.100.69"
+    },
+    {
+      "id": "aud_530ac1eb04221a57",
+      "action": "token_revoked",
+      "at": "2026-06-11T17:01:00.367Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "atk_c6c5f6388673ed2f"
+    },
+    {
+      "id": "aud_1d2f501d6d73a11c",
+      "action": "token_revoked",
+      "at": "2026-06-11T17:01:00.274Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "atk_c4a5254d27d49c75"
+    },
+    {
+      "id": "aud_eb1a57df2e08056e",
+      "action": "token_revoked",
+      "at": "2026-06-11T17:01:00.221Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "atk_c4a5254d27d49c75"
+    },
+    {
+      "id": "aud_bea4898a47e3a5c6",
+      "action": "token_revoked",
+      "at": "2026-06-11T17:00:51.865Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "atk_c4a5254d27d49c75"
+    },
+    {
+      "id": "aud_d982cc2075143d4d",
+      "action": "token_revoked",
+      "at": "2026-06-11T17:00:50.071Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "atk_33f439c252bdbb00"
+    },
+    {
+      "id": "aud_d3c275309c7c6d2a",
+      "action": "token_revoked",
+      "at": "2026-06-11T17:00:43.394Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "atk_32f055475943c7be"
+    },
+    {
+      "id": "aud_234d16627b755b0f",
+      "action": "token_created",
+      "at": "2026-06-11T16:36:57.855Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "Tester: aaaa"
+    },
+    {
+      "id": "aud_04e835002b579ba0",
+      "action": "token_created",
+      "at": "2026-06-11T16:35:55.654Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "Tester: steve"
+    },
+    {
+      "id": "aud_7f9d081891c1a166",
+      "action": "token_created",
+      "at": "2026-06-11T16:29:19.506Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "Tester: m4rc0c3l4"
+    },
+    {
+      "id": "aud_495a2f074e62051c",
+      "action": "token_created",
+      "at": "2026-06-11T16:28:52.608Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "Tester: tsasdadasd"
+    },
+    {
+      "id": "aud_009e79de54baba3b",
+      "action": "user_deleted",
+      "at": "2026-06-11T16:13:29.309Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "xxa:usr_246932f59992173b"
+    },
+    {
+      "id": "aud_e4a0b5f078a887e3",
+      "action": "user_created",
+      "at": "2026-06-11T16:13:01.687Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "xxa"
+    },
+    {
+      "id": "aud_28c6c5aeb58d6ef3",
+      "action": "user_deleted",
+      "at": "2026-06-11T16:07:26.423Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "celada:usr_805d31d1ee7a482b"
+    },
+    {
+      "id": "aud_167e468581b18ef3",
+      "action": "user_deleted",
+      "at": "2026-06-11T16:01:52.819Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "papa:usr_bc31221c521524b8"
+    },
+    {
+      "id": "aud_2d5b9e18a5a37997",
+      "action": "user_restored",
+      "at": "2026-06-11T15:59:00.279Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "usr_bc31221c521524b8"
+    },
+    {
+      "id": "aud_f9441cbc5fd22a22",
+      "action": "user_revoked",
+      "at": "2026-06-11T15:57:25.713Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "usr_bc31221c521524b8"
+    },
+    {
+      "id": "aud_fb8e09440cd22c61",
+      "action": "user_restored",
+      "at": "2026-06-11T15:57:15.924Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "usr_bc31221c521524b8"
+    },
+    {
+      "id": "aud_e999bc975ff9eee6",
+      "action": "user_revoked",
+      "at": "2026-06-11T15:57:04.817Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "usr_bc31221c521524b8"
+    },
+    {
+      "id": "aud_fd6bf8b0bdb2f1ca",
+      "action": "token_created",
+      "at": "2026-06-11T15:51:22.728Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "Cuenta marco"
+    },
+    {
+      "id": "aud_83f62fe76ef83b17",
+      "action": "user_created",
+      "at": "2026-06-11T15:51:19.104Z",
+      "ipHint": "::ffff:192.168.100.69",
+      "meta": "marco"
+    },
+    {
+      "id": "aud_a6ef43c9fd55ca3d",
+      "action": "admin_login",
+      "at": "2026-06-11T15:47:19.076Z",
+      "ipHint": "::ffff:192.168.100.69"
+    },
     {
       "id": "aud_2bf7ec270ec4d3a0",
       "action": "admin_login",
@@ -1215,5 +1728,6 @@
       "at": "2026-05-30T00:34:11.009Z",
       "meta": "unknown"
     }
-  ]
+  ],
+  "testerModeEnabled": false
 }

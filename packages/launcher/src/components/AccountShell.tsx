@@ -44,8 +44,6 @@ async function executeAccountAction(el: HubElement) {
   }
   if (el.action === "logout") {
     useAuthStore.getState().logout();
-    void getLauncherApi()?.focusMainWindow?.();
-    void getLauncherApi()?.close();
     return;
   }
   if (el.action === "instances") {

@@ -69,6 +69,8 @@ export interface LauncherDesktopApi {
     username?: string | null;
   }) => Promise<void>;
   clearAuth?: () => Promise<void>;
+  broadcastLogout?: () => Promise<boolean>;
+  onAuthLoggedOut?: (callback: () => void) => () => void;
   getSettings?: () => Promise<LauncherSettings>;
   getDisplayWorkArea?: () => Promise<{ width: number; height: number; x: number; y: number }>;
   saveSettings?: (patch: Partial<LauncherSettings>) => Promise<LauncherSettings>;

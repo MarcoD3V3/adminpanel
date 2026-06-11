@@ -24,6 +24,7 @@ import { LaunchProgressPanel } from "./LaunchProgressPanel";
 import { ModsPanel } from "./ModsPanel";
 import { PlayerSkinPanel } from "./PlayerSkinPanel";
 import { useLauncherDataStore } from "@/lib/launcher-data-store";
+import { useAuthStore } from "@/lib/auth-store";
 import { getAdminApiSource, getAdminApiUrl } from "@/lib/config";
 
 export function LauncherShell() {
@@ -77,7 +78,10 @@ export function LauncherShell() {
       .catch(() => undefined);
   }, []);
 
+  const authStatus = useAuthStore((s) => s.status);
+
   useEffect(() => {
+    if (authStatus !== "ready") return;
     void launcherActions.pollNotifications();
     void launcherActions.sendHeartbeat();
     const pollTimer = setInterval(() => void launcherActions.pollNotifications(), 5_000);
@@ -86,7 +90,7 @@ export function LauncherShell() {
       clearInterval(pollTimer);
       clearInterval(heartbeatTimer);
     };
-  }, []);
+  }, [authStatus]);
 
   useEffect(() => {
     const handler = (event: Event) => {
