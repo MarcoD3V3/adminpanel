@@ -1,4 +1,4 @@
-import type { LauncherTier } from "@craftlauncher/shared";
+import type { LauncherTier, ProfilePlanId } from "@craftlauncher/shared";
 
 export type { LauncherTier };
 
@@ -37,7 +37,7 @@ export type LauncherUserRecord = {
   username: string;
   displayName?: string;
   passwordHash: string;
-  tier: LauncherTier;
+  tier: ProfilePlanId;
   email?: string;
   notes?: string;
   referralCode?: string;

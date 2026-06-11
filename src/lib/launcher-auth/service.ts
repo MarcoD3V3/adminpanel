@@ -49,6 +49,12 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
+function resolveSessionTier(raw?: string | null): LauncherTier {
+  if (isTesterTier(raw)) return "tester";
+  if (isPremiumPlan(raw ?? "")) return "premium";
+  return normalizeLauncherTier(raw);
+}
+
 function isExpired(iso: string): boolean {
   return Date.parse(iso) < Date.now();
 }
@@ -311,6 +317,7 @@ async function createSessionForDevice(
   const sessionId = generateId("ses");
   const expiresAt = new Date(Date.now() + SESSION_TTL_MS).toISOString();
   const ts = nowIso();
+  const tier = resolveSessionTier(meta.tier);
 
   await mutateAuthStore((s) => {
     s.sessions.push({
@@ -321,7 +328,7 @@ async function createSessionForDevice(
       label: meta.label,
       userId: meta.userId,
       username: meta.username,
-      tier: meta.tier ?? "free",
+      tier,
       createdAt: ts,
       expiresAt,
       lastSeenAt: ts,
@@ -329,8 +336,6 @@ async function createSessionForDevice(
       ipHint: ip,
     });
   });
-
-  const tier = normalizeLauncherTier(meta.tier);
   const username = meta.username?.trim() || undefined;
   return {
     sessionToken,
