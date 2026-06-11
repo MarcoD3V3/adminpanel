@@ -9,6 +9,7 @@ import {
   verifyRequestSession,
 } from "@/lib/launcher-auth/service";
 import { corsHeaders, jsonWithCors, optionsResponse } from "@/lib/launcher-auth/http";
+import { requireAdminSession } from "@/lib/launcher-auth/require-admin";
 
 const LAYOUT_FILE = path.join(process.cwd(), "data", "hub-layout.json");
 
@@ -117,6 +118,9 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const denied = await requireAdminSession();
+  if (denied) return denied;
+
   const origin = request.headers.get("origin");
   try {
     const body: unknown = await request.json();

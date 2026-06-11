@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { NextResponse } from "next/server";
 import { jsonWithCors, optionsResponse } from "@/lib/launcher-auth/http";
+import { requireAdminSession } from "@/lib/launcher-auth/require-admin";
 
 const SETTINGS_FILE = path.join(process.cwd(), "data", "catalog-settings.json");
 
@@ -39,6 +40,9 @@ export async function GET(request: Request) {
 }
 
 export async function PUT(request: Request) {
+  const denied = await requireAdminSession();
+  if (denied) return denied;
+
   const body = (await request.json().catch(() => ({}))) as { settings?: CatalogSettings };
   const next: CatalogSettings = {
     featuredTabLabel:

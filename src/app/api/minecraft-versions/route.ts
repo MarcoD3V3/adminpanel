@@ -6,6 +6,7 @@ import {
   mergeVersionRegistry,
   type MinecraftVersionProfile,
 } from "@/lib/minecraft-versions";
+import { requireAdminSession } from "@/lib/launcher-auth/require-admin";
 
 const FILE = path.join(process.cwd(), "data", "minecraft-versions.json");
 
@@ -47,6 +48,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const denied = await requireAdminSession();
+  if (denied) return denied;
+
   try {
     const body = (await request.json()) as { versions?: RegistryFile["versions"] };
     if (!body?.versions || !Array.isArray(body.versions)) {

@@ -2,8 +2,12 @@ import { NextResponse } from "next/server";
 import type { NotificationDisplay, NotificationStyle } from "@craftlauncher/shared";
 import { createNotification, listNotifications } from "@/lib/launcher-notifications/service";
 import type { NotificationTarget } from "@/lib/launcher-notifications/store";
+import { requireAdminSession } from "@/lib/launcher-auth/require-admin";
 
 export async function GET() {
+  const denied = await requireAdminSession();
+  if (denied) return denied;
+
   const notifications = await listNotifications();
   return NextResponse.json({
     notifications: notifications.map((n) => ({
@@ -21,6 +25,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const denied = await requireAdminSession();
+  if (denied) return denied;
+
   const body = (await request.json()) as {
     title?: string;
     message?: string;

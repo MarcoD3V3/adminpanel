@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { FeaturedModpack } from "@craftlauncher/shared";
 import { jsonWithCors, optionsResponse } from "@/lib/launcher-auth/http";
+import { requireAdminSession } from "@/lib/launcher-auth/require-admin";
 
 const DATA_FILE = path.join(process.cwd(), "data", "modpacks.json");
 
@@ -44,6 +45,9 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const denied = await requireAdminSession();
+  if (denied) return denied;
+
   const body = (await request.json()) as FeaturedModpack;
   const modpacks = readModpacks();
   const idx = modpacks.findIndex((m) => m.id === body.id);
@@ -54,6 +58,9 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
+  const denied = await requireAdminSession();
+  if (denied) return denied;
+
   const body = await request.json();
   if (!Array.isArray(body.modpacks)) {
     return NextResponse.json({ error: "modpacks array required" }, { status: 400 });
@@ -63,6 +70,9 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const denied = await requireAdminSession();
+  if (denied) return denied;
+
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });

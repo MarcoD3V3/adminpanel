@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { mkdir, readdir, writeFile } from "fs/promises";
 import path from "path";
 import type { HubLayout } from "@/types/hub-builder";
+import { requireAdminSession } from "@/lib/launcher-auth/require-admin";
 
 const DIR = path.join(process.cwd(), "data", "hub-layouts");
 
@@ -12,12 +13,18 @@ function safeName(name: string) {
 }
 
 export async function GET() {
+  const denied = await requireAdminSession();
+  if (denied) return denied;
+
   await mkdir(DIR, { recursive: true });
   const files = (await readdir(DIR)).filter((f) => f.toLowerCase().endsWith(".json"));
   return NextResponse.json({ files: files.map((f) => f.replace(/\.json$/i, "")) });
 }
 
 export async function POST(request: Request) {
+  const denied = await requireAdminSession();
+  if (denied) return denied;
+
   await mkdir(DIR, { recursive: true });
   const body = (await request.json()) as { name?: string; layout?: HubLayout };
   const name = body.name ? safeName(body.name) : null;

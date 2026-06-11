@@ -6,6 +6,7 @@ import {
   loadingUiFileForVersion,
   normalizeMcVersionParam,
 } from "@/lib/versioned-ui-paths";
+import { requireAdminSession } from "@/lib/launcher-auth/require-admin";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -114,6 +115,9 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const denied = await requireAdminSession();
+  if (denied) return denied;
+
   try {
     const mcVersion = normalizeMcVersionParam(new URL(request.url).searchParams.get("version"));
     const body: unknown = await request.json();

@@ -122,7 +122,7 @@ export function ProfileAdminPanel() {
   const [sessions, setSessions] = useState<ProfileSession[]>([]);
   const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
   const [stats, setStats] = useState<OverviewStats | null>(null);
-  const [authenticated, setAuthenticated] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
