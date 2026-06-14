@@ -10,6 +10,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { findLocalJava } from "./find-local-java.mjs";
 import { ALL_MOD_MC_VERSIONS, modConfigFor } from "./mod-version-config.mjs";
+import { repairModProject } from "./scaffold-client-mod.mjs";
+import { applyPortMod119, applyPortMod120 } from "./port-mod-120.mjs";
+import { syncModernCraftMenu } from "./sync-modern-craftmenu.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -26,52 +29,47 @@ function run(cmd, args, cwd, opts = {}) {
   return r.status ?? 1;
 }
 
-async function download(url, dest) {
-  fs.mkdirSync(path.dirname(dest), { recursive: true });
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status} al descargar ${url}`);
-  const buf = Buffer.from(await res.arrayBuffer());
-  fs.writeFileSync(dest, buf);
+function wrapperTemplateDir(gradleVersion) {
+  const legacy = String(gradleVersion).startsWith("7");
+  return path.join(
+    root,
+    "packages",
+    legacy ? "craftlauncher-client-mod-1.16.5" : "craftlauncher-loading-mod"
+  );
 }
 
-async function ensureGradleWrapper(modDir, gradleVersion) {
-  const WRAPPER_BASE = `https://raw.githubusercontent.com/gradle/gradle/v${gradleVersion}`;
-  const wrapperDir = path.join(modDir, "gradle", "wrapper");
-  const jarPath = path.join(wrapperDir, "gradle-wrapper.jar");
-  const propsPath = path.join(wrapperDir, "gradle-wrapper.properties");
-  const isWin = process.platform === "win32";
-  const gradlewPath = path.join(modDir, isWin ? "gradlew.bat" : "gradlew");
+/** Copia gradlew + wrapper desde un proyecto que ya compila (evita URLs rotas de GitHub). */
+function syncGradleWrapper(modDir, gradleVersion) {
+  const template = wrapperTemplateDir(gradleVersion);
+  const distUrl =
+    gradleVersion === "8.8" || gradleVersion === "8.8.0"
+      ? "https\\://services.gradle.org/distributions/gradle-8.8-bin.zip"
+      : `https\\://services.gradle.org/distributions/gradle-${gradleVersion}-bin.zip`;
 
-  const distUrl = `https\\://services.gradle.org/distributions/gradle-${gradleVersion}-bin.zip`;
-
-  if (!fs.existsSync(propsPath)) {
-    fs.mkdirSync(wrapperDir, { recursive: true });
-    fs.writeFileSync(
-      propsPath,
-      [
-        "distributionBase=GRADLE_USER_HOME",
-        "distributionPath=wrapper/dists",
-        `distributionUrl=${distUrl}`,
-        "networkTimeout=10000",
-        "validateDistributionUrl=true",
-        "zipStoreBase=GRADLE_USER_HOME",
-        "zipStorePath=wrapper/dists",
-        "",
-      ].join("\n"),
-      "utf-8"
-    );
+  for (const rel of ["gradlew", "gradlew.bat", "gradle/wrapper/gradle-wrapper.jar"]) {
+    const src = path.join(template, rel);
+    const dest = path.join(modDir, rel);
+    if (!fs.existsSync(src)) continue;
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.copyFileSync(src, dest);
   }
 
-  if (!fs.existsSync(jarPath)) {
-    console.log("Descargando gradle-wrapper.jar…");
-    await download(`${WRAPPER_BASE}/gradle/wrapper/gradle-wrapper.jar`, jarPath);
-  }
-
-  if (!fs.existsSync(gradlewPath)) {
-    console.log(`Descargando ${path.basename(gradlewPath)}…`);
-    await download(`${WRAPPER_BASE}/${path.basename(gradlewPath)}`, gradlewPath);
-    if (!isWin) fs.chmodSync(gradlewPath, 0o755);
-  }
+  const propsPath = path.join(modDir, "gradle/wrapper/gradle-wrapper.properties");
+  fs.mkdirSync(path.dirname(propsPath), { recursive: true });
+  fs.writeFileSync(
+    propsPath,
+    [
+      "distributionBase=GRADLE_USER_HOME",
+      "distributionPath=wrapper/dists",
+      `distributionUrl=${distUrl}`,
+      "networkTimeout=10000",
+      "validateDistributionUrl=true",
+      "zipStoreBase=GRADLE_USER_HOME",
+      "zipStorePath=wrapper/dists",
+      "",
+    ].join("\n"),
+    "utf-8"
+  );
 }
 
 async function buildOne(mcVersion) {
@@ -102,7 +100,18 @@ Define JAVA_HOME o instala Java ${project.java}, luego vuelve a ejecutar:
   console.log(`Usando Java ${java.major}: ${java.path}`);
   console.log(`Proyecto mod: ${project.dir}`);
 
-  await ensureGradleWrapper(modDir, project.gradle);
+  if (!repairModProject(mcVersion)) {
+    console.error(`No se pudo reparar el proyecto ${project.dir}`);
+    return 1;
+  }
+
+  if (["1.19.2", "1.20.1", "1.21.1"].includes(mcVersion)) {
+    syncModernCraftMenu([mcVersion]);
+    if (mcVersion === "1.19.2") applyPortMod119(mcVersion);
+    if (mcVersion === "1.20.1" || mcVersion === "1.21.1") applyPortMod120(mcVersion);
+  }
+
+  syncGradleWrapper(modDir, project.gradle);
 
   const isWin = process.platform === "win32";
   const gradlew = path.join(modDir, isWin ? "gradlew.bat" : "gradlew");

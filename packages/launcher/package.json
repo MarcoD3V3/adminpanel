@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "electron:dev": "node scripts/free-port.mjs 1420 && concurrently -k \"vite\" \"wait-on http://localhost:1420 && nodemon --watch electron --ext mjs --exec electron .\"",
     "electron:dev:prod": "node scripts/run-electron-dev.mjs --prod-api",
-    "electron:build": "node scripts/clean-release.mjs && npm run build && electron-builder --win"
+    "electron:build": "node scripts/write-app-config.mjs && node scripts/clean-release.mjs && npm run build && electron-builder --win"
   },
   "dependencies": {
     "@craftlauncher/shared": "*",

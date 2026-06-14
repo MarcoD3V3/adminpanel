@@ -1,8 +1,9 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { LauncherAuthStore } from "./types";
+import { dataPath } from "@/lib/data-dir";
 
-const AUTH_FILE = path.join(process.cwd(), "data", "launcher-auth.json");
+const AUTH_FILE = dataPath("launcher-auth.json");
 
 const EMPTY: LauncherAuthStore = { activationTokens: [], sessions: [], users: [] };
 

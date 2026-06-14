@@ -77,11 +77,24 @@ export async function POST(request: Request) {
       },
       presence.id
     );
+    const { emitSystemEvent } = await import("@/lib/system-events");
+    emitSystemEvent("liveops.alert", {
+      action: "message",
+      username: presence.username,
+      deviceId: presence.deviceId,
+      message,
+    });
     return jsonSecure({ success: true, message: "Mensaje enviado" });
   }
 
   if (body.action === "restart") {
     await enqueueCommand(presence.deviceId, { type: "restart" }, presence.id);
+    const { emitSystemEvent } = await import("@/lib/system-events");
+    emitSystemEvent("liveops.alert", {
+      action: "restart",
+      username: presence.username,
+      deviceId: presence.deviceId,
+    });
     return jsonSecure({ success: true, message: "Reinicio encolado" });
   }
 
@@ -97,6 +110,13 @@ export async function POST(request: Request) {
     }
     await revokeSession(presence.id, ip);
     await removePresenceByDevice(presence.deviceId);
+    const { emitSystemEvent } = await import("@/lib/system-events");
+    emitSystemEvent("user.ban", {
+      userId: presence.userId,
+      username: presence.username,
+      deviceId: presence.deviceId,
+      source: "live_ops",
+    });
     return jsonSecure({
       success: true,
       message: presence.userId

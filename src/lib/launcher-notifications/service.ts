@@ -15,7 +15,9 @@ export type CreateNotificationInput = {
   targetDevices?: string[];
 };
 
-export async function createNotification(input: CreateNotificationInput): Promise<StoredNotification> {
+export async function createNotification(input: CreateNotificationInput): Promise<StoredNotification | null> {
+  const { loadSystemSettings } = await import("@/lib/settings/store");
+  if (!loadSystemSettings().features.notificationsEnabled) return null;
   const record: StoredNotification = {
     id: id(),
     title: input.title.trim(),
@@ -30,6 +32,14 @@ export async function createNotification(input: CreateNotificationInput): Promis
 
   await mutateNotificationStore((store) => {
     store.items.unshift(record);
+  });
+
+  const { emitSystemEvent } = await import("@/lib/system-events");
+  emitSystemEvent("notification.sent", {
+    title: record.title,
+    message: record.message,
+    target: record.target,
+    style: record.style,
   });
 
   return record;

@@ -83,7 +83,7 @@ export async function fetchAdminCached<T>(opts: FetchAdminCachedOptions<T>): Pro
   if (cached) {
     const age = Date.now() - cached.savedAt;
     if (age <= maxAgeMs) {
-      void revalidate();
+      void revalidate().catch(() => {});
       return cached.data;
     }
   }

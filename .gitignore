@@ -43,3 +43,33 @@ packages/launcher/dist/
 
 # web
 packages/web
+
+# base de datos interna (SQLite + WAL)
+/data/craftlauncher.db
+/data/craftlauncher.db-wal
+/data/craftlauncher.db-shm
+
+# craft launcher
+/craftlauncher.db
+/craftlauncher.db-wal
+/craftlauncher.db-shm
+
+# craft launcher desktop
+/craftlauncher-desktop.db
+/craftlauncher-desktop.db-wal
+/craftlauncher-desktop.db-shm
+
+# user web (proyecto separado; no versionar en este repo)
+/packages/user_web/
+/craftlauncher-user-web.db
+/craftlauncher-user-web.db-wal
+/craftlauncher-user-web.db-shm
+
+# gradle / builds de mods Minecraft
+**/.gradle/
+packages/craftlauncher-*/build/
+packages/craftlauncher-loading-mod/build/
+
+# vite cache del launcher
+packages/launcher/node_modules/
+

@@ -16,6 +16,8 @@
     "launcher:build": "npm run electron:build -w craftlauncher-desktop",
     "web:dev": "npm run dev -w craftlauncher-web",
     "web:build": "npm run build -w craftlauncher-web",
+    "user-web:dev": "npm run dev -w craftlauncher-user-web",
+    "user-web:build": "npm run build -w craftlauncher-user-web",
     "build:client-mod": "node scripts/build-loading-mod.mjs",
     "build:client-mod:all": "node scripts/build-loading-mod.mjs --all",
     "scaffold:client-mod": "node scripts/scaffold-client-mod.mjs --all",
@@ -24,6 +26,7 @@
   },
   "dependencies": {
     "@craftlauncher/shared": "*",
+    "better-sqlite3": "^12.10.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.511.0",
@@ -37,6 +40,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.1.8",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.15.29",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.5",

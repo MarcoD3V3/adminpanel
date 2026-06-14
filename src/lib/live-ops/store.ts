@@ -1,9 +1,8 @@
 import fs from "node:fs";
-import path from "node:path";
 import type { RemoteCommand } from "@craftlauncher/shared";
+import { dataPath, getDataDir } from "@/lib/data-dir";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const STORE_FILE = path.join(DATA_DIR, "live-ops.json");
+const STORE_FILE = dataPath("live-ops.json");
 
 export type LivePresenceRecord = {
   id: string;
@@ -45,7 +44,7 @@ type LiveOpsStore = {
 };
 
 function ensureDir() {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+  fs.mkdirSync(getDataDir(), { recursive: true });
 }
 
 function defaultStore(): LiveOpsStore {

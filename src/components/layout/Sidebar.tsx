@@ -2,11 +2,9 @@
 
 
 
-import { useTransition } from "react";
-
 import Link from "next/link";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 import {
 
@@ -175,26 +173,9 @@ export function Sidebar() {
 
   const pathname = usePathname();
 
-  const router = useRouter();
-
   const { sidebarOpen, toggleSidebar } = useAdminStore();
 
-  const [, startTransition] = useTransition();
   const testerModeEnabled = useTesterModeEnabled();
-
-
-
-  const navigate = (href: AdminRoute) => {
-
-    if (href === pathname) return;
-
-    startTransition(() => {
-
-      router.push(href, { scroll: false });
-
-    });
-
-  };
 
 
 
@@ -270,14 +251,6 @@ export function Sidebar() {
 
                     prefetch={false}
                     scroll={false}
-
-                    onClick={(e) => {
-
-                      e.preventDefault();
-
-                      navigate(href);
-
-                    }}
 
                     title={label}
 

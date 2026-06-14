@@ -57,6 +57,15 @@ export function AuthGate({ children }: AuthGateProps) {
     if (parsed.nombre) setUsername(parsed.nombre);
     if (hasPassword) setPassword(parsed.contraseña!);
 
+    if (parsed.acceso_portal?.trim()) {
+      setAuthMode("account");
+      setTokenInput("");
+      setPasteHint(
+        `Perfil «${parsed.nombre ?? "—"}» detectado con acceso_portal cifrado. Entra en Player Portal (user_web), no en el launcher.`
+      );
+      return true;
+    }
+
     // Perfil con usuario + contraseña → siempre pestaña Cuenta (no modo testeo)
     if (hasPassword) {
       setAuthMode("account");

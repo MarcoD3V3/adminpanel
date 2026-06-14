@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { NotificationDisplay, NotificationStyle } from "@craftlauncher/shared";
+import { dataPath } from "@/lib/data-dir";
 
 export type NotificationTarget = "all" | "online" | "premium" | "specific";
 
@@ -20,7 +21,7 @@ export type NotificationStore = {
   items: StoredNotification[];
 };
 
-const FILE = path.join(process.cwd(), "data", "launcher-notifications.json");
+const FILE = dataPath("launcher-notifications.json");
 const EMPTY: NotificationStore = { items: [] };
 const MAX_ITEMS = 200;
 

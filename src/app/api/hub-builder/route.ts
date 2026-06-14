@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { mkdir, readFile, rename, writeFile } from "fs/promises";
 import path from "path";
+import { dataPath } from "@/lib/data-dir";
+import { remoteGetPublishedLayout, remotePublishLayout, usesRemoteHubData } from "@/lib/hub-data-authority";
 import { defaultHubLayout } from "@/lib/hub-builder-data";
 import type { HubLayout } from "@/types/hub-builder";
 import { ensureAccountProfileScreen, normalizePerScreenChromeLayout } from "@craftlauncher/shared";
@@ -9,14 +11,14 @@ import {
   verifyRequestSession,
 } from "@/lib/launcher-auth/service";
 import { corsHeaders, jsonWithCors, optionsResponse } from "@/lib/launcher-auth/http";
-import { requireAdminSession } from "@/lib/launcher-auth/require-admin";
+import { requireAdminAccess, requireAdminSession } from "@/lib/launcher-auth/require-admin";
 import {
   parseStoredLayoutFile,
   signHubLayout,
   serializeSignedDocument,
 } from "@/lib/hub-layout-signing";
 
-const LAYOUT_FILE = path.join(process.cwd(), "data", "hub-layout.json");
+const LAYOUT_FILE = dataPath("hub-layout.json");
 
 function isHubLayout(value: unknown): value is HubLayout {
   if (!value || typeof value !== "object") return false;
@@ -86,7 +88,7 @@ async function readSavedLayout(): Promise<HubLayout | null> {
   }
 }
 
-async function requireLauncherSession(request: Request, origin: string | null) {
+async function requireHubLayoutReadAccess(request: Request, origin: string | null) {
   if (!isLauncherAuthEnforced()) return null;
 
   const result = await verifyRequestSession(
@@ -95,15 +97,17 @@ async function requireLauncherSession(request: Request, origin: string | null) {
     request.headers.get("x-device-fingerprint")
   );
 
-  if (!result.valid) {
-    return jsonWithCors(
-      { error: "Sesión inválida. Activa el launcher con un token.", reason: result.reason },
-      { status: 401 },
-      origin
-    );
-  }
+  if (result.valid) return null;
 
-  return null;
+  // El editor admin (misma sesión del panel) también puede leer el layout publicado.
+  const adminDenied = await requireAdminSession();
+  if (!adminDenied) return null;
+
+  return jsonWithCors(
+    { error: "Sesión inválida. Activa el launcher con un token.", reason: result.reason },
+    { status: 401 },
+    origin
+  );
 }
 
 export async function OPTIONS(request: Request) {
@@ -112,10 +116,16 @@ export async function OPTIONS(request: Request) {
 
 export async function GET(request: Request) {
   const origin = request.headers.get("origin");
-  const denied = await requireLauncherSession(request, origin);
+  const denied = await requireHubLayoutReadAccess(request, origin);
   if (denied) return denied;
 
-  const saved = await readSavedLayout();
+  let saved: HubLayout | null = null;
+  if (usesRemoteHubData()) {
+    saved = await remoteGetPublishedLayout();
+  }
+  if (!saved) {
+    saved = await readSavedLayout();
+  }
   const layout = ensureAccountProfileScreen(saved ?? defaultHubLayout);
   const res = NextResponse.json({ layout });
   const cors = corsHeaders(origin);
@@ -124,12 +134,14 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const denied = await requireAdminSession();
+  const denied = await requireAdminAccess(request);
   if (denied) return denied;
 
   const origin = request.headers.get("origin");
   try {
     const body: unknown = await request.json();
+    const { auditAdminRequest } = await import("@/lib/security/guard");
+    await auditAdminRequest(request, body);
     if (!isHubLayout(body)) {
       return jsonWithCors({ success: false, message: "Layout inválido" }, { status: 400 }, origin);
     }
@@ -148,10 +160,29 @@ export async function POST(request: Request) {
       );
     }
 
-    await mkdir(path.dirname(LAYOUT_FILE), { recursive: true });
-    const tmp = `${LAYOUT_FILE}.tmp`;
-    await writeFile(tmp, serializeSignedDocument(signed), "utf-8");
-    await rename(tmp, LAYOUT_FILE);
+    if (usesRemoteHubData()) {
+      const ok = await remotePublishLayout(layout);
+      if (!ok) {
+        return jsonWithCors(
+          { success: false, message: "No se pudo publicar en el servidor Railway" },
+          { status: 502 },
+          origin
+        );
+      }
+    } else {
+      await mkdir(path.dirname(LAYOUT_FILE), { recursive: true });
+      const tmp = `${LAYOUT_FILE}.tmp`;
+      await writeFile(tmp, serializeSignedDocument(signed), "utf-8");
+      await rename(tmp, LAYOUT_FILE);
+    }
+
+    const { emitSystemEvent } = await import("@/lib/system-events");
+    emitSystemEvent("hub.published", {
+      screens: layout.screens.length,
+      layoutId: layout.id,
+      updatedAt: layout.updatedAt,
+    });
+
     return jsonWithCors(
       { success: true, message: "Layout del hub guardado", layout },
       { status: 200 },

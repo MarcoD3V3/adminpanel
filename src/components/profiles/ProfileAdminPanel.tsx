@@ -29,11 +29,15 @@ import {
   formatExpiresIn,
   formatRelativeTime,
   isExpired,
+  formatDate,
 } from "@/lib/utils";
 import {
   AlertTriangle,
+  Clock,
   Copy,
+  Globe,
   ImageIcon,
+  FlaskConical,
   KeyRound,
   LogOut,
   Monitor,
@@ -47,6 +51,8 @@ import {
   Users,
   Wifi,
   Wand2,
+  Zap,
+  Dices,
 } from "lucide-react";
 import Link from "next/link";
 import { formatModerationReport } from "@/lib/launcher-auth/profile-moderation";
@@ -60,6 +66,12 @@ import {
 } from "@craftlauncher/shared";
 import { copyTextToClipboard } from "@/lib/clipboard";
 import { reportAppError } from "@/lib/app-errors-store";
+import type { SessionClientKind } from "@/lib/launcher-auth/types";
+import {
+  describeSessionActivity,
+  formatSessionIp,
+  SESSION_PLATFORM_LABELS,
+} from "@/components/profiles/session-display";
 
 type ProfileUser = {
   id: string;
@@ -69,6 +81,9 @@ type ProfileUser = {
   email?: string;
   notes?: string;
   referralCode?: string;
+  portalAccessSealed?: string;
+  temporaryExpiresAt?: string;
+  singleUse?: boolean;
   createdAt: string;
   revoked: boolean;
   lastLoginAt?: string;
@@ -81,6 +96,13 @@ type ProfileUser = {
 type CreatedProfileBundle = ProfileClipboardData & {
   username: string;
   password: string;
+  temporaryExpiresAt?: string;
+  singleUse?: boolean;
+};
+
+type ClipboardSecrets = {
+  password?: string;
+  activationToken?: string;
 };
 
 function buildClipboardPayload(
@@ -90,6 +112,7 @@ function buildClipboardPayload(
   return {
     nombre: user.username,
     contraseña: extras?.password,
+    acceso_portal: user.portalAccessSealed,
     nombre_visible: user.displayName ?? user.username,
     plan: profilePlanLabel(user.tier ?? "free"),
     codigo: extras?.activationToken,
@@ -98,6 +121,21 @@ function buildClipboardPayload(
     notas: user.notes,
     referido: user.referralCode,
   };
+}
+
+function clipboardCopyHint(data: ProfileClipboardData, hasPortalSealed: boolean): string {
+  const fields = [
+    data.contraseña ? "contraseña" : null,
+    data.codigo ? "código" : null,
+    data.acceso_portal ? "acceso_portal" : null,
+  ].filter(Boolean);
+  if (!fields.length) {
+    return "Perfil copiado sin contraseña ni código. Resetea la contraseña o vuelve a crear el token.";
+  }
+  if (hasPortalSealed && data.acceso_portal) {
+    return `Bloque copiado (${fields.join(", ")} + acceso_portal). Pégalo en el launcher.`;
+  }
+  return `Bloque copiado (${fields.join(", ")}). Pégalo en el launcher.`;
 }
 
 async function copyProfileData(data: ProfileClipboardData): Promise<boolean> {
@@ -117,7 +155,15 @@ type ProfileSession = {
   revoked: boolean;
   ipHint?: string;
   fingerprintPrefix?: string;
+  clientKind?: SessionClientKind;
+  lastClientKind?: SessionClientKind;
 };
+
+function sessionPlatformIcon(kind: SessionClientKind) {
+  if (kind === "portal") return Globe;
+  if (kind === "tester") return FlaskConical;
+  return Monitor;
+}
 
 type AuditEntry = {
   id: string;
@@ -136,13 +182,78 @@ type OverviewStats = {
   launchersOnline?: number;
 };
 
+const USERNAME_RE = /^[a-z0-9][a-z0-9._-]{2,31}$/i;
+
+const RANDOM_ADJECTIVES = [
+  "swift", "lucky", "neon", "pixel", "cosmic", "nova", "zen", "crimson", "frost", "amber",
+  "shadow", "ember", "crystal", "turbo", "silent", "brave", "wild", "solar", "lunar", "mint",
+];
+const RANDOM_NOUNS = [
+  "fox", "wolf", "star", "blade", "storm", "spark", "hawk", "lynx", "comet", "drift",
+  "pixel", "nexus", "forge", "rune", "volt", "echo", "prism", "orbit", "flare", "mint",
+];
+const RANDOM_DISPLAY_PREFIX = ["Player", "Guest", "Explorer", "Ranger", "Scout", "Pilot", "Hero"];
+
+function randomPick<T>(items: readonly T[]): T {
+  return items[Math.floor(Math.random() * items.length)]!;
+}
+
+function randomHex(length: number): string {
+  const bytes = new Uint8Array(length);
+  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+    crypto.getRandomValues(bytes);
+  } else {
+    for (let i = 0; i < length; i++) bytes[i] = Math.floor(Math.random() * 256);
+  }
+  return Array.from(bytes, (b) => (b % 16).toString(16)).join("");
+}
+
+function isValidRandomUsername(value: string): boolean {
+  return USERNAME_RE.test(value.trim());
+}
+
+function buildRandomUsername(taken: Set<string>): string {
+  const factories = [
+    () => `${randomPick(RANDOM_ADJECTIVES)}_${randomPick(RANDOM_NOUNS)}${Math.floor(Math.random() * 900 + 100)}`,
+    () => `guest_${randomHex(4)}`,
+    () => `player_${randomHex(5)}`,
+    () => `test_${randomHex(4)}`,
+  ];
+  for (let attempt = 0; attempt < 24; attempt++) {
+    const candidate = randomPick(factories)().toLowerCase().slice(0, 32);
+    if (isValidRandomUsername(candidate) && !taken.has(candidate)) return candidate;
+  }
+  return `guest_${Date.now().toString(36).slice(-8)}`;
+}
+
+function buildRandomDisplayName(username: string): string {
+  if (Math.random() < 0.45) {
+    return `${randomPick(RANDOM_DISPLAY_PREFIX)} ${Math.floor(Math.random() * 9000 + 1000)}`;
+  }
+  const parts = username.split(/[._-]/).filter(Boolean);
+  if (parts.length >= 2) {
+    return parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(" ");
+  }
+  return username.charAt(0).toUpperCase() + username.slice(1);
+}
+
 const FILTER_OPTIONS = [
   { id: "all", label: "Todos" },
   { id: "live", label: "En vivo" },
   { id: "active", label: "Activos" },
+  { id: "temporary", label: "Temporales" },
+  { id: "singleuse", label: "Un solo uso" },
   { id: "sessions", label: "Con sesión" },
   { id: "skin", label: "Con skin" },
   { id: "revoked", label: "Revocados" },
+];
+
+const TEMPORARY_DURATION_OPTIONS = [
+  { value: 60, label: "1 hora" },
+  { value: 360, label: "6 horas" },
+  { value: 1440, label: "24 horas" },
+  { value: 4320, label: "3 días" },
+  { value: 10080, label: "7 días" },
 ];
 
 const CREATED_SUMMARY_MS = 10_000;
@@ -178,7 +289,13 @@ async function profileAction(body: Record<string, unknown>) {
     body: JSON.stringify(body),
   });
   const raw = await res.text();
-  let data: { success?: boolean; error?: string; count?: number; user?: ProfileUser } = {};
+  let data: {
+    success?: boolean;
+    error?: string;
+    count?: number;
+    user?: ProfileUser & { portalAccessSealed?: string };
+    portalAccessSealed?: string;
+  } = {};
   if (raw.trim()) {
     try {
       data = JSON.parse(raw) as typeof data;
@@ -219,12 +336,48 @@ export function ProfileAdminPanel() {
   const [notes, setNotes] = useState("");
   const [referralCode, setReferralCode] = useState("");
   const [generateTokenOnCreate, setGenerateTokenOnCreate] = useState(true);
+  const [createTemporary, setCreateTemporary] = useState(false);
+  const [temporaryMinutes, setTemporaryMinutes] = useState(1440);
+  const [createSingleUse, setCreateSingleUse] = useState(false);
   const [creating, setCreating] = useState(false);
   const [lastCreated, setLastCreated] = useState<CreatedProfileBundle | null>(null);
   const [copyHint, setCopyHint] = useState<string | null>(null);
   const [moderation, setModeration] = useState<UserModerationIntel[]>([]);
   const [deletingProfile, setDeletingProfile] = useState(false);
   const createdSummaryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clipboardSecretsRef = useRef<Record<string, ClipboardSecrets>>({});
+
+  const rememberClipboardSecrets = useCallback((userId: string, secrets: ClipboardSecrets) => {
+    if (!userId) return;
+    clipboardSecretsRef.current[userId] = {
+      ...clipboardSecretsRef.current[userId],
+      ...secrets,
+    };
+  }, []);
+
+  const resolveClipboardPayload = useCallback(
+    (user: ProfileUser): ProfileClipboardData => {
+      const secrets = clipboardSecretsRef.current[user.id];
+      return buildClipboardPayload(user, {
+        password: secrets?.password,
+        activationToken: secrets?.activationToken,
+      });
+    },
+    []
+  );
+
+  const fillRandomProfile = useCallback(() => {
+    const taken = new Set(users.map((u) => u.username.toLowerCase()));
+    const nextUsername = buildRandomUsername(taken);
+    const nextPassword = generateSecurePassword();
+    setUsername(nextUsername);
+    setDisplayName(buildRandomDisplayName(nextUsername));
+    setPassword(nextPassword);
+    setEmail("");
+    setReferralCode("");
+    setNotes("");
+    setCopyHint("Perfil aleatorio listo. Revisa los datos y pulsa «Crear cuenta».");
+  }, [users]);
 
   const scheduleCreatedSummaryDismiss = useCallback(() => {
     if (createdSummaryTimer.current) clearTimeout(createdSummaryTimer.current);
@@ -272,12 +425,14 @@ export function ProfileAdminPanel() {
   }, []);
 
   useEffect(() => {
-    void refresh();
+    void refresh().catch(() => {});
   }, [refresh]);
 
   useEffect(() => {
     if (filter !== "live") return;
-    const timer = setInterval(() => void refresh(), 12_000);
+    const timer = setInterval(() => {
+      void refresh().catch(() => {});
+    }, 12_000);
     return () => clearInterval(timer);
   }, [filter, refresh]);
 
@@ -297,6 +452,12 @@ export function ProfileAdminPanel() {
     }
     if (filter === "active") list = list.filter((u) => !u.revoked);
     if (filter === "revoked") list = list.filter((u) => u.revoked);
+    if (filter === "temporary") {
+      list = list.filter((u) => u.temporaryExpiresAt && !isExpired(u.temporaryExpiresAt));
+    }
+    if (filter === "singleuse") {
+      list = list.filter((u) => u.singleUse && !u.lastLoginAt);
+    }
     if (filter === "sessions") list = list.filter((u) => u.activeSessionCount > 0);
     if (filter === "skin") list = list.filter((u) => u.hasSkin);
     if (search.trim()) {
@@ -399,6 +560,8 @@ export function ProfileAdminPanel() {
         email: savedEmail,
         notes: savedNotes,
         referralCode: savedReferral,
+        temporaryMinutes: createTemporary ? temporaryMinutes : undefined,
+        singleUse: createSingleUse,
       });
       if (!data.success) {
         reportAppError(data.error ?? "No se pudo crear la cuenta");
@@ -412,6 +575,9 @@ export function ProfileAdminPanel() {
       setNotes("");
       setReferralCode("");
       setTier("free");
+      setCreateTemporary(false);
+      setTemporaryMinutes(1440);
+      setCreateSingleUse(false);
 
       let activationToken: string | undefined;
       if (generateTokenOnCreate) {
@@ -441,33 +607,49 @@ export function ProfileAdminPanel() {
         }
       }
 
-      const createdUser: ProfileUser = data.user ?? {
-        id: "",
-        username: trimmedUsername,
-        displayName: trimmedDisplayName,
-        tier: savedTier,
-        email: savedEmail,
-        notes: savedNotes,
-        referralCode: savedReferral,
-        createdAt: new Date().toISOString(),
-        revoked: false,
-        activeSessionCount: 0,
-        totalSessionCount: 0,
-        hasSkin: false,
-      };
+      const createdUser: ProfileUser = data.user
+        ? {
+            ...data.user,
+            activeSessionCount: 0,
+            totalSessionCount: 0,
+            hasSkin: false,
+          }
+        : {
+            id: "",
+            username: trimmedUsername,
+            displayName: trimmedDisplayName,
+            tier: savedTier,
+            email: savedEmail,
+            notes: savedNotes,
+            referralCode: savedReferral,
+            createdAt: new Date().toISOString(),
+            revoked: false,
+            activeSessionCount: 0,
+            totalSessionCount: 0,
+            hasSkin: false,
+          };
 
       const bundle: CreatedProfileBundle = {
-        ...buildClipboardPayload(createdUser, { password: savedPassword, activationToken }),
+        ...buildClipboardPayload(createdUser, { activationToken, password: savedPassword }),
         username: trimmedUsername,
         password: savedPassword,
+        temporaryExpiresAt: createdUser.temporaryExpiresAt,
+        singleUse: createdUser.singleUse,
       };
+      if (createdUser.id) {
+        rememberClipboardSecrets(createdUser.id, {
+          password: savedPassword,
+          activationToken,
+        });
+        setSelectedId(createdUser.id);
+      }
       setLastCreated(bundle);
       scheduleCreatedSummaryDismiss();
       const copied = await copyProfileData(bundle);
       setCopyHint(
         copied
-          ? "Datos copiados al portapapeles — pégalos en el launcher con «Importar credenciales»."
-          : "Cuenta creada. Selecciona y copia manualmente el bloque de abajo (Ctrl+C)."
+          ? clipboardCopyHint(bundle, Boolean(data.user?.portalAccessSealed))
+          : "Cuenta creada. Usa «Copiar datos» en la ficha o selecciona el bloque verde (Ctrl+C)."
       );
 
       await refresh();
@@ -624,7 +806,9 @@ export function ProfileAdminPanel() {
             <UserPlus className="h-4 w-4" />
             Crear perfil / cuenta
           </CardTitle>
-          <CardDescription>Nueva cuenta de launcher con usuario y contraseña</CardDescription>
+          <CardDescription>
+            Nueva cuenta de launcher. Usa perfil temporal (por tiempo) o de un solo uso (se borra al primer login).
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" onSubmit={(e) => void handleCreate(e)}>
@@ -681,6 +865,63 @@ export function ProfileAdminPanel() {
               />
               Generar token de activación y copiarlo en el bloque de credenciales
             </label>
+            <div className="flex flex-wrap items-center gap-3 sm:col-span-2 lg:col-span-4">
+              <label className="flex items-center gap-2 text-xs text-[var(--color-text-soft)]">
+                <input
+                  type="checkbox"
+                  checked={createTemporary}
+                  onChange={(e) => {
+                    setCreateTemporary(e.target.checked);
+                    if (e.target.checked) setCreateSingleUse(false);
+                  }}
+                  disabled={createSingleUse}
+                  className="rounded border-[var(--color-border)]"
+                />
+                <Clock className="h-3.5 w-3.5 text-amber-400" aria-hidden />
+                Perfil temporal (por tiempo)
+              </label>
+              {createTemporary && (
+                <Select
+                  label=""
+                  value={String(temporaryMinutes)}
+                  onChange={(e) => setTemporaryMinutes(Number(e.target.value))}
+                  options={TEMPORARY_DURATION_OPTIONS.map((o) => ({
+                    value: String(o.value),
+                    label: o.label,
+                  }))}
+                  className="w-40"
+                />
+              )}
+            </div>
+            {createTemporary && (
+              <p className="text-[11px] text-amber-300/90 sm:col-span-2 lg:col-span-4">
+                La cuenta se borrará sola cuando pase el tiempo elegido (usuario, sesiones y skin).
+              </p>
+            )}
+
+            <div className="rounded-xl border border-violet-500/25 bg-violet-500/5 p-4 sm:col-span-2 lg:col-span-4 space-y-2">
+              <div className="flex flex-wrap items-center gap-3">
+                <label className="flex items-center gap-2 text-xs text-[var(--color-text-soft)]">
+                  <input
+                    type="checkbox"
+                    checked={createSingleUse}
+                    onChange={(e) => {
+                      setCreateSingleUse(e.target.checked);
+                      if (e.target.checked) setCreateTemporary(false);
+                    }}
+                    disabled={createTemporary}
+                    className="rounded border-[var(--color-border)]"
+                  />
+                  <Zap className="h-3.5 w-3.5 text-violet-400" aria-hidden />
+                  <span className="font-medium text-violet-200">Perfil de un solo uso</span>
+                </label>
+              </div>
+              <p className="text-[11px] text-violet-200/80 leading-relaxed">
+                Ideal para invitados o pruebas rápidas. Tras el <strong>primer inicio de sesión</strong> exitoso
+                (launcher o Player Portal), la cuenta se elimina automáticamente. La sesión activa sigue funcionando
+                hasta que expire o cierres sesión.
+              </p>
+            </div>
             <div className="flex flex-wrap gap-2 sm:col-span-2 lg:col-span-4">
               <Button
                 type="submit"
@@ -695,6 +936,15 @@ export function ProfileAdminPanel() {
               >
                 <KeyRound className="h-3.5 w-3.5" />
                 {creating ? "Creando…" : "Crear cuenta"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={fillRandomProfile}
+                title="Rellenar usuario, nombre visible y contraseña con datos aleatorios"
+              >
+                <Dices className="h-3.5 w-3.5" />
+                Perfil aleatorio
               </Button>
               <Button
                 type="button"
@@ -725,6 +975,18 @@ export function ProfileAdminPanel() {
                 </p>
                 {lastCreated.codigo && <p className="mt-1">Token: {lastCreated.codigo}</p>}
                 <p className="mt-1">Plan: {lastCreated.plan ?? "Gratis"}</p>
+                {lastCreated.temporaryExpiresAt && (
+                  <p className="mt-1 text-amber-200">
+                    Temporal: {formatExpiresIn(lastCreated.temporaryExpiresAt)} (
+                    {formatDate(lastCreated.temporaryExpiresAt)})
+                  </p>
+                )}
+                {lastCreated.singleUse && (
+                  <p className="mt-1 text-violet-200">Un solo uso: se elimina tras el primer login.</p>
+                )}
+                <pre className="mt-3 whitespace-pre-wrap break-all rounded border border-emerald-500/20 bg-black/40 p-2 text-[10px] leading-relaxed text-emerald-50/80">
+                  {formatProfileClipboard(lastCreated)}
+                </pre>
               </div>
               <Button
                 type="button"
@@ -806,6 +1068,16 @@ export function ProfileAdminPanel() {
                           {user.tier && user.tier !== "free" && (
                             <Badge className={badgeDefault}>{profilePlanLabel(user.tier)}</Badge>
                           )}
+                          {user.temporaryExpiresAt && !isExpired(user.temporaryExpiresAt) && (
+                            <Badge className="bg-amber-500/15 text-amber-200">
+                              Temporal · {formatExpiresIn(user.temporaryExpiresAt)}
+                            </Badge>
+                          )}
+                          {user.singleUse && !user.lastLoginAt && (
+                            <Badge className="bg-violet-500/15 text-violet-200">
+                              Un solo uso · pendiente
+                            </Badge>
+                          )}
                           {user.revoked && <Badge className="bg-red-500/20 text-red-300">Revocado</Badge>}
                           {intel?.launcherOpen && (
                             <Badge className="bg-emerald-500/15 text-emerald-300">En vivo</Badge>
@@ -864,10 +1136,11 @@ export function ProfileAdminPanel() {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      void copyProfileData(buildClipboardPayload(selected)).then((ok) =>
+                      const payload = resolveClipboardPayload(selected);
+                      void copyProfileData(payload).then((ok) =>
                         setCopyHint(
                           ok
-                            ? "Datos del perfil copiados (sin contraseña)."
+                            ? clipboardCopyHint(payload, Boolean(selected.portalAccessSealed))
                             : "No se pudo copiar automáticamente. Usa Ctrl+C sobre el texto."
                         )
                       );
@@ -937,6 +1210,26 @@ export function ProfileAdminPanel() {
                         label: "Riesgo",
                         value: selectedIntel?.riskLevel?.toUpperCase() ?? "—",
                       },
+                      ...(selected.temporaryExpiresAt
+                        ? [
+                            {
+                              label: "Perfil temporal",
+                              value: isExpired(selected.temporaryExpiresAt)
+                                ? "Expirado (pendiente de borrado)"
+                                : `${formatExpiresIn(selected.temporaryExpiresAt)} · ${formatDate(selected.temporaryExpiresAt)}`,
+                            },
+                          ]
+                        : []),
+                      ...(selected.singleUse
+                        ? [
+                            {
+                              label: "Un solo uso",
+                              value: selected.lastLoginAt
+                                ? "Consumido — perfil eliminado tras el login"
+                                : "Pendiente — se elimina al primer login",
+                            },
+                          ]
+                        : []),
                       {
                         label: "IPs conocidas",
                         value: selectedIntel?.knownIps?.join(" · ") || "—",
@@ -1035,37 +1328,121 @@ export function ProfileAdminPanel() {
                   {userSessions.length === 0 ? (
                     <p className="text-sm text-[var(--color-muted)]">Sin sesiones registradas para este usuario.</p>
                   ) : (
-                    <ul className="space-y-2">
+                    <ul className="space-y-3">
                       {userSessions.map((s) => {
                         const active = !s.revoked && !isExpired(s.expiresAt);
                         const urgent = active && expiresWithin(s.expiresAt, 7 * 24 * 60 * 60 * 1000);
+                        const activity = describeSessionActivity(s, selectedIntel?.liveDevices);
+                        const PlatformIcon = sessionPlatformIcon(activity.platform);
+                        const tierLabel = s.tier ? profilePlanLabel(s.tier) : "—";
                         return (
                           <li
                             key={s.id}
-                            className={`rounded-xl border px-3 py-2.5 text-sm ${
+                            className={`rounded-xl border px-4 py-3 text-sm ${
                               active ? "border-[var(--color-border)]" : "border-[var(--color-border-subtle)] opacity-60"
                             }`}
                           >
                             <div className="flex items-start justify-between gap-3">
-                              <div className="min-w-0">
-                                <p className="truncate font-medium">{s.label ?? s.deviceId.slice(0, 18)}</p>
-                                <p className="text-[11px] text-[var(--color-muted)]">
-                                  {s.deviceId.slice(0, 24)}… · IP {s.ipHint ?? "—"}
-                                  {s.fingerprintPrefix ? ` · fp ${s.fingerprintPrefix}` : ""}
-                                </p>
-                                <p className="text-[11px] text-[var(--color-muted)]">
-                                  Visto {formatRelativeTime(s.lastSeenAt)} · {formatExpiresIn(s.expiresAt)}
-                                  {urgent && (
-                                    <span className="ml-2 inline-flex items-center gap-1 text-amber-400">
-                                      <AlertTriangle className="h-3 w-3" /> Por expirar
-                                    </span>
+                              <div className="min-w-0 flex-1 space-y-2">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <p className="truncate font-medium text-[var(--color-text)]">
+                                    {s.label ?? s.username ?? "Sesión sin nombre"}
+                                  </p>
+                                  {activity.isLiveNow && (
+                                    <Badge className="bg-emerald-500/15 text-emerald-300">
+                                      <span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                                      En vivo
+                                    </Badge>
                                   )}
-                                </p>
+                                  {!active && (
+                                    <Badge className={badgeDefault}>{s.revoked ? "Revocada" : "Expirada"}</Badge>
+                                  )}
+                                </div>
+
+                                <div className="flex flex-wrap items-center gap-2 text-[11px]">
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-surface)] px-2 py-0.5 text-[var(--color-text-soft)]">
+                                    <PlatformIcon className="h-3 w-3 shrink-0" />
+                                    {activity.platformLabel}
+                                  </span>
+                                  {s.username && (
+                                    <span className="text-[var(--color-muted)]">@{s.username}</span>
+                                  )}
+                                  <span className="text-[var(--color-muted)]">· {tierLabel}</span>
+                                </div>
+
+                                {activity.liveLabel && (
+                                  <p className="text-[11px] text-emerald-300/90">{activity.liveLabel}</p>
+                                )}
+
+                                <div className="grid gap-x-4 gap-y-1.5 text-[11px] text-[var(--color-muted)] sm:grid-cols-2">
+                                  <p>
+                                    <span className="text-[var(--color-text-soft)]">Estado: </span>
+                                    {active ? "Activa" : s.revoked ? "Revocada" : "Expirada"}
+                                  </p>
+                                  <p>
+                                    <span className="text-[var(--color-text-soft)]">Última actividad: </span>
+                                    {formatRelativeTime(s.lastSeenAt)}
+                                  </p>
+                                  <p>
+                                    <span className="text-[var(--color-text-soft)]">Inicio de sesión: </span>
+                                    {formatRelativeTime(s.createdAt)} ({formatDate(s.createdAt)})
+                                  </p>
+                                  <p>
+                                    <span className="text-[var(--color-text-soft)]">Expira: </span>
+                                    {formatExpiresIn(s.expiresAt)}
+                                    {urgent && (
+                                      <span className="ml-1.5 inline-flex items-center gap-0.5 text-amber-400">
+                                        <AlertTriangle className="h-3 w-3" /> Pronto
+                                      </span>
+                                    )}
+                                  </p>
+                                  <p>
+                                    <span className="text-[var(--color-text-soft)]">IP: </span>
+                                    {formatSessionIp(s.ipHint)}
+                                  </p>
+                                  <p>
+                                    <span className="text-[var(--color-text-soft)]">Origen: </span>
+                                    {activity.originLabel}
+                                    {s.lastClientKind &&
+                                      s.clientKind &&
+                                      s.lastClientKind !== s.clientKind && (
+                                        <span> → ahora {SESSION_PLATFORM_LABELS[s.lastClientKind]}</span>
+                                      )}
+                                  </p>
+                                  <p className="font-mono sm:col-span-2">
+                                    <span className="font-sans text-[var(--color-text-soft)]">Dispositivo: </span>
+                                    {s.deviceId}
+                                  </p>
+                                  {s.fingerprintPrefix && (
+                                    <p>
+                                      <span className="text-[var(--color-text-soft)]">Huella: </span>
+                                      <span className="font-mono">{s.fingerprintPrefix}</span>
+                                    </p>
+                                  )}
+                                  <p className="font-mono">
+                                    <span className="font-sans text-[var(--color-text-soft)]">ID sesión: </span>
+                                    {s.id}
+                                  </p>
+                                  {activity.liveDevice?.launcherVersion && (
+                                    <p>
+                                      <span className="text-[var(--color-text-soft)]">Launcher: </span>
+                                      v{activity.liveDevice.launcherVersion}
+                                      {activity.liveDevice.os ? ` · ${activity.liveDevice.os}` : ""}
+                                    </p>
+                                  )}
+                                  {activity.liveDevice?.ip && activity.liveDevice.ip !== s.ipHint && (
+                                    <p>
+                                      <span className="text-[var(--color-text-soft)]">IP en vivo: </span>
+                                      {formatSessionIp(activity.liveDevice.ip)}
+                                    </p>
+                                  )}
+                                </div>
                               </div>
                               {active && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
+                                  className="shrink-0"
                                   onClick={async () => {
                                     await profileAction({ action: "revoke-session", sessionId: s.id });
                                     await refresh();
@@ -1074,7 +1451,6 @@ export function ProfileAdminPanel() {
                                   Revocar
                                 </Button>
                               )}
-                              {!active && <Badge className={badgeDefault}>{s.revoked ? "Revocada" : "Expirada"}</Badge>}
                             </div>
                           </li>
                         );
@@ -1144,7 +1520,26 @@ export function ProfileAdminPanel() {
                         id: selected.id,
                         password: next,
                       });
-                      if (!data.success) reportAppError(data.error ?? "No se pudo resetear");
+                      if (!data.success) {
+                        reportAppError(data.error ?? "No se pudo resetear");
+                        return;
+                      }
+                      const ok = await copyProfileData(
+                        buildClipboardPayload(
+                          {
+                            ...selected,
+                            portalAccessSealed: data.portalAccessSealed ?? selected.portalAccessSealed,
+                          },
+                          { password: next }
+                        )
+                      );
+                      rememberClipboardSecrets(selected.id, { password: next });
+                      setCopyHint(
+                        ok
+                          ? "Contraseña actualizada y bloque copiado para el launcher."
+                          : "Contraseña actualizada. Pulsa «Copiar datos» de nuevo."
+                      );
+                      await refresh();
                     }}
                   >
                     <KeyRound className="h-3.5 w-3.5" />

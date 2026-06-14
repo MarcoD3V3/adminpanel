@@ -10,7 +10,29 @@ function write(rel, content) {
   const full = path.join(root, rel);
   fs.mkdirSync(path.dirname(full), { recursive: true });
   fs.writeFileSync(full, content, "utf-8");
-  console.log("wrote", rel);
+}
+
+export function applyPortMod119(mcVersion) {
+  if (mcVersion !== "1.19.2") return;
+
+  const base = `packages/craftlauncher-client-mod-${mcVersion}/src/main/java`;
+  write(`${base}/io/craftlauncher/loading/mixin/TitleScreenDecorMixin.java`, titleScreenDecorMixin119);
+}
+
+export function applyPortMod120(mcVersion) {
+  if (mcVersion !== "1.20.1" && mcVersion !== "1.21.1") return;
+
+  const base = `packages/craftlauncher-client-mod-${mcVersion}/src/main/java`;
+  write(`${base}/io/craftlauncher/client/ui/CraftButton.java`, craftButton);
+  const legacyBtn = path.join(root, `packages/craftlauncher-client-mod-${mcVersion}/src/main/java/net/minecraft/client/gui/screens/CraftButton.java`);
+  if (fs.existsSync(legacyBtn)) fs.unlinkSync(legacyBtn);
+  write(`${base}/io/craftlauncher/loading/LoadingRenderer.java`, loadingRenderer);
+  write(`${base}/io/craftlauncher/loading/mixin/LoadingOverlayMixin.java`, loadingOverlayMixin);
+  write(`${base}/io/craftlauncher/loading/mixin/ScreenAccessor.java`, screenAccessor120);
+  write(
+    `${base}/io/craftlauncher/loading/mixin/TitleScreenDecorMixin.java`,
+    mcVersion === "1.21.1" ? titleScreenDecorMixin121 : titleScreenDecorMixin,
+  );
 }
 
 const craftButton = `package io.craftlauncher.client.ui;
@@ -145,16 +167,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.LoadingOverlay;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LoadingOverlay.class)
 public abstract class LoadingOverlayMixin {
-    @Shadow
-    private float progress;
-
     @Inject(
         method = "render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
         at = @At("HEAD"),
@@ -163,17 +181,105 @@ public abstract class LoadingOverlayMixin {
     private void craftlauncher$renderMinimal(GuiGraphics gui, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         LoadingConfig cfg = LoadingConfig.get();
         if (!cfg.enabled) return;
-        LoadingRenderer.render(Minecraft.getInstance(), gui, partialTick, this.progress);
+        float progress = ((LoadingOverlayAccessor) this).craftlauncher$getCurrentProgress();
+        LoadingRenderer.render(Minecraft.getInstance(), gui, partialTick, progress);
         ci.cancel();
+    }
+}
+`;
+
+const screenAccessor120 = `package io.craftlauncher.loading.mixin;
+
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
+
+@Mixin(Screen.class)
+public interface ScreenAccessor {
+    @Accessor("minecraft")
+    Minecraft craftlauncher$getMinecraft();
+
+    @Accessor("children")
+    List<GuiEventListener> craftlauncher$getChildren();
+
+    @Accessor("renderables")
+    List<Renderable> craftlauncher$getRenderables();
+
+    @Invoker("addRenderableOnly")
+    Renderable craftlauncher$addRenderableOnly(Renderable widget);
+}
+`;
+
+const titleScreenDecorMixin119 = `package io.craftlauncher.loading.mixin;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+
+import io.craftlauncher.client.ui.CraftMenu;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.client.ForgeHooksClient;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
+
+@Mixin(TitleScreen.class)
+public abstract class TitleScreenDecorMixin {
+    private static final ResourceLocation BLANK = new ResourceLocation("craftlauncher", "textures/blank.png");
+
+    @Redirect(
+            method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;IIF)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraftforge/client/ForgeHooksClient;renderMainMenu(Lnet/minecraft/client/gui/screens/TitleScreen;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;III)V"
+            ),
+            remap = false
+    )
+    private void craftlauncher$skipForgeBranding(
+            TitleScreen gui, PoseStack poseStack, Font font, int width, int height, int alpha) {
+        if (!CraftMenu.hideVanillaDecor()) {
+            ForgeHooksClient.renderMainMenu(gui, poseStack, font, width, height, alpha);
+        }
+    }
+
+    @Redirect(
+            method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;IIF)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/texture/TextureManager;bindForSetup(Lnet/minecraft/resources/ResourceLocation;)V",
+                    ordinal = 1
+            )
+    )
+    private void craftlauncher$hideLogoTexture(TextureManager manager, ResourceLocation id) {
+        manager.bindForSetup(CraftMenu.hideVanillaDecor() ? BLANK : id);
+    }
+
+    @Redirect(
+            method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;IIF)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/texture/TextureManager;bindForSetup(Lnet/minecraft/resources/ResourceLocation;)V",
+                    ordinal = 2
+            )
+    )
+    private void craftlauncher$hideEditionTexture(TextureManager manager, ResourceLocation id) {
+        manager.bindForSetup(CraftMenu.hideVanillaDecor() ? BLANK : id);
     }
 }
 `;
 
 const titleScreenDecorMixin = `package io.craftlauncher.loading.mixin;
 
+import io.craftlauncher.client.ui.CraftMenu;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.CraftMenu;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -224,17 +330,12 @@ const titleScreenDecorMixin121 = titleScreenDecorMixin.replace(
   'ResourceLocation.fromNamespaceAndPath("craftlauncher", "textures/blank.png")',
 );
 
-for (const ver of ["1.20.1", "1.21.1"]) {
-  const base = `packages/craftlauncher-client-mod-${ver}/src/main/java`;
-  write(`${base}/io/craftlauncher/client/ui/CraftButton.java`, craftButton);
-  const legacyBtn = path.join(root, `packages/craftlauncher-client-mod-${ver}/src/main/java/net/minecraft/client/gui/screens/CraftButton.java`);
-  if (fs.existsSync(legacyBtn)) fs.unlinkSync(legacyBtn);
-  write(`${base}/io/craftlauncher/loading/LoadingRenderer.java`, loadingRenderer);
-  write(`${base}/io/craftlauncher/loading/mixin/LoadingOverlayMixin.java`, loadingOverlayMixin);
-  write(
-    `${base}/io/craftlauncher/loading/mixin/TitleScreenDecorMixin.java`,
-    ver === "1.21.1" ? titleScreenDecorMixin121 : titleScreenDecorMixin,
-  );
-}
+const isMain =
+  process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
 
-console.log("✓ Port 1.20+ aplicado");
+if (isMain) {
+  for (const ver of ["1.20.1", "1.21.1"]) {
+    applyPortMod120(ver);
+  }
+  console.log("✓ Port 1.20+ aplicado");
+}

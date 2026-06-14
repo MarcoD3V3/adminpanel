@@ -60,7 +60,7 @@ export function AdminSessionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    void refresh();
+    void refresh().catch(() => {});
   }, [refresh]);
 
   const setRemember = useCallback((value: boolean) => {

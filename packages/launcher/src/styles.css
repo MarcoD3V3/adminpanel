@@ -1,3 +1,4 @@
+@import "../../shared/hub-text-fonts.css";
 @import "../../shared/hub-runtime-widgets.css";
 
 :root {
@@ -2788,4 +2789,25 @@ body:has(.lw-shell) {
   font-size: 11px;
   line-height: 1.45;
   color: var(--muted);
+}
+
+/* Experimentos A/B — variantes aplicadas en tiempo real */
+.shell.experiment-ui-v2 {
+  --accent: #5a9e66;
+  --accent-soft: rgba(90, 158, 102, 0.18);
+}
+
+.shell.experiment-ui-v2 .hub-chrome-custom.chrome {
+  border-color: rgba(90, 158, 102, 0.25);
+}
+
+.shell.experiment-big-play .hub-preview-btn--play {
+  transform: scale(1.12);
+  font-size: 1.08em;
+  letter-spacing: 0.02em;
+  box-shadow: 0 6px 24px rgba(90, 158, 102, 0.28);
+}
+
+.shell.experiment-big-play .hub-preview-btn--play:hover:not(:disabled) {
+  transform: scale(1.15);
 }

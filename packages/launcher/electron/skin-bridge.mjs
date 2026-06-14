@@ -7,9 +7,9 @@ import {
   readAuthFile,
   resolveLauncherUsername,
 } from "./launcher-session.mjs";
+import { getPanelBase } from "./panel-base.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PANEL_BASE = process.env.CRAFTLAUNCHER_PANEL_URL || "http://localhost:3000";
 
 function panelProjectRoot() {
   return process.env.CRAFTLAUNCHER_PANEL_ROOT || path.resolve(__dirname, "../../..");
@@ -76,7 +76,7 @@ export async function syncPlayerSkins({ gameRoot, onProgress, minecraftUsername 
 
   let entries = [];
   if (headers) {
-    const registry = await fetchJson(`${PANEL_BASE}/api/launcher-auth/skins?action=registry`, headers);
+    const registry = await fetchJson(`${getPanelBase()}/api/launcher-auth/skins?action=registry`, headers);
     if (Array.isArray(registry?.entries)) entries = registry.entries;
   }
   if (entries.length === 0) entries = readLocalSkinMeta();
@@ -100,7 +100,7 @@ export async function syncPlayerSkins({ gameRoot, onProgress, minecraftUsername 
     let png = tryReadLocalSkin(entry.userId);
     if (!png && headers) {
       png = await fetchPng(
-        `${PANEL_BASE}/api/launcher-auth/skins?action=file&username=${encodeURIComponent(entry.username)}`,
+        `${getPanelBase()}/api/launcher-auth/skins?action=file&username=${encodeURIComponent(entry.username)}`,
         headers
       );
     }

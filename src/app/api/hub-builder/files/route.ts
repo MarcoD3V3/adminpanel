@@ -2,14 +2,16 @@ import { NextResponse } from "next/server";
 import { mkdir, readdir, writeFile } from "fs/promises";
 import path from "path";
 import type { HubLayout } from "@/types/hub-builder";
+import { dataPath } from "@/lib/data-dir";
+import { remoteSaveLayoutFile, usesRemoteHubData } from "@/lib/hub-data-authority";
 import {
   isHubLayoutShape,
   signHubLayout,
   serializeSignedDocument,
 } from "@/lib/hub-layout-signing";
-import { requireAdminSession } from "@/lib/launcher-auth/require-admin";
+import { requireAdminAccess } from "@/lib/launcher-auth/require-admin";
 
-const DIR = path.join(process.cwd(), "data", "hub-layouts");
+const DIR = dataPath("hub-layouts");
 
 function safeName(name: string) {
   const n = name.trim().replace(/\.json$/i, "");
@@ -17,9 +19,13 @@ function safeName(name: string) {
   return n;
 }
 
-export async function GET() {
-  const denied = await requireAdminSession();
+export async function GET(request: Request) {
+  const denied = await requireAdminAccess(request);
   if (denied) return denied;
+
+  if (usesRemoteHubData()) {
+    return NextResponse.json({ files: ["_autosave"], remote: true });
+  }
 
   await mkdir(DIR, { recursive: true });
   const files = (await readdir(DIR)).filter((f) => f.toLowerCase().endsWith(".json"));
@@ -27,14 +33,24 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const denied = await requireAdminSession();
+  const denied = await requireAdminAccess(request);
   if (denied) return denied;
 
-  await mkdir(DIR, { recursive: true });
   const body = (await request.json()) as { name?: string; layout?: HubLayout };
   const name = body.name ? safeName(body.name) : null;
   if (!name || !body.layout || !isHubLayoutShape(body.layout)) {
     return NextResponse.json({ success: false, error: "Nombre o layout inválido" }, { status: 400 });
+  }
+
+  if (usesRemoteHubData()) {
+    const ok = await remoteSaveLayoutFile(name, body.layout);
+    if (!ok) {
+      return NextResponse.json(
+        { success: false, error: "No se pudo guardar en Railway (revisa HUB_DATA_AUTHORITY_URL y LAUNCHER_ADMIN_SECRET)" },
+        { status: 502 }
+      );
+    }
+    return NextResponse.json({ success: true, name, remote: true });
   }
 
   const signed = signHubLayout(body.layout);
@@ -45,9 +61,9 @@ export async function POST(request: Request) {
     );
   }
 
+  await mkdir(DIR, { recursive: true });
   const signedJson = serializeSignedDocument(signed);
   const file = path.join(DIR, `${name}.json`);
   await writeFile(file, signedJson, "utf-8");
   return NextResponse.json({ success: true, name, signedJson });
 }
-

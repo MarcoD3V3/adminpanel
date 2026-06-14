@@ -4,7 +4,12 @@ import {
 } from "@/lib/launcher-auth/service";
 import type { VerifySessionResult } from "@/lib/launcher-auth/types";
 import { clientIp, corsHeaders, jsonWithCors, optionsResponse } from "@/lib/launcher-auth/http";
+import { recordExperimentHeartbeat } from "@/lib/experiments/service";
+import { loadExperimentStore } from "@/lib/experiments/store";
+import { auditHeartbeatAnomaly } from "@/lib/security/guard";
 import { pollCommandsForDevice, upsertPresence } from "@/lib/live-ops/service";
+import { buildPresenceCommands, getPublicLauncherConfig } from "@/lib/settings/service";
+import { loadSystemSettings } from "@/lib/settings/store";
 
 export async function OPTIONS(request: Request) {
   return optionsResponse(request.headers.get("origin"));
@@ -56,6 +61,9 @@ export async function POST(request: Request) {
       : "online"
   ) as "online" | "playing" | "launching" | "updating" | "idle";
 
+  const storeBefore = await loadExperimentStore();
+  const prevStatus = storeBefore.deviceStatus[deviceId];
+
   await upsertPresence({
     sessionId: session.sessionId!,
     userId: session.userId,
@@ -75,6 +83,61 @@ export async function POST(request: Request) {
     ip: clientIp(request) ?? undefined,
   });
 
-  const commands = await pollCommandsForDevice(deviceId);
-  return jsonWithCors({ ok: true, commands }, { status: 200 }, origin);
+  const ip = clientIp(request);
+  await auditHeartbeatAnomaly(
+    deviceId,
+    ip,
+    typeof body.ramUsage === "number" ? body.ramUsage : 0,
+    typeof body.cpuUsage === "number" ? body.cpuUsage : 0,
+    status
+  );
+
+  const launcherVersion = body.launcherVersion ?? "1.0.0";
+  const settings = loadSystemSettings();
+
+  const experiments = settings.features.experimentsEnabled
+    ? await recordExperimentHeartbeat({
+        deviceId,
+        status,
+        prevStatus,
+      })
+    : undefined;
+
+  const { emitSystemEvent } = await import("@/lib/system-events");
+  emitSystemEvent("launcher.online", {
+    deviceId,
+    userId: session.userId,
+    username: session.username,
+    launcherVersion,
+    tier: session.tier,
+    premium: session.premium,
+  });
+
+  const settingsCommands = await buildPresenceCommands(
+    launcherVersion,
+    session.tester ?? session.tier === "tester"
+  );
+  const polled = await pollCommandsForDevice(deviceId);
+  const config = await getPublicLauncherConfig();
+  let rewards = null;
+  if (session.userId) {
+    const { ensureUser } = await import("@/lib/rewards/store");
+    const { getUserRewardsState } = await import("@/lib/rewards/service");
+    ensureUser(session.userId, session.username ?? "usuario");
+    rewards = getUserRewardsState(session.userId);
+
+    if (status === "playing" || status === "launching") {
+      const { processRewardsEvent } = await import("@/lib/rewards/service");
+      void processRewardsEvent(session.userId, session.username ?? "usuario", {
+        metric: "play_time",
+        amount: 1,
+      });
+    }
+  }
+
+  return jsonWithCors(
+    { ok: true, commands: [...settingsCommands, ...polled], experiments, config, rewards },
+    { status: 200 },
+    origin
+  );
 }

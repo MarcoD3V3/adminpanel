@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
 import { Header } from "@/components/layout/Header";
 import { PageContent } from "@/components/layout/PageContent";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -31,13 +29,7 @@ const quickActions: { label: string; href: AdminRoute; icon: typeof Bell }[] = [
 ];
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const [, startTransition] = useTransition();
   const stats = getDashboardStats();
-
-  const go = (href: AdminRoute) => {
-    startTransition(() => router.push(href, { scroll: false }));
-  };
 
   return (
     <>
@@ -76,10 +68,6 @@ export default function DashboardPage() {
                   key={href}
                   href={href}
                   scroll={false}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    go(href);
-                  }}
                   className={`flex items-center gap-3 ${rowItem} text-sm text-[var(--color-text-soft)] hover:text-[var(--color-text)]`}
                 >
                   <Icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />

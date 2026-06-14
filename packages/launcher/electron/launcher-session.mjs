@@ -1,9 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { getPanelBase } from "./panel-base.mjs";
 
 const require = createRequire(import.meta.url);
-const PANEL_BASE = process.env.CRAFTLAUNCHER_PANEL_URL || "http://localhost:3000";
 export const DEFAULT_MC_USERNAME = "CraftPlayer";
 
 function authFilePath() {
@@ -57,7 +57,7 @@ export function normalizeMinecraftUsername(name) {
 
 async function verifySessionUsername(headers) {
   try {
-    const res = await fetch(`${PANEL_BASE}/api/launcher-auth/verify`, {
+    const res = await fetch(`${getPanelBase()}/api/launcher-auth/verify`, {
       method: "POST",
       headers: { ...headers, "Content-Type": "application/json" },
       signal: AbortSignal.timeout(12_000),

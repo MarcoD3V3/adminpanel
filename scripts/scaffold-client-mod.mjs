@@ -57,6 +57,7 @@ function patchJavaSources(modDir, mcVersion) {
 
 function patchModsToml(modDir, cfg) {
   const toml = path.join(modDir, "src", "main", "resources", "META-INF", "mods.toml");
+  if (!fs.existsSync(toml)) return;
   patchFile(toml, [
     [/loaderVersion="\[40,\)"/, `loaderVersion="${cfg.loaderRange}"`],
     [/versionRange="\[1\.18\.2,1\.19\)"/, `versionRange="${cfg.mcRange}"`],
@@ -76,33 +77,13 @@ function patchModsToml(modDir, cfg) {
   fs.writeFileSync(toml, text, "utf-8");
 }
 
-function scaffoldOne(mcVersion) {
-  const cfg = MOD_VERSION_CONFIG[mcVersion];
-  if (!cfg) {
-    console.error(`Versión desconocida: ${mcVersion}`);
-    return false;
-  }
+function templateDirFor(cfg) {
+  return cfg.template === "legacy"
+    ? path.join(packagesDir, "craftlauncher-client-mod-1.16.5")
+    : path.join(packagesDir, "craftlauncher-loading-mod");
+}
 
-  const templateDir =
-    cfg.template === "legacy"
-      ? path.join(packagesDir, "craftlauncher-client-mod-1.16.5")
-      : path.join(packagesDir, "craftlauncher-loading-mod");
-  const destDir = path.join(packagesDir, cfg.dir);
-
-  if (!fs.existsSync(templateDir)) {
-    console.error(`Plantilla no encontrada: ${templateDir}`);
-    return false;
-  }
-
-  if (fs.existsSync(destDir)) {
-    console.log(`Ya existe ${cfg.dir} — omitiendo scaffold`);
-    return true;
-  }
-
-  console.log(`Scaffolding ${cfg.dir} desde ${path.basename(templateDir)}…`);
-  copyDir(templateDir, destDir);
-
-  const props = path.join(destDir, "gradle.properties");
+function writeGradleProperties(destDir, cfg) {
   const propsText = [
     "org.gradle.jvmargs=-Xmx3G",
     "org.gradle.daemon=false",
@@ -120,17 +101,17 @@ function scaffoldOne(mcVersion) {
     `java_version=${cfg.java}`,
     "",
   ].join("\n");
-  fs.writeFileSync(props, propsText, "utf-8");
+  fs.writeFileSync(path.join(destDir, "gradle.properties"), propsText, "utf-8");
+}
 
+function applyProjectPatches(destDir, cfg, mcVersion) {
   if (cfg.template === "legacy") {
-    const buildGradle = path.join(destDir, "build.gradle");
-    patchFile(buildGradle, [
+    patchFile(path.join(destDir, "build.gradle"), [
       ["craftlauncher-client-1.16.5", cfg.archivesName],
       ["JavaLanguageVersion.of(8)", `JavaLanguageVersion.of(${cfg.java})`],
     ]);
   } else {
-    const buildGradle = path.join(destDir, "build.gradle");
-    patchFile(buildGradle, [
+    patchFile(path.join(destDir, "build.gradle"), [
       ["archivesName = 'craftlauncher-loading'", `archivesName = '${cfg.archivesName}'`],
       [
         /java\.toolchain\.languageVersion = JavaLanguageVersion\.of\(Integer\.parseInt\(java_version\)\)/,
@@ -152,19 +133,81 @@ function scaffoldOne(mcVersion) {
       "utf-8"
     );
   }
+}
 
+function scaffoldOne(mcVersion) {
+  const cfg = MOD_VERSION_CONFIG[mcVersion];
+  if (!cfg) {
+    console.error(`Versión desconocida: ${mcVersion}`);
+    return false;
+  }
+
+  const templateDir = templateDirFor(cfg);
+  const destDir = path.join(packagesDir, cfg.dir);
+
+  if (!fs.existsSync(templateDir)) {
+    console.error(`Plantilla no encontrada: ${templateDir}`);
+    return false;
+  }
+
+  if (fs.existsSync(destDir)) {
+    console.log(`Ya existe ${cfg.dir} — omitiendo scaffold`);
+    return true;
+  }
+
+  console.log(`Scaffolding ${cfg.dir} desde ${path.basename(templateDir)}…`);
+  copyDir(templateDir, destDir);
+  writeGradleProperties(destDir, cfg);
+  applyProjectPatches(destDir, cfg, mcVersion);
   console.log(`✓ ${cfg.dir}`);
   return true;
 }
 
-const arg = process.argv[2] ?? "--all";
-if (arg === "--all") {
-  let ok = true;
-  for (const v of ALL_MOD_MC_VERSIONS) {
-    if (v === "1.18.2" || v === "1.16.5") continue;
-    if (!scaffoldOne(v)) ok = false;
+/** Repara proyectos a medias (sin build.gradle) copiando la plantilla completa. */
+export function repairModProject(mcVersion) {
+  const cfg = MOD_VERSION_CONFIG[mcVersion];
+  if (!cfg) return false;
+
+  const templateDir = templateDirFor(cfg);
+  const destDir = path.join(packagesDir, cfg.dir);
+
+  if (!fs.existsSync(templateDir)) {
+    console.error(`Plantilla no encontrada: ${templateDir}`);
+    return false;
   }
-  process.exit(ok ? 0 : 1);
-} else {
-  process.exit(scaffoldOne(arg) ? 0 : 1);
+
+  if (!fs.existsSync(destDir)) {
+    return scaffoldOne(mcVersion);
+  }
+
+  const requiredFiles =
+    cfg.template === "legacy"
+      ? ["build.gradle", "src/main/java/io/craftlauncher/client/ui/CraftButton.java"]
+      : ["build.gradle", "src/main/resources/META-INF/mods.toml"];
+  const incomplete = requiredFiles.some((rel) => !fs.existsSync(path.join(destDir, rel)));
+  if (incomplete) {
+    console.log(`Reparando proyecto incompleto: ${cfg.dir}…`);
+    copyDir(templateDir, destDir);
+  }
+
+  writeGradleProperties(destDir, cfg);
+  applyProjectPatches(destDir, cfg, mcVersion);
+  return true;
+}
+
+const isMain =
+  process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
+
+if (isMain) {
+  const arg = process.argv[2] ?? "--all";
+  if (arg === "--all") {
+    let ok = true;
+    for (const v of ALL_MOD_MC_VERSIONS) {
+      if (v === "1.18.2" || v === "1.16.5") continue;
+      if (!scaffoldOne(v)) ok = false;
+    }
+    process.exit(ok ? 0 : 1);
+  } else {
+    process.exit(scaffoldOne(arg) ? 0 : 1);
+  }
 }

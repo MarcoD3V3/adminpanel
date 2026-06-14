@@ -7,13 +7,35 @@ import {
 } from "./admin-session";
 import { secureCompareSecret } from "./crypto";
 
+function railwayPublicOrigin(): string | null {
+  const domain = process.env.RAILWAY_PUBLIC_DOMAIN?.trim();
+  return domain ? `https://${domain}` : null;
+}
+
+function portalPublicOrigin(): string | null {
+  const explicit =
+    process.env.USER_WEB_ORIGIN?.trim() ||
+    process.env.PORTAL_PUBLIC_URL?.trim().replace(/\/$/, "");
+  if (explicit) return explicit;
+  return null;
+}
+
 const LAUNCHER_ORIGINS = [
   "http://localhost:1420",
   "http://127.0.0.1:1420",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "http://localhost:3001",
+  "http://127.0.0.1:3001",
   "http://localhost:3002",
   "http://127.0.0.1:3002",
+  "http://localhost:3003",
+  "http://127.0.0.1:3003",
   process.env.LAUNCHER_ORIGIN,
   process.env.WEB_ORIGIN,
+  process.env.ADMIN_PUBLIC_URL?.trim().replace(/\/$/, ""),
+  portalPublicOrigin(),
+  railwayPublicOrigin(),
 ].filter(Boolean) as string[];
 
 export function securityHeaders(): HeadersInit {
@@ -38,7 +60,7 @@ export function corsHeaders(origin: string | null): HeadersInit {
     "Access-Control-Allow-Origin": origin && LAUNCHER_ORIGINS.includes(origin) ? origin : "*",
     "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
     "Access-Control-Allow-Headers":
-      "Content-Type, Authorization, X-Device-Id, X-Device-Fingerprint",
+      "Content-Type, Authorization, X-Device-Id, X-Device-Fingerprint, X-Client-Kind",
     "Access-Control-Max-Age": "86400",
     Vary: "Origin",
   };

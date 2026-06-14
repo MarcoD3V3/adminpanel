@@ -1,0 +1,146 @@
+{
+  "experiments": [
+    {
+      "id": "ex_7a509507d1d7",
+      "name": "prueba 1",
+      "key": "asdasdsad",
+      "description": "",
+      "status": "running",
+      "variantA": "Control",
+      "variantB": "Variante B",
+      "rolloutPercent": 50,
+      "metric": "crash_rate",
+      "resultA": 0,
+      "resultB": 0,
+      "createdAt": "2026-06-13T18:16:27.464Z",
+      "updatedAt": "2026-06-13T18:16:32.100Z",
+      "startedAt": "2026-06-13T18:16:32.100Z"
+    },
+    {
+      "id": "ex1",
+      "name": "Nuevo diseño launcher",
+      "key": "new_ui_v2",
+      "description": "UI rediseñada vs actual",
+      "status": "running",
+      "variantA": "UI actual",
+      "variantB": "UI v2",
+      "rolloutPercent": 50,
+      "metric": "retention",
+      "resultA": 0,
+      "resultB": 0,
+      "startedAt": "2026-06-06T18:13:39.413Z",
+      "createdAt": "2026-06-06T18:13:39.413Z",
+      "updatedAt": "2026-06-13T18:13:39.428Z"
+    },
+    {
+      "id": "ex2",
+      "name": "Botón Jugar grande",
+      "key": "big_play_btn",
+      "description": "CTA principal más visible",
+      "status": "running",
+      "variantA": "Normal",
+      "variantB": "Grande",
+      "rolloutPercent": 30,
+      "metric": "session_time",
+      "resultA": 0,
+      "resultB": 0,
+      "startedAt": "2026-06-08T18:13:39.413Z",
+      "createdAt": "2026-06-08T18:13:39.413Z",
+      "updatedAt": "2026-06-13T18:13:39.428Z"
+    },
+    {
+      "id": "ex3",
+      "name": "Onboarding simplificado",
+      "key": "simple_onboard",
+      "description": "Menos pasos al registrarse",
+      "status": "completed",
+      "variantA": "5 pasos",
+      "variantB": "2 pasos",
+      "rolloutPercent": 100,
+      "metric": "conversion",
+      "resultA": 0,
+      "resultB": 0,
+      "winner": "B",
+      "startedAt": "2026-05-14T18:13:39.413Z",
+      "createdAt": "2026-05-14T18:13:39.413Z",
+      "updatedAt": "2026-06-13T18:13:39.428Z"
+    }
+  ],
+  "stats": {
+    "ex1": {
+      "A": {
+        "exposures": 0,
+        "uniqueDevices": [],
+        "sessionMinutes": 0,
+        "launches": 0,
+        "returns": 0,
+        "crashes": 0
+      },
+      "B": {
+        "exposures": 0,
+        "uniqueDevices": [],
+        "sessionMinutes": 0,
+        "launches": 0,
+        "returns": 0,
+        "crashes": 0
+      }
+    },
+    "ex2": {
+      "A": {
+        "exposures": 0,
+        "uniqueDevices": [],
+        "sessionMinutes": 0,
+        "launches": 0,
+        "returns": 0,
+        "crashes": 0
+      },
+      "B": {
+        "exposures": 0,
+        "uniqueDevices": [],
+        "sessionMinutes": 0,
+        "launches": 0,
+        "returns": 0,
+        "crashes": 0
+      }
+    },
+    "ex3": {
+      "A": {
+        "exposures": 0,
+        "uniqueDevices": [],
+        "sessionMinutes": 0,
+        "launches": 0,
+        "returns": 0,
+        "crashes": 0
+      },
+      "B": {
+        "exposures": 0,
+        "uniqueDevices": [],
+        "sessionMinutes": 0,
+        "launches": 0,
+        "returns": 0,
+        "crashes": 0
+      }
+    },
+    "ex_7a509507d1d7": {
+      "A": {
+        "exposures": 0,
+        "uniqueDevices": [],
+        "sessionMinutes": 0,
+        "launches": 0,
+        "returns": 0,
+        "crashes": 0
+      },
+      "B": {
+        "exposures": 0,
+        "uniqueDevices": [],
+        "sessionMinutes": 0,
+        "launches": 0,
+        "returns": 0,
+        "crashes": 0
+      }
+    }
+  },
+  "deviceStatus": {},
+  "deviceFirstSeen": {},
+  "deviceReturnCounted": {}
+}

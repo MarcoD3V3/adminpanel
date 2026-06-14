@@ -103,6 +103,28 @@ export function clearHubLayoutStorage(): void {
   }
 }
 
+function layoutTimestamp(layout: HubLayout): number {
+  const t = Date.parse(layout.updatedAt ?? "");
+  return Number.isFinite(t) ? t : 0;
+}
+
+/** Elige el layout más reciente (local, borrador servidor o publicado). */
+export function pickNewestHubLayout(
+  ...candidates: (HubLayout | null | undefined)[]
+): HubLayout | null {
+  let best: HubLayout | null = null;
+  let bestTs = -1;
+  for (const layout of candidates) {
+    if (!layout) continue;
+    const ts = layoutTimestamp(layout);
+    if (!best || ts >= bestTs) {
+      best = layout;
+      bestTs = ts;
+    }
+  }
+  return best;
+}
+
 export async function fetchHubLayoutFromApi(opts?: { timeoutMs?: number }): Promise<HubLayout | null> {
   const timeoutMs = opts?.timeoutMs ?? 10_000;
   const controller = new AbortController();
@@ -111,6 +133,7 @@ export async function fetchHubLayoutFromApi(opts?: { timeoutMs?: number }): Prom
   try {
     const res = await fetch("/api/hub-builder", {
       cache: "no-store",
+      credentials: "include",
       signal: controller.signal,
     });
     if (!res.ok) return null;

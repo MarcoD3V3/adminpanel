@@ -83,8 +83,7 @@ function isLoadingUi(v: unknown): v is LoadingUi {
 }
 
 async function readUi(mcVersion: string): Promise<LoadingUi> {
-  const cwd = process.cwd();
-  const file = loadingUiFileForVersion(cwd, mcVersion);
+  const file = loadingUiFileForVersion(mcVersion);
   try {
     const raw = await readFile(file, "utf-8");
     const parsed: unknown = JSON.parse(raw);
@@ -94,7 +93,7 @@ async function readUi(mcVersion: string): Promise<LoadingUi> {
   }
   if (mcVersion === "1.18.2") {
     try {
-      const raw = await readFile(legacyLoadingUiFile(cwd), "utf-8");
+      const raw = await readFile(legacyLoadingUiFile(), "utf-8");
       const parsed: unknown = JSON.parse(raw);
       if (isLoadingUi(parsed)) return { ...parsed, mcVersion };
     } catch {
@@ -125,7 +124,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, message: "UI inválida" }, { status: 400, headers: CORS });
     }
     const ui = { ...body, mcVersion };
-    const file = loadingUiFileForVersion(process.cwd(), mcVersion);
+    const file = loadingUiFileForVersion(mcVersion);
     await mkdir(path.dirname(file), { recursive: true });
     const tmp = `${file}.tmp`;
     await writeFile(tmp, JSON.stringify(ui, null, 2), "utf-8");

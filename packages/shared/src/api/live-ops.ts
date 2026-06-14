@@ -15,6 +15,9 @@ export type LiveOpsHeartbeatPayload = {
 export type LiveOpsHeartbeatResult = {
   ok: boolean;
   commands: RemoteCommand[];
+  experiments?: Record<string, "A" | "B">;
+  config?: Record<string, unknown>;
+  rewards?: Record<string, unknown>;
   unauthorized?: boolean;
   error?: boolean;
 };
@@ -41,8 +44,19 @@ export async function sendLiveOpsHeartbeat(
     if (!res.ok) {
       return { ok: false, commands: [], error: true };
     }
-    const data = (await res.json()) as { commands?: RemoteCommand[] };
-    return { ok: true, commands: data.commands ?? [] };
+    const data = (await res.json()) as {
+      commands?: RemoteCommand[];
+      experiments?: Record<string, "A" | "B">;
+      config?: Record<string, unknown>;
+      rewards?: Record<string, unknown>;
+    };
+    return {
+      ok: true,
+      commands: data.commands ?? [],
+      experiments: data.experiments,
+      config: data.config,
+      rewards: data.rewards,
+    };
   } catch {
     return { ok: false, commands: [], error: true };
   }

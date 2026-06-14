@@ -74,6 +74,8 @@ export async function POST(request: Request) {
     email?: string;
     notes?: string;
     referralCode?: string;
+    temporaryMinutes?: number;
+    singleUse?: boolean;
     sessionId?: string;
   };
   try {
@@ -139,6 +141,12 @@ export async function POST(request: Request) {
   }
 
   const tier = normalizeProfilePlan(body.tier);
+  const temporaryMinutes =
+    typeof body.temporaryMinutes === "number" && body.temporaryMinutes > 0
+      ? Math.min(Math.max(Math.floor(body.temporaryMinutes), 15), 60 * 24 * 30)
+      : undefined;
+  const singleUse = Boolean(body.singleUse);
+
   const created = await createLauncherUser(
     body.username,
     body.password,
@@ -149,6 +157,8 @@ export async function POST(request: Request) {
       email: body.email,
       notes: body.notes,
       referralCode: body.referralCode,
+      temporaryMinutes,
+      singleUse,
     }
   );
 

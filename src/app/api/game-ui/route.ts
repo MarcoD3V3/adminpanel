@@ -67,8 +67,7 @@ function isGameUi(v: unknown): v is { schema?: number; elements: unknown[] } {
 }
 
 async function readUi(mcVersion: string): Promise<GameUi> {
-  const cwd = process.cwd();
-  const file = gameUiFileForVersion(cwd, mcVersion);
+  const file = gameUiFileForVersion(mcVersion);
   try {
     const raw = await readFile(file, "utf-8");
     const parsed: unknown = JSON.parse(raw);
@@ -81,7 +80,7 @@ async function readUi(mcVersion: string): Promise<GameUi> {
   }
   if (mcVersion === "1.18.2") {
     try {
-      const raw = await readFile(legacyGameUiFile(cwd), "utf-8");
+      const raw = await readFile(legacyGameUiFile(), "utf-8");
       const parsed: unknown = JSON.parse(raw);
       if (isGameUi(parsed)) {
         const { ui } = normalizeGameUi(parsed as Record<string, unknown>);
@@ -121,7 +120,7 @@ export async function POST(request: Request) {
       mcVersion,
       elements: ui.elements as GameUiElement[],
     };
-    const file = gameUiFileForVersion(process.cwd(), mcVersion);
+    const file = gameUiFileForVersion(mcVersion);
     await mkdir(path.dirname(file), { recursive: true });
     const tmp = `${file}.tmp`;
     await writeFile(tmp, JSON.stringify(payload, null, 2), "utf-8");

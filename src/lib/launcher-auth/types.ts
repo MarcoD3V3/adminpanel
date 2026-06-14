@@ -16,6 +16,9 @@ export type ActivationTokenRecord = {
   revoked: boolean;
 };
 
+/** Dónde se creó o se usó por última vez la sesión. */
+export type SessionClientKind = "launcher" | "portal" | "tester";
+
 export type DeviceSessionRecord = {
   id: string;
   tokenHash: string;
@@ -30,6 +33,10 @@ export type DeviceSessionRecord = {
   lastSeenAt: string;
   revoked: boolean;
   ipHint?: string;
+  /** Plataforma del primer inicio de sesión. */
+  clientKind?: SessionClientKind;
+  /** Última plataforma que renovó la sesión (verify / portal). */
+  lastClientKind?: SessionClientKind;
 };
 
 export type LauncherUserRecord = {
@@ -37,6 +44,8 @@ export type LauncherUserRecord = {
   username: string;
   displayName?: string;
   passwordHash: string;
+  /** Contraseña cifrada para acceso_portal en portapapeles (solo user_web descifra) */
+  portalAccessSealed?: string;
   tier: ProfilePlanId;
   email?: string;
   notes?: string;
@@ -44,6 +53,10 @@ export type LauncherUserRecord = {
   createdAt: string;
   revoked: boolean;
   lastLoginAt?: string;
+  /** Si está definido, la cuenta se elimina automáticamente al expirar */
+  temporaryExpiresAt?: string;
+  /** Se elimina tras el primer inicio de sesión exitoso */
+  singleUse?: boolean;
 };
 
 export type LauncherAuthStore = {
@@ -113,6 +126,8 @@ export type VerifySessionResult = {
   username?: string;
   displayName?: string;
   reason?: string;
+  /** false si la sesión es válida pero el usuario fue borrado o revocado (portal no disponible). */
+  accountAvailable?: boolean;
 };
 
-export type LauncherUserPublic = Omit<LauncherUserRecord, "passwordHash">;
+export type LauncherUserPublic = Omit<LauncherUserRecord, "passwordHash" | "portalAccessSealed">;

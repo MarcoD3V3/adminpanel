@@ -152,6 +152,51 @@
       "revoked": false,
       "usedAt": "2026-06-11T17:38:00.384Z",
       "usedByDeviceId": "e71ca041-64a7-40ec-846d-d1687617e99f"
+    },
+    {
+      "id": "atk_fda444599606d24a",
+      "label": "marco",
+      "tokenHash": "c57b9bc67218d71802e844c69c1eea62519b604028ef75bfdb041398fb6139ee",
+      "tier": "free",
+      "createdAt": "2026-06-13T19:36:14.046Z",
+      "expiresAt": "2026-06-20T19:36:14.046Z",
+      "revoked": false
+    },
+    {
+      "id": "atk_f1ceb1cc2f4e9744",
+      "label": "marco",
+      "tokenHash": "6a666fafc3cfb907094747e241f148249047106498538e00a67dec6906de6d8d",
+      "tier": "free",
+      "createdAt": "2026-06-13T19:40:24.777Z",
+      "expiresAt": "2026-06-20T19:40:24.777Z",
+      "revoked": false
+    },
+    {
+      "id": "atk_e02c365604b74c51",
+      "label": "Owner",
+      "tokenHash": "ca019a34b7f294820a28e5dbf95673d52d16a796cd5498f939178c0f9c0a2c4f",
+      "tier": "premium",
+      "createdAt": "2026-06-14T15:59:16.523Z",
+      "expiresAt": "2026-06-21T15:59:16.523Z",
+      "revoked": false
+    },
+    {
+      "id": "atk_606d49b130cab96e",
+      "label": "asdasdsd",
+      "tokenHash": "052b85cb52ce0e3a7ccdf645e20c734180d5c107d1636b08fd9d33468247f2be",
+      "tier": "free",
+      "createdAt": "2026-06-14T16:18:20.950Z",
+      "expiresAt": "2026-06-21T16:18:20.950Z",
+      "revoked": false
+    },
+    {
+      "id": "atk_0fe5f37477f010da",
+      "label": "Guest B509",
+      "tokenHash": "2d42b783baf26fc0c478cb6be8846b8e4989acec42d0f957530b471b6b042ffa",
+      "tier": "free",
+      "createdAt": "2026-06-14T16:35:35.717Z",
+      "expiresAt": "2026-06-21T16:35:35.717Z",
+      "revoked": false
     }
   ],
   "sessions": [
@@ -234,56 +279,54 @@
       "lastSeenAt": "2026-06-11T18:07:37.267Z",
       "revoked": false,
       "ipHint": "::1"
+    },
+    {
+      "id": "ses_34a8818d71e24785",
+      "tokenHash": "20f2419c0c61df11db211a13a62c5e9f77cc88cd2f4f4c409f7ab72428dd6253",
+      "deviceId": "7c051258-b7da-46bd-bc5c-7804f8e023e0",
+      "deviceFingerprintHash": "a9b7d1ac9fcb66a588fd6d4e51a192ee832021d749d242f0d71351289dd9e622",
+      "label": "marco",
+      "userId": "usr_65786785022f586b",
+      "username": "marco",
+      "tier": "free",
+      "createdAt": "2026-06-13T19:40:39.934Z",
+      "expiresAt": "2026-09-11T19:40:39.934Z",
+      "lastSeenAt": "2026-06-14T16:22:31.151Z",
+      "revoked": false,
+      "ipHint": "::1"
+    },
+    {
+      "id": "ses_992bfc611cc6c176",
+      "tokenHash": "5871b4d31f57f686eeb1a8186021d4bd79e5c74d29f0f1c4e0e994bbf10eb694",
+      "deviceId": "7c051258-b7da-46bd-bc5c-7804f8e023e0",
+      "deviceFingerprintHash": "a9b7d1ac9fcb66a588fd6d4e51a192ee832021d749d242f0d71351289dd9e622",
+      "label": "asdasdsd",
+      "userId": "usr_bf818c01ed375801",
+      "username": "asdasdsd",
+      "tier": "free",
+      "createdAt": "2026-06-14T16:22:52.548Z",
+      "expiresAt": "2026-09-12T16:22:52.548Z",
+      "lastSeenAt": "2026-06-14T16:26:37.783Z",
+      "revoked": false,
+      "ipHint": "::1"
+    },
+    {
+      "id": "ses_2a391eaf8864d41a",
+      "tokenHash": "c41c1d0b8dfb9c46f10aacc1f9edc2df175fa390c94aa5a528170de00ec94852",
+      "deviceId": "7c051258-b7da-46bd-bc5c-7804f8e023e0",
+      "deviceFingerprintHash": "a9b7d1ac9fcb66a588fd6d4e51a192ee832021d749d242f0d71351289dd9e622",
+      "label": "Guest B509",
+      "userId": "usr_637d3a8bf6311635",
+      "username": "guest_b509",
+      "tier": "free",
+      "createdAt": "2026-06-14T16:35:53.167Z",
+      "expiresAt": "2026-09-12T16:35:53.167Z",
+      "lastSeenAt": "2026-06-14T18:32:07.462Z",
+      "revoked": false,
+      "ipHint": "::1"
     }
   ],
   "users": [
-    {
-      "id": "usr_765df2fe8dffcf66",
-      "username": "marco",
-      "displayName": "marco",
-      "passwordHash": "scrypt2:57234aa6067cd4daae21785a9ca45743:cd1dcb9f0124afbf7a7119a8273f687636192eb168be0107e11d8a5ffc4c136bda598074730dd85b85c9d86d198833b85ce1efae9a352c22f83ce90e670b9f2c",
-      "tier": "vip",
-      "email": "sinister.good.222@gmail.com",
-      "notes": "para hacer pruebas",
-      "referralCode": "EEEC",
-      "createdAt": "2026-06-11T15:51:18.820Z",
-      "revoked": false
-    },
-    {
-      "id": "usr_244ce8a44783b1f0",
-      "username": "asdasdasdasd",
-      "displayName": "asd",
-      "passwordHash": "scrypt2:dbecca294df2519c25ac7f3c7e803fa6:20f91facb22f8b8bb816f34b10303f8bc003e56a39d34686acdbd107b1c8a892776b3e532b1c81f8838d01f595b9c45b82099993c48f8a58faf8d52914b1f102",
-      "tier": "free",
-      "email": "sd@asd",
-      "notes": "asd",
-      "createdAt": "2026-06-11T17:21:43.946Z",
-      "revoked": false
-    },
-    {
-      "id": "usr_0c0601aa7fdc54fb",
-      "username": "asdadasdasd",
-      "displayName": "marco",
-      "passwordHash": "scrypt2:e31a2c55d56c0266dbc394424da309a9:a260c511255b4d373e2f5109764fda46bceac73211948c4f8571cb90da47f415cf8a4b43d5be1f7059fc9a5249849a15123903a260d5fc1bab8d1e41a0a06fee",
-      "tier": "free",
-      "email": "sinister.good.222@gmail.com",
-      "notes": "para hacer pruebas",
-      "referralCode": "asdasdasd",
-      "createdAt": "2026-06-11T17:24:24.248Z",
-      "revoked": false
-    },
-    {
-      "id": "usr_c6f75654a9840ebf",
-      "username": "asdadadasdadadassd",
-      "displayName": "asdasdad",
-      "passwordHash": "scrypt2:cbcc65e4010032ee834d8fa0cd163ab5:3d1f253c48f35ddf9863549281f23a9ce7f4883865abba11ab985299e9189154d1dc0bc6a275fe9f818694181b0c225d2d7b4b7793f96d0d9b132dd61209b3d3",
-      "tier": "pro",
-      "email": "sinister.good.222@gmail.com",
-      "notes": "asdasdad",
-      "referralCode": "asdasdas",
-      "createdAt": "2026-06-11T17:25:02.621Z",
-      "revoked": false
-    },
     {
       "id": "usr_47cfd73f0aaf7a0d",
       "username": "marcoss",
@@ -308,9 +351,194 @@
       "createdAt": "2026-06-11T17:42:38.019Z",
       "revoked": false,
       "lastLoginAt": "2026-06-11T17:43:23.800Z"
+    },
+    {
+      "id": "usr_65786785022f586b",
+      "username": "marco",
+      "displayName": "marco",
+      "passwordHash": "scrypt2:a9411d505a22ec16dfc28690ba39eb97:db0990d412f90340f6272aa817f9d9587340a75d942b2949ce256d99e5fb14a416e89f26b638ff50b79675c88597eae4afc639496d840faed1fff402a6a023d6",
+      "temporaryExpiresAt": "2026-06-14T19:40:23.635Z",
+      "tier": "free",
+      "notes": "[Perfil temporal — se elimina 14 jun, 14:40]",
+      "createdAt": "2026-06-13T19:40:23.632Z",
+      "revoked": false,
+      "lastLoginAt": "2026-06-13T19:40:39.921Z"
+    },
+    {
+      "id": "usr_bfe81b3bb5b41f6f",
+      "username": "celadita",
+      "displayName": "Owner",
+      "passwordHash": "scrypt2:2bb6b0f15e7c35d2f59533658c8819bf:c4561649d11e323193e24ccd063b610cf2fdafa8281217bcb32ebbbed16d6b4eb49a638be14dccab8d5c459a439ad1a93fe8081e48d20cd6c9f1317391b2f369",
+      "tier": "creator",
+      "email": "git.sinister.developer@gmail.com",
+      "notes": "OWNER",
+      "createdAt": "2026-06-14T15:59:15.125Z",
+      "revoked": false
+    },
+    {
+      "id": "usr_637d3a8bf6311635",
+      "username": "guest_b509",
+      "displayName": "Guest B509",
+      "passwordHash": "scrypt2:4e2ed90e2dc5a973fea4d61bb0444a42:e7af597c0861e6167c6788bfbaddf9954318062e0d55487593b0500193c5bede6a10ceebea4f697ca3bf35781b8113610f348093942affee21a6be4b6cbff7fc",
+      "tier": "free",
+      "createdAt": "2026-06-14T16:35:34.223Z",
+      "revoked": false,
+      "lastLoginAt": "2026-06-14T16:35:53.151Z"
     }
   ],
   "auditLog": [
+    {
+      "id": "aud_6ca3471b19dd983b",
+      "action": "user_login_success",
+      "at": "2026-06-14T16:35:53.159Z",
+      "ipHint": "::1",
+      "meta": "guest_b509"
+    },
+    {
+      "id": "aud_32b963d8ceaa87fd",
+      "action": "token_created",
+      "at": "2026-06-14T16:35:35.724Z",
+      "ipHint": "::1",
+      "meta": "Guest B509"
+    },
+    {
+      "id": "aud_8da0d31e45e21bb7",
+      "action": "user_created",
+      "at": "2026-06-14T16:35:34.573Z",
+      "ipHint": "::1",
+      "meta": "guest_b509"
+    },
+    {
+      "id": "aud_4c6c1cdc4d1afbe2",
+      "action": "session_verify_failed",
+      "at": "2026-06-14T16:24:52.989Z",
+      "meta": "unknown"
+    },
+    {
+      "id": "aud_c802ce04dd71806e",
+      "action": "user_deleted",
+      "at": "2026-06-14T16:22:52.601Z",
+      "ipHint": "::1",
+      "meta": "asdasdsd:usr_bf818c01ed375801"
+    },
+    {
+      "id": "aud_aa2dff556dd0b8e6",
+      "action": "user_login_success",
+      "at": "2026-06-14T16:22:52.540Z",
+      "ipHint": "::1",
+      "meta": "asdasdsd"
+    },
+    {
+      "id": "aud_a2e40ddd837f3fdb",
+      "action": "token_created",
+      "at": "2026-06-14T16:18:20.972Z",
+      "ipHint": "::1",
+      "meta": "asdasdsd"
+    },
+    {
+      "id": "aud_b58ca157162bec47",
+      "action": "user_created",
+      "at": "2026-06-14T16:18:19.610Z",
+      "ipHint": "::1",
+      "meta": "asdasdsd"
+    },
+    {
+      "id": "aud_a03667431e7ee41d",
+      "action": "token_created",
+      "at": "2026-06-14T15:59:16.536Z",
+      "ipHint": "::1",
+      "meta": "Owner"
+    },
+    {
+      "id": "aud_00b1ed948c71ea3b",
+      "action": "user_created",
+      "at": "2026-06-14T15:59:15.420Z",
+      "ipHint": "::1",
+      "meta": "celadita"
+    },
+    {
+      "id": "aud_4234ec54c9aab9e2",
+      "action": "user_login_success",
+      "at": "2026-06-13T19:40:39.927Z",
+      "ipHint": "::1",
+      "meta": "marco"
+    },
+    {
+      "id": "aud_fc5e91ca26afac08",
+      "action": "token_created",
+      "at": "2026-06-13T19:40:24.787Z",
+      "ipHint": "::1",
+      "meta": "marco"
+    },
+    {
+      "id": "aud_25d8122877218ae7",
+      "action": "user_created",
+      "at": "2026-06-13T19:40:23.967Z",
+      "ipHint": "::1",
+      "meta": "marco"
+    },
+    {
+      "id": "aud_fe049bc921a018f4",
+      "action": "user_deleted",
+      "at": "2026-06-13T19:39:01.975Z",
+      "ipHint": "::1",
+      "meta": "marco:usr_053725453571ba79"
+    },
+    {
+      "id": "aud_1990c164905e7d58",
+      "action": "token_created",
+      "at": "2026-06-13T19:36:14.053Z",
+      "ipHint": "::1",
+      "meta": "marco"
+    },
+    {
+      "id": "aud_ce32bd678ca72880",
+      "action": "user_created",
+      "at": "2026-06-13T19:36:13.192Z",
+      "ipHint": "::1",
+      "meta": "marco"
+    },
+    {
+      "id": "aud_f873eddcb83da2c9",
+      "action": "user_deleted",
+      "at": "2026-06-13T19:30:36.858Z",
+      "ipHint": "::1",
+      "meta": "asdadadasdadadassd:usr_c6f75654a9840ebf"
+    },
+    {
+      "id": "aud_d6cd40a48080b672",
+      "action": "user_deleted",
+      "at": "2026-06-13T19:30:18.960Z",
+      "ipHint": "::1",
+      "meta": "asdadasdasd:usr_0c0601aa7fdc54fb"
+    },
+    {
+      "id": "aud_2de6f54e97d37a90",
+      "action": "user_deleted",
+      "at": "2026-06-13T19:29:48.341Z",
+      "ipHint": "::1",
+      "meta": "asdasdasdasd:usr_244ce8a44783b1f0"
+    },
+    {
+      "id": "aud_c5e586e3231bd3c4",
+      "action": "user_deleted",
+      "at": "2026-06-13T19:29:35.431Z",
+      "ipHint": "::1",
+      "meta": "marco:usr_765df2fe8dffcf66"
+    },
+    {
+      "id": "aud_f7a4624289057246",
+      "action": "user_login_failed",
+      "at": "2026-06-13T19:20:38.845Z",
+      "ipHint": "::1",
+      "meta": "invalid_format"
+    },
+    {
+      "id": "aud_9ec9bad81084d6be",
+      "action": "admin_login",
+      "at": "2026-06-13T18:38:27.718Z",
+      "ipHint": "::1"
+    },
     {
       "id": "aud_99080ba8c9ae3b74",
       "action": "user_login_success",

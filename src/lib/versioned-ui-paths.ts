@@ -1,4 +1,5 @@
 import path from "path";
+import { getDataDir } from "@/lib/data-dir";
 
 export const DEFAULT_MC_VERSION = "1.18.2";
 
@@ -7,18 +8,18 @@ export function normalizeMcVersionParam(raw: string | null | undefined): string 
   return v || DEFAULT_MC_VERSION;
 }
 
-export function gameUiFileForVersion(cwd: string, mcVersion: string): string {
-  return path.join(cwd, "data", "game-ui", `${normalizeMcVersionParam(mcVersion)}.json`);
+export function gameUiFileForVersion(mcVersion: string): string {
+  return path.join(getDataDir(), "game-ui", `${normalizeMcVersionParam(mcVersion)}.json`);
 }
 
-export function loadingUiFileForVersion(cwd: string, mcVersion: string): string {
-  return path.join(cwd, "data", "loading-ui", `${normalizeMcVersionParam(mcVersion)}.json`);
+export function loadingUiFileForVersion(mcVersion: string): string {
+  return path.join(getDataDir(), "loading-ui", `${normalizeMcVersionParam(mcVersion)}.json`);
 }
 
-export function legacyGameUiFile(cwd: string): string {
-  return path.join(cwd, "data", "game-ui.json");
+export function legacyGameUiFile(): string {
+  return path.join(getDataDir(), "game-ui.json");
 }
 
-export function legacyLoadingUiFile(cwd: string): string {
-  return path.join(cwd, "data", "loading-ui.json");
+export function legacyLoadingUiFile(): string {
+  return path.join(getDataDir(), "loading-ui.json");
 }

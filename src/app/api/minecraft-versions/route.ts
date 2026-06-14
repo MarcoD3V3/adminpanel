@@ -8,7 +8,9 @@ import {
 } from "@/lib/minecraft-versions";
 import { requireAdminSession } from "@/lib/launcher-auth/require-admin";
 
-const FILE = path.join(process.cwd(), "data", "minecraft-versions.json");
+import { dataPath } from "@/lib/data-dir";
+
+const FILE = dataPath("minecraft-versions.json");
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",

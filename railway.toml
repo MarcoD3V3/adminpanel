@@ -1,7 +1,18 @@
 # CraftLauncher — despliega el ADMIN (Next.js), NO el launcher Electron.
+#
+# Variables obligatorias en Railway:
+#   LAUNCHER_ADMIN_SECRET, LAUNCHER_TOKEN_PEPPER, LAUNCHER_AUTH_ENFORCE=true
+# NO definas HUB_DATA_AUTHORITY_URL en Railway (este servicio es la autoridad de datos).
+#
+# Volumen persistente: monta en /app/data (hub-layout.json, hub-layouts/, launcher-auth.json…).
 [build]
 buildCommand = "npm run build"
 
 [deploy]
 startCommand = "npm run start"
 restartPolicyType = "ON_FAILURE"
+
+# Segundo servicio: Player Portal (user_web)
+# - Root directory: packages/user_web (o usa packages/user_web/railway.json)
+# - Variables: ADMIN_API_URL, NEXT_PUBLIC_ADMIN_API_URL, PORTAL_CLIPBOARD_SECRET
+# - El admin (este servicio) necesita volumen /app/data + PORTAL_CLIPBOARD_SECRET para chat/portal

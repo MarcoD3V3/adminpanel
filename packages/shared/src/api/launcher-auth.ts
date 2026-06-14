@@ -17,6 +17,7 @@ function authHeaders(auth: LauncherAuthHeaders): HeadersInit {
     Authorization: auth.authorization,
     "X-Device-Id": auth.deviceId,
     "X-Device-Fingerprint": auth.fingerprint,
+    "X-Client-Kind": "launcher",
   };
 }
 

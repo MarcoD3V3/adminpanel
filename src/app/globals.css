@@ -1,3 +1,5 @@
+@import "../../packages/shared/hub-text-fonts.css";
+@import "../styles/hub-catalog-preview.css";
 @import "tailwindcss";
 
 @theme {
@@ -111,5 +113,3 @@ input[type="color"]::-webkit-color-swatch {
   }
 }
 
-/* Estilos Hub Builder / preview launcher — en global para evitar ChunkLoadError al import dinámico */
-@import "../styles/hub-catalog-preview.css";

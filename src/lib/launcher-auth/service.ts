@@ -35,6 +35,7 @@ import type {
   GeneratedActivationToken,
   LauncherUserPublic,
   LauncherUserRecord,
+  SessionClientKind,
   VerifySessionResult,
 } from "./types";
 
@@ -123,7 +124,21 @@ export async function listSessions(): Promise<Omit<DeviceSessionRecord, "tokenHa
 
 export async function listLauncherUsers(): Promise<LauncherUserPublic[]> {
   const store = await loadAuthStore();
-  return store.users.map(({ passwordHash: _h, ...rest }) => rest);
+  return store.users.map(({ passwordHash: _h, portalAccessSealed: _s, ...rest }) => rest);
+}
+
+export async function purgeExpiredTemporaryProfiles(ipHint?: string): Promise<number> {
+  const store = await loadAuthStore();
+  const expiredIds = store.users
+    .filter((u) => u.temporaryExpiresAt && isExpired(u.temporaryExpiresAt))
+    .map((u) => u.id);
+
+  let removed = 0;
+  for (const id of expiredIds) {
+    const result = await deleteLauncherUser(id, ipHint ?? "temporary_expiry");
+    if (result.success) removed += 1;
+  }
+  return removed;
 }
 
 export async function createLauncherUser(
@@ -132,8 +147,14 @@ export async function createLauncherUser(
   tier: string = "free",
   displayName?: string,
   ipHint?: string,
-  extras?: { email?: string; notes?: string; referralCode?: string }
-): Promise<LauncherUserPublic | { error: string }> {
+  extras?: {
+    email?: string;
+    notes?: string;
+    referralCode?: string;
+    temporaryMinutes?: number;
+    singleUse?: boolean;
+  }
+): Promise<(LauncherUserPublic & { portalAccessSealed?: string }) | { error: string }> {
   const normalized = username.trim().toLowerCase();
   if (!isValidUsername(normalized)) {
     return { error: "Usuario inválido (3–32 caracteres, letras/números/._-)" };
@@ -150,14 +171,47 @@ export async function createLauncherUser(
 
   const id = generateId("usr");
   const createdAt = nowIso();
+  const portalAccessSealed = await (
+    await import("@/lib/portal-access-seal")
+  ).sealPasswordForPortalClipboard(password);
+
+  let temporaryExpiresAt: string | undefined;
+  let notes = extras?.notes?.trim() || undefined;
+  const tempMinutes = extras?.temporaryMinutes;
+  const singleUse = Boolean(extras?.singleUse);
+
+  if (singleUse && tempMinutes) {
+    return { error: "Un perfil no puede ser temporal y de un solo uso a la vez" };
+  }
+
+  if (tempMinutes && tempMinutes > 0) {
+    temporaryExpiresAt = new Date(Date.now() + tempMinutes * 60_000).toISOString();
+    const expiryLabel = new Intl.DateTimeFormat("es-ES", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(temporaryExpiresAt));
+    const tempNote = `[Perfil temporal — se elimina ${expiryLabel}]`;
+    notes = notes ? `${notes} · ${tempNote}` : tempNote;
+  }
+
+  if (singleUse) {
+    const singleNote = "[Perfil de un solo uso — se elimina tras el primer login]";
+    notes = notes ? `${notes} · ${singleNote}` : singleNote;
+  }
+
   const record: LauncherUserRecord = {
     id,
     username: normalized,
     displayName: displayName?.trim() || normalized,
     passwordHash: hashPassword(password),
+    portalAccessSealed,
+    temporaryExpiresAt,
+    singleUse: singleUse || undefined,
     tier: normalizeProfilePlan(tier),
     email: extras?.email?.trim() || undefined,
-    notes: extras?.notes?.trim() || undefined,
+    notes,
     referralCode: extras?.referralCode?.trim() || undefined,
     createdAt,
     revoked: false,
@@ -167,8 +221,23 @@ export async function createLauncherUser(
     s.users.push(record);
   });
   await appendAuditLog("user_created", ipHint, normalized);
-  const { passwordHash: _h, ...pub } = record;
-  return pub;
+  const { emitSystemEvent } = await import("@/lib/system-events");
+  emitSystemEvent("user.register", {
+    userId: record.id,
+    username: normalized,
+    tier: record.tier,
+    premium: record.tier === "premium",
+    referralCode: extras?.referralCode?.trim(),
+  });
+  if (extras?.referralCode?.trim()) {
+    void import("@/lib/rewards/service")
+      .then(({ applyReferralCode }) => {
+        applyReferralCode(record.id, normalized, extras.referralCode!.trim());
+      })
+      .catch(() => {});
+  }
+  const { passwordHash: _h, portalAccessSealed: sealedAccess, ...pub } = record;
+  return { ...pub, portalAccessSealed: sealedAccess };
 }
 
 export async function revokeLauncherUser(id: string, ipHint?: string): Promise<boolean> {
@@ -181,13 +250,18 @@ export async function revokeLauncherUser(id: string, ipHint?: string): Promise<b
       found = true;
     }
   });
-  if (found) await appendAuditLog("user_revoked", ipHint, id);
+  if (found) {
+    await appendAuditLog("user_revoked", ipHint, id);
+    const { emitSystemEvent } = await import("@/lib/system-events");
+    emitSystemEvent("user.ban", { userId: id, source: "revoke" });
+  }
   return found;
 }
 
 export async function deleteLauncherUser(
   id: string,
-  ipHint?: string
+  ipHint?: string,
+  options?: { keepSessions?: boolean }
 ): Promise<{ success: boolean; error?: string }> {
   if (!isValidRecordId(id)) {
     return { success: false, error: "ID de perfil inválido" };
@@ -200,7 +274,9 @@ export async function deleteLauncherUser(
     if (index === -1) return;
     username = s.users[index]!.username;
     s.users.splice(index, 1);
-    s.sessions = s.sessions.filter((session) => session.userId !== id);
+    if (!options?.keepSessions) {
+      s.sessions = s.sessions.filter((session) => session.userId !== id);
+    }
     removed = true;
   });
 
@@ -212,6 +288,12 @@ export async function deleteLauncherUser(
     await deleteUserSkin(id);
   } catch {
     // El perfil ya se eliminó del store; la skin es limpieza secundaria.
+  }
+  try {
+    const { removePortalChatDataForUser } = await import("@/lib/player-portal/chat");
+    removePortalChatDataForUser(id);
+  } catch {
+    // Limpieza secundaria del chat del portal.
   }
   await appendAuditLog("user_deleted", ipHint, `${username}:${id}`);
   return { success: true };
@@ -270,7 +352,7 @@ export async function updateLauncherUser(
   if (!updated) return { error: "Usuario no encontrado" };
   await appendAuditLog("user_updated", ipHint, id);
   const record: LauncherUserRecord = updated;
-  const { passwordHash: _h, ...pub } = record;
+  const { passwordHash: _h, portalAccessSealed: _s, ...pub } = record;
   return pub;
 }
 
@@ -278,7 +360,7 @@ export async function resetLauncherUserPassword(
   id: string,
   newPassword: string,
   ipHint?: string
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; error?: string; portalAccessSealed?: string }> {
   if (!isValidRecordId(id)) return { success: false, error: "ID inválido" };
 
   const store = await loadAuthStore();
@@ -293,24 +375,35 @@ export async function resetLauncherUserPassword(
     return { success: false, error: passwordCheck.errors[0] ?? "Contraseña demasiado débil" };
   }
 
+  const portalAccessSealed = await (
+    await import("@/lib/portal-access-seal")
+  ).sealPasswordForPortalClipboard(newPassword);
+
   let ok = false;
   await mutateAuthStore((s) => {
     const target = s.users.find((x) => x.id === id);
     if (!target || target.revoked) return;
     target.passwordHash = hashPassword(newPassword);
+    target.portalAccessSealed = portalAccessSealed;
     ok = true;
   });
 
   if (!ok) return { success: false, error: "Usuario no encontrado" };
   await appendAuditLog("user_password_reset", ipHint, id);
-  return { success: true };
+  return { success: true, portalAccessSealed };
 }
 
 async function createSessionForDevice(
   deviceId: string,
   fingerprint: string,
   ip: string | undefined,
-  meta: { label?: string; tier?: string; userId?: string; username?: string }
+  meta: {
+    label?: string;
+    tier?: string;
+    userId?: string;
+    username?: string;
+    clientKind?: SessionClientKind;
+  }
 ): Promise<ActivationResult> {
   const fpHash = hashFingerprint(`${deviceId}:${fingerprint}`);
   const sessionToken = generateSessionToken();
@@ -318,6 +411,7 @@ async function createSessionForDevice(
   const expiresAt = new Date(Date.now() + SESSION_TTL_MS).toISOString();
   const ts = nowIso();
   const tier = resolveSessionTier(meta.tier);
+  const clientKind = meta.clientKind ?? "launcher";
 
   await mutateAuthStore((s) => {
     s.sessions.push({
@@ -334,6 +428,8 @@ async function createSessionForDevice(
       lastSeenAt: ts,
       revoked: false,
       ipHint: ip,
+      clientKind,
+      lastClientKind: clientKind,
     });
   });
   const username = meta.username?.trim() || undefined;
@@ -353,7 +449,8 @@ export async function loginLauncherUser(
   password: string,
   deviceId: string,
   fingerprint: string,
-  ipHint?: string
+  ipHint?: string,
+  options?: { forbidSingleUse?: boolean }
 ): Promise<ActivationResult | { error: string; status: number }> {
   const ip = sanitizeIpHint(ipHint);
   const rateKey = `login:${ip ?? "unknown"}:${deviceId}`;
@@ -379,6 +476,13 @@ export async function loginLauncherUser(
     return { error: LOGIN_FAIL_MSG, status: 401 };
   }
 
+  if (user.singleUse && options?.forbidSingleUse) {
+    return {
+      error: "Este perfil es de un solo uso y solo puede iniciar sesión desde el launcher de escritorio.",
+      status: 403,
+    };
+  }
+
   const ts = nowIso();
   await mutateAuthStore((s) => {
     const live = s.users.find((x) => x.id === user.id);
@@ -387,12 +491,34 @@ export async function loginLauncherUser(
 
   resetRateLimit(rateKey);
   await appendAuditLog("user_login_success", ip, user.username);
-  return createSessionForDevice(deviceId, fingerprint, ip, {
+  const result = await createSessionForDevice(deviceId, fingerprint, ip, {
     label: user.displayName ?? user.username,
     tier: user.tier ?? "free",
     userId: user.id,
     username: user.username,
+    clientKind: options?.forbidSingleUse ? "portal" : "launcher",
   });
+
+  const { emitSystemEvent } = await import("@/lib/system-events");
+  emitSystemEvent("user.login", {
+    username: user.username,
+    deviceId,
+    tier: user.tier ?? "free",
+    premium: (user.tier ?? "free") === "premium",
+    userId: user.id,
+  });
+
+  void import("@/lib/rewards/service")
+    .then(({ processRewardsEvent }) => {
+      void processRewardsEvent(user.id, user.username, { metric: "login" }).catch(() => {});
+    })
+    .catch(() => {});
+
+  if (user.singleUse) {
+    await deleteLauncherUser(user.id, ip ?? "single_use_login", { keepSessions: true });
+  }
+
+  return result;
 }
 
 export async function revokeActivationToken(id: string, ipHint?: string): Promise<boolean> {
@@ -478,6 +604,7 @@ export async function activateLauncherToken(
     label: mcName ?? record.label,
     tier,
     username: mcName ?? inferredUsername,
+    clientKind: isTesterTier(tier) ? "tester" : "launcher",
   });
 
   const ts = nowIso();
@@ -501,7 +628,8 @@ export async function verifySessionToken(
   rawToken: string,
   deviceId: string,
   fingerprint: string,
-  ipHint?: string
+  ipHint?: string,
+  clientKind?: SessionClientKind
 ): Promise<VerifySessionResult> {
   const ip = sanitizeIpHint(ipHint);
   const rateKey = `verify:${deviceId}:${ip ?? "unknown"}`;
@@ -533,6 +661,20 @@ export async function verifySessionToken(
     return { valid: false, reason: "dispositivo" };
   }
   if (session.deviceFingerprintHash !== fpHash) {
+    const { loadSystemSettings } = await import("@/lib/settings/store");
+    const settings = loadSystemSettings();
+    if (settings.security.verifyHwid) {
+      const { raiseSecurityAlert } = await import("@/lib/security/service");
+      await raiseSecurityAlert({
+        type: "launcher_hwid_mismatch",
+        ip,
+        deviceId,
+        userId: session.userId,
+        username: session.username ?? deviceId.slice(0, 12),
+        detail: "Huella de dispositivo no coincide con la sesión registrada",
+      });
+      return { valid: false, reason: "hwid" };
+    }
     await mutateAuthStore((s) => {
       const live = s.sessions.find((x) => x.id === session.id);
       if (live) live.deviceFingerprintHash = fpHash;
@@ -541,14 +683,30 @@ export async function verifySessionToken(
 
   await mutateAuthStore((s) => {
     const live = s.sessions.find((x) => x.id === session.id);
-    if (live) live.lastSeenAt = nowIso();
+    if (live) {
+      live.lastSeenAt = nowIso();
+      if (clientKind) live.lastClientKind = clientKind;
+    }
   });
 
   let username = session.username;
   let displayName: string | undefined;
+  let accountAvailable = true;
   if (session.userId) {
     const user = store.users.find((u) => u.id === session.userId && !u.revoked);
-    if (user) {
+    if (!user) {
+      accountAvailable = false;
+      if (!session.username) {
+        return { valid: false, reason: "revocada" };
+      }
+      username = session.username;
+      displayName = resolveSessionDisplayName(session.label, session.username);
+    } else {
+      const { isTempBanned } = await import("@/lib/automation/store");
+      const ban = isTempBanned(session.userId);
+      if (ban.banned) {
+        return { valid: false, reason: "baneado" };
+      }
       username = username ?? user.username;
       displayName = resolveSessionDisplayName(user.displayName ?? user.username, user.username);
     }
@@ -568,6 +726,7 @@ export async function verifySessionToken(
     tester: isTesterTier(tier),
     username,
     displayName,
+    accountAvailable,
   };
 }
 
@@ -579,16 +738,18 @@ export function extractBearerToken(authHeader: string | null): string | null {
 export async function verifyRequestSession(
   authHeader: string | null,
   deviceId: string | null,
-  fingerprint: string | null
+  fingerprint: string | null,
+  clientKind?: SessionClientKind
 ): Promise<VerifySessionResult> {
   const token = extractBearerToken(authHeader);
   if (!token || !deviceId || !fingerprint) {
     return { valid: false, reason: "sin_credenciales" };
   }
-  return verifySessionToken(token, deviceId, fingerprint);
+  return verifySessionToken(token, deviceId, fingerprint, undefined, clientKind);
 }
 
 export type AdminProfileUser = LauncherUserPublic & {
+  portalAccessSealed?: string;
   activeSessionCount: number;
   totalSessionCount: number;
   hasSkin: boolean;
@@ -603,12 +764,15 @@ export async function getAdminProfilesOverview(): Promise<{
   users: AdminProfileUser[];
   sessions: AdminSessionPublic[];
 }> {
+  await purgeExpiredTemporaryProfiles("profiles_overview");
   const store = await loadAuthStore();
-  const users: AdminProfileUser[] = store.users.map(({ passwordHash: _h, ...user }) => {
+  const users: AdminProfileUser[] = store.users.map((user) => {
+    const { passwordHash: _h, portalAccessSealed, ...pub } = user;
     const skinMeta = getSkinMeta(user.id);
     const userSessions = store.sessions.filter((s) => s.userId === user.id);
     return {
-      ...user,
+      ...pub,
+      portalAccessSealed,
       activeSessionCount: userSessions.filter((s) => !s.revoked && !isExpired(s.expiresAt)).length,
       totalSessionCount: userSessions.length,
       hasSkin: skinExists(user.id),
@@ -629,6 +793,8 @@ export async function getAdminProfilesOverview(): Promise<{
 export { listAuditLog } from "./audit";
 export { isAdminSecretConfigured } from "./admin-session";
 
+import { resolveLauncherAuthEnforced } from "@/lib/settings/store";
+
 export function isLauncherAuthEnforced(): boolean {
-  return process.env.LAUNCHER_AUTH_ENFORCE !== "false";
+  return resolveLauncherAuthEnforced();
 }

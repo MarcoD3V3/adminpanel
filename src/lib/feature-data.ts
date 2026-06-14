@@ -47,17 +47,17 @@ export const mockModpacks: Modpack[] = [
 ];
 
 export const mockSecurityAlerts: SecurityAlert[] = [
-  { id: "a1", username: "CreeperBoom", userId: "u5", type: "cheat_client", severity: "critical", detail: "Cliente Wurst detectado en classpath", detectedAt: new Date(Date.now() - 3600000).toISOString(), resolved: false },
-  { id: "a2", username: "Hacker99", userId: "u11", type: "modified_jar", severity: "high", detail: "minecraft.jar hash no coincide", detectedAt: new Date(Date.now() - 7200000).toISOString(), resolved: false },
-  { id: "a3", username: "AltAccount", userId: "u12", type: "hwid_mismatch", severity: "medium", detail: "HWID cambió en 24h (posible cuenta compartida)", detectedAt: new Date(Date.now() - 86400000).toISOString(), resolved: true },
-  { id: "a4", username: "ModFan", userId: "u13", type: "suspicious_mod", severity: "low", detail: "Mod no whitelisted: xray-1.0.jar", detectedAt: new Date(Date.now() - 1800000).toISOString(), resolved: false },
+  { id: "a1", username: "CreeperBoom", userId: "u5", type: "launcher_cheat_client", source: "launcher", severity: "critical", detail: "Cliente Wurst detectado en classpath", detectedAt: new Date(Date.now() - 3600000).toISOString(), resolved: false },
+  { id: "a2", username: "Hacker99", userId: "u11", type: "launcher_modified_jar", source: "launcher", severity: "high", detail: "minecraft.jar hash no coincide", detectedAt: new Date(Date.now() - 7200000).toISOString(), resolved: false },
+  { id: "a3", username: "AltAccount", userId: "u12", type: "launcher_hwid_mismatch", source: "launcher", severity: "medium", detail: "HWID cambió en 24h (posible cuenta compartida)", detectedAt: new Date(Date.now() - 86400000).toISOString(), resolved: true },
+  { id: "a4", username: "ModFan", userId: "u13", type: "launcher_suspicious_mod", source: "launcher", severity: "low", detail: "Mod no whitelisted: xray-1.0.jar", detectedAt: new Date(Date.now() - 1800000).toISOString(), resolved: false },
 ];
 
 export const mockSecurityRules: SecurityRule[] = [
-  { id: "sr1", name: "Detectar clients hackeados", description: "Escanea classpath al iniciar MC", enabled: true, action: "ban" },
-  { id: "sr2", name: "Verificar hash de JAR", description: "Compara integridad de archivos del juego", enabled: true, action: "kick" },
-  { id: "sr3", name: "HWID tracking", description: "Alerta si HWID cambia frecuentemente", enabled: true, action: "flag" },
-  { id: "sr4", name: "Whitelist de mods", description: "Solo mods aprobados en modpacks oficiales", enabled: false, action: "notify_admin" },
+  { id: "sr1", detectionType: "launcher_cheat_client", name: "Detectar clients hackeados", description: "Escanea classpath al iniciar MC", enabled: true, action: "ban", source: "launcher" },
+  { id: "sr2", detectionType: "launcher_modified_jar", name: "Verificar hash de JAR", description: "Compara integridad de archivos del juego", enabled: true, action: "kick", source: "launcher" },
+  { id: "sr3", detectionType: "launcher_hwid_mismatch", name: "HWID tracking", description: "Alerta si HWID cambia frecuentemente", enabled: true, action: "flag", source: "launcher" },
+  { id: "sr4", detectionType: "launcher_suspicious_mod", name: "Whitelist de mods", description: "Solo mods aprobados en modpacks oficiales", enabled: false, action: "notify_admin", source: "launcher" },
 ];
 
 export const mockExperiments: Experiment[] = [

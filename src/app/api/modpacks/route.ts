@@ -5,7 +5,9 @@ import type { FeaturedModpack } from "@craftlauncher/shared";
 import { jsonWithCors, optionsResponse } from "@/lib/launcher-auth/http";
 import { requireAdminSession } from "@/lib/launcher-auth/require-admin";
 
-const DATA_FILE = path.join(process.cwd(), "data", "modpacks.json");
+import { dataPath } from "@/lib/data-dir";
+
+const DATA_FILE = dataPath("modpacks.json");
 
 function readModpacks(): FeaturedModpack[] {
   try {

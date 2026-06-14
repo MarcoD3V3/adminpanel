@@ -1,5 +1,5 @@
 /* Widgets compartidos Hub Builder ↔ Launcher (selectores, tabs) */
-@import "./hub-text-fonts.css";
+/* Fuentes: importar hub-text-fonts.css antes de este archivo en el entry CSS */
 
 /* Sin contorno amarillo/naranja de foco del sistema (Windows / Chromium) */
 .hub-runtime-content :focus,

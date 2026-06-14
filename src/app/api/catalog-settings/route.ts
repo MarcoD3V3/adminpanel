@@ -4,7 +4,9 @@ import { NextResponse } from "next/server";
 import { jsonWithCors, optionsResponse } from "@/lib/launcher-auth/http";
 import { requireAdminSession } from "@/lib/launcher-auth/require-admin";
 
-const SETTINGS_FILE = path.join(process.cwd(), "data", "catalog-settings.json");
+import { dataPath } from "@/lib/data-dir";
+
+const SETTINGS_FILE = dataPath("catalog-settings.json");
 
 type CatalogSettings = {
   featuredTabLabel?: string;

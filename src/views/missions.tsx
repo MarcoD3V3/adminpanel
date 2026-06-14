@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { PageContent } from "@/components/layout/PageContent";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Toggle } from "@/components/ui/Toggle";
 import { FilterPills } from "@/components/ui/FilterPills";
 import { StatCard } from "@/components/ui/StatCard";
-import { mockMissions, missionMetricLabels } from "@/lib/feature-data";
+import { missionMetricLabels } from "@/lib/feature-data";
 import { badgeDefault, badgeWarning, rowItem } from "@/lib/styles";
 import { formatDate } from "@/lib/utils";
 import { Plus, Target, Trophy, Users } from "lucide-react";
@@ -30,9 +30,10 @@ const typeBadge: Record<MissionType, string> = {
 };
 
 export default function MissionsPage() {
-  const [missions, setMissions] = useState(mockMissions);
+  const [missions, setMissions] = useState<Mission[]>([]);
   const [filter, setFilter] = useState("all");
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -42,6 +43,21 @@ export default function MissionsPage() {
     rewardPoints: "50",
   });
 
+  const refresh = useCallback(async () => {
+    try {
+      const res = await fetch("/api/missions", { credentials: "include", cache: "no-store" });
+      if (!res.ok) return;
+      const data = (await res.json()) as { missions?: Mission[] };
+      setMissions(data.missions ?? []);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
+
   const filtered = useMemo(
     () => (filter === "all" ? missions : missions.filter((m) => m.type === filter)),
     [missions, filter]
@@ -50,23 +66,36 @@ export default function MissionsPage() {
   const totalCompletions = missions.reduce((s, m) => s + m.completions, 0);
   const activeCount = missions.filter((m) => m.active).length;
 
-  const addMission = () => {
+  async function addMission() {
     if (!form.title) return;
-    const newMission: Mission = {
-      id: `m${Date.now()}`,
-      title: form.title,
-      description: form.description,
-      type: form.type as MissionType,
-      metric: form.metric as Mission["metric"],
-      target: Number(form.target) || 1,
-      rewardPoints: Number(form.rewardPoints) || 25,
-      active: true,
-      completions: 0,
-    };
-    setMissions((prev) => [newMission, ...prev]);
+    await fetch("/api/missions", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: form.title,
+        description: form.description,
+        type: form.type,
+        metric: form.metric,
+        target: Number(form.target) || 1,
+        rewardPoints: Number(form.rewardPoints) || 25,
+        active: true,
+      }),
+    });
     setForm({ title: "", description: "", type: "daily", metric: "play_time", target: "60", rewardPoints: "50" });
     setShowForm(false);
-  };
+    void refresh();
+  }
+
+  async function toggleMission(id: string, active: boolean) {
+    await fetch("/api/missions", {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, active }),
+    });
+    setMissions((prev) => prev.map((m) => (m.id === id ? { ...m, active } : m)));
+  }
 
   return (
     <>
@@ -82,9 +111,9 @@ export default function MissionsPage() {
 
       <PageContent>
         <div className="grid gap-4 sm:grid-cols-3">
-          <StatCard title="Activas" value={activeCount} icon={Target} />
-          <StatCard title="Completadas (total)" value={totalCompletions.toLocaleString()} icon={Trophy} />
-          <StatCard title="Jugadores únicos hoy" value="1.2k" change="+8% vs ayer" trend="up" icon={Users} />
+          <StatCard title="Activas" value={loading ? "…" : activeCount} icon={Target} />
+          <StatCard title="Completadas (total)" value={loading ? "…" : totalCompletions.toLocaleString()} icon={Trophy} />
+          <StatCard title="Misiones totales" value={loading ? "…" : missions.length} icon={Users} />
         </div>
 
         {showForm && (
@@ -121,7 +150,7 @@ export default function MissionsPage() {
               <Input label="Objetivo (número)" value={form.target} onChange={(e) => setForm({ ...form, target: e.target.value })} />
               <Input label="Puntos recompensa" value={form.rewardPoints} onChange={(e) => setForm({ ...form, rewardPoints: e.target.value })} />
               <div className="flex gap-2 sm:col-span-2">
-                <Button onClick={addMission}>Crear</Button>
+                <Button onClick={() => void addMission()}>Crear</Button>
                 <Button variant="outline" onClick={() => setShowForm(false)}>Cancelar</Button>
               </div>
             </CardContent>
@@ -131,6 +160,7 @@ export default function MissionsPage() {
         <FilterPills options={typeFilters} active={filter} onChange={setFilter} />
 
         <div className="space-y-2">
+          {loading && <p className="text-sm text-[var(--color-muted)]">Cargando misiones…</p>}
           {filtered.map((mission) => (
             <div key={mission.id} className={`flex items-start justify-between gap-4 ${rowItem}`}>
               <div className="min-w-0 flex-1">
@@ -151,9 +181,7 @@ export default function MissionsPage() {
               <Toggle
                 compact
                 checked={mission.active}
-                onChange={(checked) =>
-                  setMissions((prev) => prev.map((m) => (m.id === mission.id ? { ...m, active: checked } : m)))
-                }
+                onChange={(checked) => void toggleMission(mission.id, checked)}
               />
             </div>
           ))}

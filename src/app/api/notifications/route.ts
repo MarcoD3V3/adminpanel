@@ -50,6 +50,13 @@ export async function POST(request: Request) {
     targetDevices: body.targetDevices,
   });
 
+  if (!created) {
+    return NextResponse.json(
+      { success: false, error: "Las notificaciones están desactivadas en Configuración" },
+      { status: 403 }
+    );
+  }
+
   return NextResponse.json({
     success: true,
     notification: {

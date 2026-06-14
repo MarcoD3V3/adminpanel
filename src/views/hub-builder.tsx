@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { usePathname } from "next/navigation";
 import { HubCanvas } from "@/components/hub-builder/HubCanvas";
+import { useHubEditLock } from "@/components/hub-builder/useHubEditLock";
 import { HubEditorToolbar } from "@/components/hub-builder/HubEditorToolbar";
 import {
   fetchSignedHubLayoutJson,
@@ -71,7 +72,11 @@ export default function HubBuilderPage() {
     storageHydrated,
     savedFingerprint,
     publishedFingerprint,
+    hubEditAccess,
+    hubLockHolder,
   } = useHubBuilderStore();
+
+  useHubEditLock(isActivePage);
 
   const { needsSave, needsPublish } = useMemo(
     () =>
@@ -96,11 +101,23 @@ export default function HubBuilderPage() {
   const [rightOpen, setRightOpen] = useState(true);
   const [paletteWidth, setPaletteWidth] = useState(DEFAULT_PALETTE_WIDTH);
   const [resizingPalette, setResizingPalette] = useState(false);
+  const [hubRemoteAuthority, setHubRemoteAuthority] = useState<string | null>(null);
   const paletteWidthRef = useRef(paletteWidth);
 
   useEffect(() => {
     setPaletteWidth(readStoredPaletteWidth());
   }, []);
+
+  useEffect(() => {
+    if (!isActivePage) return;
+    void fetch("/api/hub-builder/config", { credentials: "include", cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { remote?: boolean; authority?: string } | null) => {
+        if (data?.remote && data.authority) setHubRemoteAuthority(data.authority);
+        else setHubRemoteAuthority(null);
+      })
+      .catch(() => setHubRemoteAuthority(null));
+  }, [isActivePage]);
 
   useEffect(() => {
     paletteWidthRef.current = paletteWidth;
@@ -140,20 +157,17 @@ export default function HubBuilderPage() {
   };
 
   useEffect(() => {
-    if (!isActivePage) return;
-    void loadSavedLayout();
-  }, [isActivePage, loadSavedLayout]);
-
-  // Si la hidratación falla o queda colgada, reintenta sin bloquear toda la sesión.
-  useEffect(() => {
     if (!isActivePage || storageHydrated) return;
     const watchdog = window.setTimeout(() => {
       if (!useHubBuilderStore.getState().storageHydrated) {
-        void useHubBuilderStore.getState().loadSavedLayout();
+        void useHubBuilderStore.getState().loadSavedLayout().catch(() => {});
       }
     }, 2500);
     return () => window.clearTimeout(watchdog);
-  }, [isActivePage, storageHydrated, loadSavedLayout]);
+  }, [isActivePage, storageHydrated]);
+
+  const hubReadOnly = hubEditAccess === "viewer";
+  const hubLockPending = hubEditAccess === "pending";
 
   useEffect(() => {
     if (!previewMode) return;
@@ -307,6 +321,7 @@ export default function HubBuilderPage() {
   }, []);
   useEffect(() => {
     if (!isActivePage || !storageHydrated || previewMode || !needsSave) return;
+    if (hubEditAccess !== "editor") return;
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     autoSaveTimer.current = setTimeout(() => {
       saveLayout();
@@ -314,13 +329,13 @@ export default function HubBuilderPage() {
     return () => {
       if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     };
-  }, [isActivePage, storageHydrated, previewMode, needsSave, layout, saveLayout]);
+  }, [isActivePage, storageHydrated, previewMode, needsSave, layout, saveLayout, hubEditAccess]);
 
   useEffect(() => {
     if (!isActivePage) return;
     const flushSilentSave = () => {
       const state = useHubBuilderStore.getState();
-      if (!state.storageHydrated) return;
+      if (!state.storageHydrated || state.hubEditAccess !== "editor") return;
       if (getHubSyncStatus(state).needsSave) {
         state.saveLayout();
       }
@@ -380,6 +395,25 @@ export default function HubBuilderPage() {
       onChange={(e) => void handleLoadFilePicked(e)}
     />
     <div className="flex h-[calc(100dvh)] max-h-[calc(100dvh)] flex-col overflow-hidden">
+      {hubRemoteAuthority && !previewMode && (
+        <div className="shrink-0 border-b border-accent/30 bg-accent/10 px-4 py-2 text-center text-sm text-text">
+          Los cambios se guardan en el servidor remoto ({hubRemoteAuthority}). Publica para que el launcher los reciba.
+        </div>
+      )}
+      {(hubReadOnly || hubLockPending) && !previewMode && (
+        <div
+          className={cn(
+            "shrink-0 border-b px-4 py-2 text-center text-sm",
+            hubReadOnly
+              ? "border-warning-text/30 bg-warning-bg text-warning-text"
+              : "border-border bg-surface-raised text-text-soft"
+          )}
+        >
+          {hubLockPending
+            ? "Conectando al servidor del Hub…"
+            : `${hubLockHolder ?? "Otro editor"} está editando el Hub. Solo puedes ver los cambios en tiempo real hasta que salga.`}
+        </div>
+      )}
       {!previewMode && <HubContextMenu />}
       {!previewMode && <HubElementTreeBubble />}
       <HubEditorToolbar

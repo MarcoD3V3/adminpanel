@@ -1,8 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
+import { dataPath } from "@/lib/data-dir";
 import { loadAuthStore } from "./store";
 
-const SKINS_DIR = path.join(process.cwd(), "data", "user-skins");
+const SKINS_DIR = dataPath("user-skins");
 const META_FILE = path.join(SKINS_DIR, "meta.json");
 const MAX_BYTES = 512 * 1024;
 const ALLOWED_DIMS = new Set([

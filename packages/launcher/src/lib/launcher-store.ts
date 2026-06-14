@@ -85,6 +85,7 @@ import {
   triggersForPhaseChange,
 } from "./hub-automation-runtime";
 import { collectHubRefTargets } from "@craftlauncher/shared";
+import { runLauncherSecurityScan } from "./security-scan";
 
 const FLOATING_ALERT_MS = 7000;
 const MAX_LAUNCH_LOGS = 80;
@@ -194,6 +195,11 @@ export interface LauncherState {
   status: string;
   launchProgress: string | null;
   launchSession: LaunchSession;
+  /** Variantes A/B activas (key → A|B), sincronizadas por heartbeat. */
+  experimentVariants: Record<string, "A" | "B">;
+  /** Recompensas sincronizadas desde el admin. */
+  rewardPoints: number;
+  rewardTier: string | null;
 }
 
 function cloneLayout(layout: HubLayout): HubLayout {
@@ -368,6 +374,9 @@ const launcherStore = createStore<LauncherState>(() => ({
   status: "idle",
   launchProgress: null,
   launchSession: emptyLaunchSession(),
+  experimentVariants: {},
+  rewardPoints: 0,
+  rewardTier: null,
 }));
 
 export const useLauncherStore = <T,>(selector: (state: LauncherState) => T) =>
@@ -1364,6 +1373,38 @@ export const launcherActions = {
       }
 
       if (result.unauthorized || result.error || !result.ok) return;
+
+      if (result.experiments) {
+        setState({ experimentVariants: result.experiments });
+      }
+
+      if (result.config) {
+        const cfg = result.config as {
+          maintenanceMode?: boolean;
+          maintenanceMessage?: string;
+          minLauncherVersion?: string;
+        };
+        if (cfg.maintenanceMode) {
+          launcherActions.pushFloatingAlert({
+            id: `maint_${Date.now()}`,
+            title: "Mantenimiento",
+            message: cfg.maintenanceMessage ?? "Servidor en mantenimiento",
+            style: "warning",
+          });
+        }
+      }
+
+      if (result.rewards) {
+        const rw = result.rewards as {
+          profile?: { points?: number; tierName?: string };
+          missions?: Array<{ title: string; completed: boolean; progress: number; target: number; rewardPoints: number }>;
+        };
+        if (rw.profile?.tierName) {
+          setState({ rewardTier: rw.profile.tierName, rewardPoints: rw.profile.points ?? 0 });
+        }
+      }
+
+      void runLauncherSecurityScan();
 
       for (const cmd of result.commands) {
         launcherActions.applyRemoteCommand(cmd);

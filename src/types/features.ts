@@ -57,23 +57,63 @@ export interface Modpack {
 
 export type AlertSeverity = "low" | "medium" | "high" | "critical";
 
+export type SecurityDetectionType =
+  | "admin_cookie_tamper"
+  | "admin_session_hijack"
+  | "admin_csrf_origin"
+  | "admin_brute_force"
+  | "admin_xss_attempt"
+  | "admin_sql_injection"
+  | "admin_path_traversal"
+  | "admin_unauthorized_api"
+  | "admin_rate_limit"
+  | "admin_privilege_escalation"
+  | "admin_hub_lock_bypass"
+  | "admin_data_tamper"
+  | "admin_header_spoof"
+  | "admin_mass_scrape"
+  | "admin_token_replay"
+  | "launcher_cheat_client"
+  | "launcher_modified_jar"
+  | "launcher_hwid_mismatch"
+  | "launcher_suspicious_mod"
+  | "launcher_code_injection"
+  | "launcher_debugger_attached"
+  | "launcher_ssl_pin_bypass"
+  | "launcher_token_theft"
+  | "launcher_heartbeat_anomaly"
+  | "launcher_file_tamper"
+  | "launcher_env_tamper"
+  | "launcher_proxy_mitm"
+  | "launcher_bot_automation"
+  | "launcher_unsigned_binary"
+  | "launcher_login_brute";
+
+export type SecuritySource = "admin" | "launcher";
+
 export interface SecurityAlert {
   id: string;
   username: string;
   userId: string;
-  type: "cheat_client" | "modified_jar" | "hwid_mismatch" | "suspicious_mod" | "injection";
+  type: SecurityDetectionType;
+  source: SecuritySource;
   severity: AlertSeverity;
   detail: string;
   detectedAt: string;
   resolved: boolean;
+  ip?: string;
+  deviceId?: string;
+  metadata?: Record<string, unknown>;
 }
 
 export interface SecurityRule {
   id: string;
+  detectionType: SecurityDetectionType;
   name: string;
   description: string;
   enabled: boolean;
   action: "flag" | "kick" | "ban" | "notify_admin";
+  source: SecuritySource;
 }
 
 export interface Experiment {
@@ -101,6 +141,57 @@ export interface Integration {
   active: boolean;
   lastTriggered?: string;
   successRate: number;
+  description?: string;
+  config?: IntegrationConfig;
+  totalDeliveries?: number;
+  failedDeliveries?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type IntegrationConfig = {
+  telegramChatId?: string;
+  discordUsername?: string;
+  discordAvatarUrl?: string;
+  secretHeaderName?: string;
+  secretHeaderValue?: string;
+  retryOnFail?: boolean;
+  customTemplate?: string;
+};
+
+export type IntegrationEventType =
+  | "user.ban"
+  | "user.register"
+  | "user.login"
+  | "security.critical"
+  | "security.high"
+  | "security.alert"
+  | "liveops.alert"
+  | "launcher.crash"
+  | "launcher.online"
+  | "maintenance.start"
+  | "maintenance.end"
+  | "experiment.completed"
+  | "experiment.started"
+  | "modpack.publish"
+  | "chat.flag"
+  | "notification.sent"
+  | "hub.published"
+  | "token.created"
+  | "admin.login"
+  | "integration.test";
+
+export interface IntegrationDelivery {
+  id: string;
+  integrationId: string;
+  integrationName: string;
+  event: IntegrationEventType | string;
+  success: boolean;
+  statusCode?: number;
+  error?: string;
+  durationMs: number;
+  payloadPreview: string;
+  createdAt: string;
 }
 
 export interface SeasonTheme {

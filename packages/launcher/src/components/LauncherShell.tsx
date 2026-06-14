@@ -26,12 +26,18 @@ import { PlayerSkinPanel } from "./PlayerSkinPanel";
 import { useLauncherDataStore } from "@/lib/launcher-data-store";
 import { useAuthStore } from "@/lib/auth-store";
 import { getAdminApiSource, getAdminApiUrl } from "@/lib/config";
+import { experimentShellClasses } from "@/lib/experiments-ui";
 
 export function LauncherShell() {
   const layout = useLauncherStore((s) => s.layout);
   const loading = useLauncherStore((s) => s.loading);
   const lastSync = useLauncherStore((s) => s.lastSync);
   const panel = useLauncherDataStore((s) => s.panel);
+  const experimentVariants = useLauncherStore((s) => s.experimentVariants);
+  const experimentClasses = useMemo(
+    () => experimentShellClasses(experimentVariants),
+    [experimentVariants]
+  );
   const desktop = isDesktopLauncher();
   const activeScreen = useMemo(() => getActiveScreen(layout), [layout]);
   const chromeHeight = useMemo(
@@ -137,7 +143,7 @@ export function LauncherShell() {
   ]);
 
   return (
-    <div className="shell">
+    <div className={experimentClasses ? `shell ${experimentClasses}` : "shell"}>
       <div
         className={extendedFrameBg ? "shell-viewport shell-viewport-extended-bg" : "shell-viewport"}
         style={extendedFrameBg}

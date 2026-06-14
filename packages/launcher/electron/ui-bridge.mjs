@@ -4,12 +4,12 @@ import { fileURLToPath } from "node:url";
 import { loadSettings } from "./launcher-settings.mjs";
 import { resolveDataDir, instanceGameRoot } from "./launcher-paths.mjs";
 import { normalizeGameUi, validateLoadingUi } from "./game-ui-validate.mjs";
+import { getPanelBase } from "./panel-base.mjs";
 
 /**
  * Puente web -> juego: sondea /api/game-ui y /api/loading-ui del panel (por versión MC)
  * y escribe craftlauncher-ui.json / craftlauncher-loading-ui.json en la instancia activa.
  */
-const PANEL_BASE = process.env.CRAFTLAUNCHER_PANEL_URL || "http://localhost:3000";
 const INTERVAL_MS = 2500;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -78,7 +78,7 @@ function serializeGameUi(ui, mcVersion, launchWindow = null) {
 
 async function fetchGameUi(mcVersion) {
   try {
-    const res = await fetch(`${PANEL_BASE}/api/game-ui?version=${encodeURIComponent(mcVersion)}`, {
+    const res = await fetch(`${getPanelBase()}/api/game-ui?version=${encodeURIComponent(mcVersion)}`, {
       cache: "no-store",
     });
     if (res.ok) return { ui: await res.json(), source: "panel" };
@@ -117,7 +117,7 @@ async function pollLoadingUi(gameRoot, mcVersion) {
   let ui = null;
   let source = "panel";
   try {
-    const res = await fetch(`${PANEL_BASE}/api/loading-ui?version=${encodeURIComponent(mcVersion)}`, {
+    const res = await fetch(`${getPanelBase()}/api/loading-ui?version=${encodeURIComponent(mcVersion)}`, {
       cache: "no-store",
     });
     if (res.ok) ui = await res.json();

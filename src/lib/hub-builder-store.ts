@@ -57,6 +57,7 @@ import {
   fetchHubLayoutDraftFromApi,
   fetchHubLayoutFromApi,
   layoutFingerprint,
+  pickNewestHubLayout,
   publishHubLayoutToApi,
   readHubLayoutFromStorage,
   saveHubLayoutDraftToApi,
@@ -501,6 +502,12 @@ interface HubBuilderState {
   selectNextElement: (direction: 1 | -1) => void;
   clipboard: HubElementClipboard | null;
   editSessionActive: boolean;
+  /** Solo `editor` puede modificar; `viewer` = otro admin editando. */
+  hubEditAccess: "pending" | "editor" | "viewer";
+  hubLockHolder: string | null;
+  setHubEditAccess: (access: "pending" | "editor" | "viewer", holder?: string | null) => void;
+  applyRemoteLayout: (layout: HubLayout) => void;
+  syncRemoteDraft: () => Promise<boolean>;
   contextMenu: ContextMenuState | null;
   scriptConsole: ScriptLogEntry[];
   openContextMenu: (menu: ContextMenuState) => void;
@@ -533,6 +540,15 @@ function cloneLayout(layout: HubLayout): HubLayout {
 let editDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 let loadSavedLayoutInFlight = false;
 
+function hubEditAllowed(state: Pick<HubBuilderState, "hubEditAccess">): boolean {
+  return state.hubEditAccess === "editor";
+}
+
+function layoutUpdatedAtMs(layout: HubLayout): number {
+  const t = Date.parse(layout.updatedAt ?? "");
+  return Number.isFinite(t) ? t : 0;
+}
+
 function prepareLayoutForEditor(layout: HubLayout): HubLayout {
   let initial = cloneLayout(layout);
   initial = ensureAccountProfileScreen(initial);
@@ -562,6 +578,8 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
   historyIndex: 0,
   clipboard: null as HubElementClipboard | null,
   editSessionActive: false,
+  hubEditAccess: "pending" as const,
+  hubLockHolder: null,
   contextMenu: null as ContextMenuState | null,
   scriptConsole: [] as ScriptLogEntry[],
   storageHydrated: false,
@@ -569,6 +587,42 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
   publishedFingerprint: null,
   editorCanvasSettings: readHubEditorCanvasSettings(),
   minecraftEditVersion: "1.18.2",
+
+  setHubEditAccess: (access, holder = null) => {
+    set({ hubEditAccess: access, hubLockHolder: holder });
+  },
+
+  applyRemoteLayout: (layout) => {
+    try {
+      const initial = prepareLayoutForEditor(cloneLayout(layout));
+      const fp = layoutFingerprint(initial);
+      writeHubLayoutToStorage(initial);
+      set({
+        layout: initial,
+        history: [initial],
+        historyIndex: 0,
+        selectedId: null,
+        selectedIds: [],
+        editSessionActive: false,
+        savedFingerprint: fp,
+      });
+    } catch {
+      /* layout remoto corrupto o incompatible */
+    }
+  },
+
+  syncRemoteDraft: async () => {
+    try {
+      const draft = await fetchHubLayoutDraftFromApi();
+      if (!draft) return false;
+      const current = get().layout;
+      if (layoutUpdatedAtMs(draft) <= layoutUpdatedAtMs(current)) return false;
+      get().applyRemoteLayout(draft);
+      return true;
+    } catch {
+      return false;
+    }
+  },
 
   setMinecraftEditVersion: (mcVersion) => {
     const profile = resolveVersionProfile(mcVersion);
@@ -1228,6 +1282,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
   },
 
   updateScreen: (screenId, patch) => {
+    if (!hubEditAllowed(get())) return;
     get().pushHistory();
     if (isScreenChromeVirtualId(screenId)) {
       const ownerId =
@@ -1270,6 +1325,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
   },
 
   updateElement: (id, patch) => {
+    if (!hubEditAllowed(get())) return;
     const state = get();
     if (!state.previewMode && !state.editSessionActive) {
       get().pushHistory();
@@ -1366,6 +1422,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
   },
 
   moveElement: (id, rawX, rawY, options) => {
+    if (!hubEditAllowed(get())) return;
     const layout = get().layout;
     const activeScreenId = layout.activeScreenId;
     const surfaceId = resolveElementSurfaceId(layout, id, activeScreenId);
@@ -1422,6 +1479,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
   },
 
   resizeElement: (id, patch) => {
+    if (!hubEditAllowed(get())) return;
     const layout = get().layout;
     const activeScreenId = layout.activeScreenId;
     const surfaceId = resolveElementSurfaceId(layout, id, activeScreenId);
@@ -1823,6 +1881,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
   },
 
   pushHistory: () => {
+    if (!hubEditAllowed(get())) return;
     const { layout, history, historyIndex } = get();
     const next = history.slice(0, historyIndex + 1);
     next.push(cloneLayout(layout));
@@ -1831,6 +1890,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
   },
 
   undo: () => {
+    if (!hubEditAllowed(get())) return;
     const { history, historyIndex } = get();
     if (historyIndex <= 0) return;
     if (editDebounceTimer) clearTimeout(editDebounceTimer);
@@ -1846,6 +1906,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
   },
 
   redo: () => {
+    if (!hubEditAllowed(get())) return;
     const { history, historyIndex } = get();
     if (historyIndex >= history.length - 1) return;
     if (editDebounceTimer) clearTimeout(editDebounceTimer);
@@ -1861,6 +1922,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
   },
 
   resetLayout: () => {
+    if (!hubEditAllowed(get())) return;
     clearScreenNavHistory();
     // "Restablecer" vuelve al último guardado (localStorage o server), no al layout de fábrica.
     const local = readHubLayoutFromStorage();
@@ -1898,6 +1960,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
   },
 
   saveLayout: () => {
+    if (!hubEditAllowed(get())) return false;
     const layout = cloneLayout(get().layout);
     layout.updatedAt = new Date().toISOString();
     const ok = writeHubLayoutToStorage(layout);
@@ -1917,27 +1980,27 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
 
     try {
       const local = readHubLayoutFromStorage();
-      let serverDraft: HubLayout | null = null;
-      if (!local) {
-        serverDraft = await fetchHubLayoutDraftFromApi();
-      }
-      const seed = local ?? serverDraft;
+      const [serverDraft, published] = await Promise.all([
+        fetchHubLayoutDraftFromApi(),
+        fetchHubLayoutFromApi({ timeoutMs: 8_000 }),
+      ]);
+      const seed = pickNewestHubLayout(local, serverDraft, published);
       const initial = prepareLayoutForEditor(
         seed ? cloneLayout(seed) : cloneLayout(defaultHubLayout)
       );
       const fp = layoutFingerprint(initial);
+      const publishedFp = published ? layoutFingerprint(published) : null;
 
-      if (local) {
+      if (seed && seed !== local) {
+        writeHubLayoutToStorage(initial);
+      } else if (local) {
         const localFp = layoutFingerprint(local);
         if (localFp !== fp) {
           initial.updatedAt = new Date().toISOString();
           writeHubLayoutToStorage(initial);
         }
-      } else if (serverDraft) {
-        writeHubLayoutToStorage(initial);
       }
 
-      // Mostrar el editor de inmediato (local, borrador servidor o default). La API no debe bloquear la UI.
       set({
         storageHydrated: true,
         layout: initial,
@@ -1947,39 +2010,10 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
         selectedIds: [],
         editSessionActive: false,
         savedFingerprint: seed ? fp : null,
-        publishedFingerprint: null,
+        publishedFingerprint: publishedFp,
       });
 
-      void (async () => {
-        try {
-          const remote = await fetchHubLayoutFromApi({ timeoutMs: 8_000 });
-          if (!remote || !get().storageHydrated) return;
-
-          const remoteFp = layoutFingerprint(remote);
-          const state = get();
-          if (state.editSessionActive || state.previewMode) {
-            set({ publishedFingerprint: remoteFp });
-            return;
-          }
-
-          if (!local && !serverDraft) {
-            const remoteLayout = prepareLayoutForEditor(cloneLayout(remote));
-            set({
-              layout: remoteLayout,
-              history: [remoteLayout],
-              historyIndex: 0,
-              publishedFingerprint: remoteFp,
-            });
-            return;
-          }
-
-          set({ publishedFingerprint: remoteFp });
-        } catch {
-          /* sync en segundo plano — no bloquear edición */
-        }
-      })();
-
-      return Boolean(local ?? serverDraft);
+      return Boolean(seed);
     } catch {
       const fresh = prepareLayoutForEditor(cloneLayout(defaultHubLayout));
       const fp = layoutFingerprint(fresh);
@@ -2001,6 +2035,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
   },
 
   publishLayout: async () => {
+    if (!hubEditAllowed(get())) return false;
     const layout = ensureAccountProfileScreen(
       normalizeLaunchLayout(
         syncLauncherChromeWithWindow(

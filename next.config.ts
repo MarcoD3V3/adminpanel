@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  serverExternalPackages: ["better-sqlite3"],
   async redirects() {
     return [{ source: "/hub_builder", destination: "/hub-builder", permanent: true }];
   },

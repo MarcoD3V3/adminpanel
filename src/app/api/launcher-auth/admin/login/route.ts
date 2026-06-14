@@ -8,15 +8,23 @@ import {
 import { appendAuditLog } from "@/lib/launcher-auth/audit";
 import { clientIp, isSameOriginAdminRequest, jsonSecure } from "@/lib/launcher-auth/http";
 import { checkRateLimit } from "@/lib/launcher-auth/rate-limit";
+import {
+  auditAdminLoginFailed,
+  auditAdminOriginBlocked,
+  auditAdminRateLimit,
+  auditAdminRequest,
+} from "@/lib/security/guard";
 
 export async function POST(request: Request) {
   if (!isSameOriginAdminRequest(request)) {
+    await auditAdminOriginBlocked(request);
     return jsonSecure({ error: "Origen no permitido" }, { status: 403 });
   }
 
   const ip = clientIp(request);
   const rateKey = `admin_login:${ip}`;
   if (!checkRateLimit(rateKey, 5, 15 * 60 * 1000)) {
+    await auditAdminRateLimit(request, "admin_login");
     return jsonSecure({ error: "Demasiados intentos. Espera 15 minutos." }, { status: 429 });
   }
 
@@ -30,8 +38,11 @@ export async function POST(request: Request) {
   }
 
   const body = (await request.json()) as { key?: string; remember?: boolean };
+  await auditAdminRequest(request, body);
+
   if (!verifyAdminSecret(body.key ?? null)) {
     await appendAuditLog("admin_login_failed", ip);
+    await auditAdminLoginFailed(request);
     return jsonSecure({ error: "Clave incorrecta" }, { status: 401 });
   }
 
@@ -42,6 +53,8 @@ export async function POST(request: Request) {
   }
 
   await appendAuditLog("admin_login", ip);
+  const { emitSystemEvent } = await import("@/lib/system-events");
+  emitSystemEvent("admin.login", { ip });
   const res = jsonSecure({ success: true, remember });
   res.cookies.set(ADMIN_SESSION_COOKIE, sessionValue, adminSessionCookieOptions(remember));
   return res;

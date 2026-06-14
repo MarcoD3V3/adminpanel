@@ -69,6 +69,12 @@ export async function POST(request: Request) {
   if ("error" in created) {
     return jsonSecure({ success: false, error: created.error }, { status: 400 });
   }
+  const { emitSystemEvent } = await import("@/lib/system-events");
+  emitSystemEvent("token.created", {
+    label: body.label ?? "Token",
+    tier,
+    minecraftUsername: body.minecraftUsername,
+  });
   return jsonSecure(
     {
       success: true,

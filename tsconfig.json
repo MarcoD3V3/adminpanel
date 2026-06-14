@@ -19,5 +19,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "packages/launcher", "packages/web"]
+  "exclude": ["node_modules", "packages/launcher", "packages/web", "packages/user_web"]
 }
