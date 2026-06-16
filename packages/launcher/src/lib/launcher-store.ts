@@ -56,6 +56,7 @@ import {
 import { getSessionAuthApiUrl } from "./auth-api";
 import { getAdminApiUrl } from "./config";
 import { useAuthStore } from "./auth-store";
+import { portalChatActions, usePortalChatStore } from "./portal-chat-store";
 import {
   launchForge,
   getLauncherApi,
@@ -1756,6 +1757,20 @@ export const launcherActions = {
       return;
     }
 
+    if (el.type === "chat-bubble-toggle") {
+      portalChatActions.toggle();
+      return;
+    }
+    if (el.type === "chat-send") {
+      void usePortalChatStore.getState().sendMessage();
+      return;
+    }
+    if (el.type === "chat-close") {
+      if (usePortalChatStore.getState().peer) usePortalChatStore.getState().setPeer(null);
+      else usePortalChatStore.getState().close();
+      return;
+    }
+
     if (el.type === "toggle-visible") {
       const visTarget = parseVisibilityActions(el.logic?.constants)[0]?.target ?? "";
       const target = String(
@@ -1913,6 +1928,10 @@ export const launcherActions = {
     }
     if (el?.type === "installed-version-selector") {
       void useLauncherDataStore.getState().refreshInstalledVersions();
+    }
+    if (el.type === "chat-input") {
+      usePortalChatStore.getState().setDraft(String(value));
+      return;
     }
     if (el?.logic?.enabled && el.logic.script.trim() && el.logic.trigger === "change") {
       await launcherActions.runElementLogic(elementId);

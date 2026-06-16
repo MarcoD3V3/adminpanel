@@ -78,7 +78,15 @@ export type HubElementType =
   | "chrome-icon-button"
   | "chrome-spacer"
   | "chrome-divider"
-  | "chrome-launch-progress";
+  | "chrome-launch-progress"
+  | "chat-bubble-toggle"
+  | "chat-header"
+  | "chat-panel"
+  | "chat-tabs"
+  | "chat-input"
+  | "chat-send"
+  | "chat-close"
+  | "chat-resize-handle";
 
 export type HubElementAction =
   | "play"

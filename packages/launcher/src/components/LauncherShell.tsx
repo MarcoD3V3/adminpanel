@@ -17,6 +17,8 @@ import {
 } from "@/lib/electron-api";
 import { HubChromeBar } from "./HubChromeBar";
 import { HubRuntime } from "./HubRuntime";
+import { PortalChatBubbleOverlay } from "./chat-hub/PortalChatHub";
+import { CHAT_HUB_ELEMENT_TYPES, type HubElement } from "@craftlauncher/shared";
 import { LauncherAlerts } from "./LauncherAlerts";
 import { LauncherBanners } from "./LauncherBanners";
 import { FloatingAlerts } from "./FloatingAlerts";
@@ -27,6 +29,7 @@ import { useLauncherDataStore } from "@/lib/launcher-data-store";
 import { useAuthStore } from "@/lib/auth-store";
 import { getAdminApiSource, getAdminApiUrl } from "@/lib/config";
 import { experimentShellClasses } from "@/lib/experiments-ui";
+import { usePortalChatStore } from "@/lib/portal-chat-store";
 
 export function LauncherShell() {
   const layout = useLauncherStore((s) => s.layout);
@@ -44,6 +47,17 @@ export function LauncherShell() {
     () => resolveLayoutChromeHeight(layout, activeScreen.id),
     [layout, activeScreen.id]
   );
+  const chatElements = useMemo(() => {
+    const types = new Set<string>(CHAT_HUB_ELEMENT_TYPES);
+    const collect = (els: HubElement[] | undefined) => (els ?? []).filter((e) => types.has(e.type));
+    const fromScreens = layout.screens.flatMap((s) => [
+      ...collect(s.elements),
+      ...collect(s.chrome?.elements),
+    ]);
+    const fromLauncherChrome = collect(layout.launcherChrome?.elements);
+    return [...fromScreens, ...fromLauncherChrome];
+  }, [layout]);
+
   const extendedFrameBg = useMemo(
     () =>
       backgroundExtendsIntoChrome(resolveBackgroundChromeStyle(activeScreen))
@@ -90,11 +104,14 @@ export function LauncherShell() {
     if (authStatus !== "ready") return;
     void launcherActions.pollNotifications();
     void launcherActions.sendHeartbeat();
+    void usePortalChatStore.getState().refresh();
     const pollTimer = setInterval(() => void launcherActions.pollNotifications(), 5_000);
     const heartbeatTimer = setInterval(() => void launcherActions.sendHeartbeat(), 15_000);
+    const chatTimer = setInterval(() => void usePortalChatStore.getState().refresh(), 25_000);
     return () => {
       clearInterval(pollTimer);
       clearInterval(heartbeatTimer);
+      clearInterval(chatTimer);
     };
   }, [authStatus]);
 
@@ -174,6 +191,7 @@ export function LauncherShell() {
       <LaunchProgressPanel />
       {panel === "mods" && <ModsPanel />}
       {panel === "skin" && <PlayerSkinPanel />}
+      <PortalChatBubbleOverlay elements={chatElements} />
     </div>
   );
 }

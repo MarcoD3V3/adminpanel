@@ -845,6 +845,30 @@ export function HubRuntimePreview({ element, style, compact }: HubRuntimePreview
     );
   }
 
+  if (element.type === "chat-bubble-toggle") {
+    return (
+      <PreviewShell element={element} compact={compact} frameStyle={style}>
+        <div className="hub-preview-btn hub-chat-toggle-preview">💬</div>
+      </PreviewShell>
+    );
+  }
+
+  if (
+    element.type === "chat-header" ||
+    element.type === "chat-panel" ||
+    element.type === "chat-tabs" ||
+    element.type === "chat-input" ||
+    element.type === "chat-send" ||
+    element.type === "chat-close" ||
+    element.type === "chat-resize-handle"
+  ) {
+    return (
+      <PreviewShell element={element} compact={compact} frameStyle={style}>
+        <div className="hub-preview-chat-part">{label || element.type.replace("chat-", "")}</div>
+      </PreviewShell>
+    );
+  }
+
   if (element.type === "mods-search") {
     return (
         <PreviewShell element={element} compact={compact} frameStyle={style}>

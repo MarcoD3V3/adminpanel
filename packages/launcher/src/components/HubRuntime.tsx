@@ -38,6 +38,9 @@ const CLICKABLE = new Set([
   "action-chip",
   "play-show-bind",
   "panel-visibility-select",
+  "chat-bubble-toggle",
+  "chat-send",
+  "chat-close",
 ]);
 
 const CONTAINER_SHELL_TYPES = new Set<HubElement["type"]>([

@@ -55,6 +55,8 @@ import {
 import { MinecraftStatusChip } from "./automation-hub/MinecraftStatusChip";
 import { PanelVisibilitySelectHub } from "./automation-hub/PanelVisibilitySelectHub";
 import { HubElementShell } from "./hub/HubElementShell";
+import { CHAT_OVERLAY_ELEMENT_TYPES } from "@craftlauncher/shared";
+import { ChatBubbleToggleHub } from "./chat-hub/PortalChatHub";
 
 function cssToStyle(css: HubElement["css"]): React.CSSProperties {
   return hubElementCssToStyle(css) as React.CSSProperties;
@@ -739,6 +741,18 @@ export function HubElementView({ element, allElements, onClick, onChange, flow, 
           ...cssStyle,
         })}
       />
+    );
+  }
+
+  if ((CHAT_OVERLAY_ELEMENT_TYPES as ReadonlySet<string>).has(element.type)) {
+    return null;
+  }
+
+  if (element.type === "chat-bubble-toggle") {
+    return (
+      <div {...wrapFrame({ background: "transparent", ...cssStyle })}>
+        <ChatBubbleToggleHub element={element} />
+      </div>
     );
   }
 

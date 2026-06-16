@@ -47,6 +47,8 @@ export * from "./api/launcher-skins";
 export * from "./api/notifications";
 export * from "./api/live-ops";
 export * from "./api/security";
+export * from "./api/portal-chat";
+export * from "./portal/linkify";
 export * from "./ws/launcher-client";
 export * from "./runtime/hub-preview-runtime";
 export * from "./runtime/hub-nav-history";

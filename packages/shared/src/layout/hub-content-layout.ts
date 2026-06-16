@@ -38,6 +38,7 @@ export const HUB_STRETCH_CONTENT_ELEMENT_TYPES = new Set<HubElementType>([
   "mods-installed-search",
   "mods-installed-list",
   "mods-install-log",
+  "chat-panel",
 ]);
 
 /** Flex para posicionar el contenido hijo dentro del área del elemento. */
