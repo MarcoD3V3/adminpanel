@@ -1980,6 +1980,53 @@
   cursor: default;
 }
 
+.hub-chat-overlay-at-layout {
+  pointer-events: auto;
+}
+
+.hub-chat-positioned-part {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.hub-chat-positioned-part .hub-chat-messages,
+.hub-chat-positioned-part .hub-chat-friends {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.hub-chat-toast--floating,
+.hub-chat-error--floating {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9020;
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  max-width: min(90vw, 420px);
+  text-align: center;
+  pointer-events: none;
+}
+
+.hub-chat-toast--floating {
+  background: #1a3d2a;
+  color: #86efac;
+  border: 1px solid #22c55e44;
+}
+
+.hub-chat-error--floating {
+  background: #3d1a1a;
+  color: #fca5a5;
+  border: 1px solid #ef444444;
+}
+
 .hub-chat-bubble {
   position: fixed;
   z-index: 9001;

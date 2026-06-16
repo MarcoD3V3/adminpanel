@@ -875,9 +875,15 @@ export function HubRuntimePreview({ element, style, compact }: HubRuntimePreview
     element.type === "chat-close" ||
     element.type === "chat-resize-handle"
   ) {
+    const partLabel = label || element.type.replace("chat-", "");
+    const panelLike = element.type === "chat-panel";
     return (
       <PreviewShell element={element} compact={compact} frameStyle={style}>
-        <div className="hub-preview-chat-part">{label || element.type.replace("chat-", "")}</div>
+        <div
+          className={cn("hub-preview-chat-part", panelLike && "hub-preview-chat-part--panel")}
+        >
+          {partLabel}
+        </div>
       </PreviewShell>
     );
   }

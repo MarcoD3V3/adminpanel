@@ -56,7 +56,7 @@ import { MinecraftStatusChip } from "./automation-hub/MinecraftStatusChip";
 import { PanelVisibilitySelectHub } from "./automation-hub/PanelVisibilitySelectHub";
 import { HubElementShell } from "./hub/HubElementShell";
 import { CHAT_OVERLAY_ELEMENT_TYPES } from "@craftlauncher/shared";
-import { ChatBubbleToggleHub } from "./chat-hub/PortalChatHub";
+import { ChatBubbleAtHub, ChatOverlayAtPosition } from "./chat-hub/ChatHubLayoutElements";
 import { LauncherUpdateBannerHub } from "./update-hub/LauncherUpdateBannerHub";
 
 function cssToStyle(css: HubElement["css"]): React.CSSProperties {
@@ -754,15 +754,11 @@ export function HubElementView({ element, allElements, onClick, onChange, flow, 
   }
 
   if ((CHAT_OVERLAY_ELEMENT_TYPES as ReadonlySet<string>).has(element.type)) {
-    return null;
+    return <ChatOverlayAtPosition element={element} lhWrap={lhWrap} />;
   }
 
   if (element.type === "chat-bubble-toggle") {
-    return (
-      <div {...wrapFrame({ background: "transparent", ...cssStyle })}>
-        <ChatBubbleToggleHub element={element} />
-      </div>
-    );
+    return <ChatBubbleAtHub element={element} lhWrap={lhWrap} cssStyle={cssStyle} />;
   }
 
   if (element.type === "profile-widget") {

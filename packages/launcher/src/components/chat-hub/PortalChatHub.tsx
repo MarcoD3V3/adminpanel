@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { HubElement } from "@craftlauncher/shared";
+import { hasPositionedChatLayout } from "@craftlauncher/shared";
 import { usePortalChatStore } from "@/lib/portal-chat-store";
 import { MessageLinkText } from "./MessageLinkText";
 
@@ -338,9 +339,14 @@ export function PortalChatBubbleOverlay({ elements }: { elements: HubElement[] }
 
   if (!isOpen) return null;
 
+  const positionedLayout = hasPositionedChatLayout(elements);
+
   return (
     <>
       <button type="button" className="hub-chat-backdrop" aria-label="Cerrar" onClick={() => usePortalChatStore.getState().close()} />
+      {toast && <p className="hub-chat-toast hub-chat-toast--floating">{toast}</p>}
+      {error && <p className="hub-chat-error hub-chat-error--floating">{error}</p>}
+      {!positionedLayout && (
       <div
         className="hub-chat-bubble"
         style={{ left: geometry.x, top: geometry.y, width: geometry.width, height: geometry.height }}
@@ -349,8 +355,6 @@ export function PortalChatBubbleOverlay({ elements }: { elements: HubElement[] }
         onPointerUp={() => setDragging(false)}
         onPointerLeave={() => setDragging(false)}
       >
-        {toast && <p className="hub-chat-toast">{toast}</p>}
-        {error && <p className="hub-chat-error">{error}</p>}
         <div className="hub-chat-bubble__stack">
           {overlayEls.length > 0 ? (
             overlayEls.map((el) => (
@@ -377,6 +381,7 @@ export function PortalChatBubbleOverlay({ elements }: { elements: HubElement[] }
           )}
         </div>
       </div>
+      )}
     </>
   );
 }

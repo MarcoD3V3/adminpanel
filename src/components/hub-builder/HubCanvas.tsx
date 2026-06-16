@@ -15,8 +15,10 @@ import {
 } from "@/lib/hub-builder-placement";
 import {
   backgroundExtendsIntoChrome,
+  computeChatOverlayBounds,
   hubScreenContentBackgroundStyle,
   hubWindowFrameBackgroundStyle,
+  isChatHubElementType,
   isScreenChromeVirtualId,
   normalizeHubBackgroundImageUrl,
   resolveBackgroundChromeStyle,
@@ -173,6 +175,14 @@ export function HubCanvas() {
     () => canvasLayerElements(sortedElements),
     [sortedElements]
   );
+  const chatGroupBounds = useMemo(() => {
+    if (previewMode) return null;
+    const activeIds = selectedIds?.length ? selectedIds : selectedId ? [selectedId] : [];
+    if (!activeIds.length) return null;
+    const selected = canvasScreen.elements.filter((e) => activeIds.includes(e.id));
+    if (!selected.some((e) => isChatHubElementType(e.type))) return null;
+    return computeChatOverlayBounds(canvasScreen.elements);
+  }, [previewMode, selectedId, selectedIds, canvasScreen.elements]);
   const isGameMenu = layout.activeScreenId === GAME_MENU_SCREEN_ID;
   const isLoadingScreen = layout.activeScreenId === GAME_LOADING_SCREEN_ID;
   const isMinecraftScreen = isGameMenu || isLoadingScreen;
@@ -1206,6 +1216,19 @@ export function HubCanvas() {
                 height: marquee.h,
               }}
             />
+          )}
+          {!previewMode && chatGroupBounds && (
+            <div
+              className="hub-builder-chat-group-frame pointer-events-none absolute z-[7500]"
+              style={{
+                left: chatGroupBounds.x,
+                top: chatGroupBounds.y,
+                width: chatGroupBounds.width,
+                height: chatGroupBounds.height,
+              }}
+            >
+              <span className="hub-builder-chat-group-label">Panel de chat (visible al abrir la burbuja)</span>
+            </div>
           )}
           <HubPreviewToasts />
           <HubCssElementsProvider elements={canvasScreen.elements}>
