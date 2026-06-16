@@ -1,8 +1,10 @@
 import { verifyRequestSession } from "@/lib/launcher-auth/service";
 import { jsonWithCors, optionsResponse } from "@/lib/launcher-auth/http";
 import {
-  addPortalFriend,
+  acceptPortalFriendRequest,
+  declinePortalFriendRequest,
   getPortalChatSnapshot,
+  sendPortalFriendRequest,
   sendPortalMessage,
 } from "@/lib/player-portal/chat";
 
@@ -31,7 +33,10 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const peerUserId = url.searchParams.get("peer")?.trim() || undefined;
-  const snapshot = await getPortalChatSnapshot(session.userId, peerUserId);
+  const snapshot = await getPortalChatSnapshot(session.userId, peerUserId, {
+    username: session.username ?? "usuario",
+    displayName: session.displayName,
+  });
 
   return jsonWithCors({ ok: true, chat: snapshot }, { status: 200 }, origin);
 }
@@ -50,15 +55,49 @@ export async function POST(request: Request) {
     recipientUserId?: string;
     text?: string;
     peerUserId?: string;
+    requestId?: string;
+    fromUserId?: string;
+  };
+
+  const presence = {
+    username: session.username ?? "usuario",
+    displayName: session.displayName,
   };
 
   if (body.action === "add_friend" && body.username) {
-    const result = await addPortalFriend(session.userId, body.username);
+    const result = await sendPortalFriendRequest(session.userId, body.username);
     if (!result.ok) {
       return jsonWithCors({ error: result.error }, { status: 400 }, origin);
     }
-    const chat = await getPortalChatSnapshot(session.userId, result.friend.userId);
+    const chat = await getPortalChatSnapshot(
+      session.userId,
+      result.type === "accepted" ? result.friend.userId : undefined,
+      presence
+    );
+    if (result.type === "accepted") {
+      return jsonWithCors({ ok: true, type: "accepted", friend: result.friend, chat }, { status: 200 }, origin);
+    }
+    return jsonWithCors({ ok: true, type: "request_sent", request: result.request, chat }, { status: 200 }, origin);
+  }
+
+  if (body.action === "accept_friend" && (body.requestId || body.fromUserId)) {
+    const key = body.requestId?.trim() || body.fromUserId?.trim() || "";
+    const result = await acceptPortalFriendRequest(session.userId, key);
+    if (!result.ok) {
+      return jsonWithCors({ error: result.error }, { status: 400 }, origin);
+    }
+    const chat = await getPortalChatSnapshot(session.userId, result.friend.userId, presence);
     return jsonWithCors({ ok: true, friend: result.friend, chat }, { status: 200 }, origin);
+  }
+
+  if (body.action === "decline_friend" && (body.requestId || body.fromUserId)) {
+    const key = body.requestId?.trim() || body.fromUserId?.trim() || "";
+    const result = await declinePortalFriendRequest(session.userId, key);
+    if (!result.ok) {
+      return jsonWithCors({ error: result.error }, { status: 400 }, origin);
+    }
+    const chat = await getPortalChatSnapshot(session.userId, undefined, presence);
+    return jsonWithCors({ ok: true, chat }, { status: 200 }, origin);
   }
 
   if (body.action === "send" && body.recipientUserId && body.text) {
@@ -66,13 +105,13 @@ export async function POST(request: Request) {
     if (!result.ok) {
       return jsonWithCors({ error: result.error }, { status: 400 }, origin);
     }
-    const chat = await getPortalChatSnapshot(session.userId, body.recipientUserId);
+    const chat = await getPortalChatSnapshot(session.userId, body.recipientUserId, presence);
     return jsonWithCors({ ok: true, message: result.message, chat }, { status: 200 }, origin);
   }
 
   if (body.action === "sync") {
     const peer = body.peerUserId?.trim() || undefined;
-    const chat = await getPortalChatSnapshot(session.userId, peer);
+    const chat = await getPortalChatSnapshot(session.userId, peer, presence);
     return jsonWithCors({ ok: true, chat }, { status: 200 }, origin);
   }
 

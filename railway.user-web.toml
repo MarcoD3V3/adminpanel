@@ -1,13 +1,14 @@
 # Player Portal (packages/user_web) — segundo servicio en Railway.
 #
-# IMPORTANTE: en Railway → Settings → Root Directory debe estar VACÍO (raíz del repo).
-# Si pones "packages/user_web", npm no ve packages/shared y falla con:
-#   404 '@craftlauncher/shared@*' is not in this registry
+# Root directory: packages/user_web (o repo dedicado solo user_web)
+# Builder: Dockerfile en packages/user_web
+# Start: node server.js  (NO npm run start -w craftlauncher-user-web)
 #
 # Variables: ADMIN_API_URL, NEXT_PUBLIC_ADMIN_API_URL, PORTAL_CLIPBOARD_SECRET
 [build]
-buildCommand = "npm ci && npm run build -w craftlauncher-user-web"
+builder = "DOCKERFILE"
+dockerfilePath = "packages/user_web/Dockerfile"
 
 [deploy]
-startCommand = "npm run start -w craftlauncher-user-web"
+startCommand = "node server.js"
 restartPolicyType = "ON_FAILURE"

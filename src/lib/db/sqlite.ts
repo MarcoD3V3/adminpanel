@@ -355,6 +355,27 @@ function initSchema(database: Database.Database): void {
 
     CREATE INDEX IF NOT EXISTS idx_portal_messages_thread ON portal_messages(sender_id, recipient_id, created_at DESC);
     CREATE INDEX IF NOT EXISTS idx_portal_messages_inbox ON portal_messages(recipient_id, created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS portal_friend_requests (
+      id TEXT PRIMARY KEY,
+      from_user_id TEXT NOT NULL,
+      to_user_id TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending',
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      UNIQUE(from_user_id, to_user_id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_portal_friend_requests_to ON portal_friend_requests(to_user_id, status);
+
+    CREATE TABLE IF NOT EXISTS portal_presence (
+      user_id TEXT PRIMARY KEY,
+      username TEXT NOT NULL,
+      display_name TEXT NOT NULL,
+      client TEXT NOT NULL DEFAULT 'portal',
+      status TEXT NOT NULL DEFAULT 'online',
+      last_seen_at TEXT NOT NULL
+    );
   `);
 }
 
