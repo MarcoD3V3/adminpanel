@@ -13,6 +13,8 @@ startCommand = "npm run start"
 restartPolicyType = "ON_FAILURE"
 
 # Segundo servicio: Player Portal (user_web)
-# - Root directory: packages/user_web (o usa packages/user_web/railway.json)
+# - Root directory en Railway: VACÍO (raíz del repo). NO uses packages/user_web.
+# - Build: npm ci && npm run build -w craftlauncher-user-web
+# - Start: npm run start -w craftlauncher-user-web
+# - Ver también railway.user-web.toml
 # - Variables: ADMIN_API_URL, NEXT_PUBLIC_ADMIN_API_URL, PORTAL_CLIPBOARD_SECRET
-# - El admin (este servicio) necesita volumen /app/data + PORTAL_CLIPBOARD_SECRET para chat/portal
