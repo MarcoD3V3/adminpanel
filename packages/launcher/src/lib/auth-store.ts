@@ -200,7 +200,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   resolveHeaders: async (force = false) => {
-    if (get().status !== "ready") return null;
+    if (!force && get().status !== "ready") return null;
     if (!force) {
       const cached = get().authHeaders;
       if (cached) return cached;

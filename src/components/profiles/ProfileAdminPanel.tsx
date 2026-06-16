@@ -105,6 +105,35 @@ type ClipboardSecrets = {
   activationToken?: string;
 };
 
+const CLIPBOARD_SECRETS_STORAGE = "cl_admin_profile_clipboard_secrets";
+
+function loadClipboardSecretsFromStorage(): Record<string, ClipboardSecrets> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = sessionStorage.getItem(CLIPBOARD_SECRETS_STORAGE);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as Record<string, ClipboardSecrets>;
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveClipboardSecretsToStorage(secrets: Record<string, ClipboardSecrets>) {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(CLIPBOARD_SECRETS_STORAGE, JSON.stringify(secrets));
+  } catch {
+    /* quota / private mode */
+  }
+}
+
+function profileHasLauncherClipboardSecret(data: ProfileClipboardData): boolean {
+  return Boolean(
+    data.contraseña?.trim() || data.codigo?.trim() || data.acceso_portal?.trim()
+  );
+}
+
 function buildClipboardPayload(
   user: ProfileUser,
   extras?: { password?: string; activationToken?: string }
@@ -345,7 +374,7 @@ export function ProfileAdminPanel() {
   const [moderation, setModeration] = useState<UserModerationIntel[]>([]);
   const [deletingProfile, setDeletingProfile] = useState(false);
   const createdSummaryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const clipboardSecretsRef = useRef<Record<string, ClipboardSecrets>>({});
+  const clipboardSecretsRef = useRef<Record<string, ClipboardSecrets>>(loadClipboardSecretsFromStorage());
 
   const rememberClipboardSecrets = useCallback((userId: string, secrets: ClipboardSecrets) => {
     if (!userId) return;
@@ -353,17 +382,49 @@ export function ProfileAdminPanel() {
       ...clipboardSecretsRef.current[userId],
       ...secrets,
     };
+    saveClipboardSecretsToStorage(clipboardSecretsRef.current);
   }, []);
 
-  const resolveClipboardPayload = useCallback(
-    (user: ProfileUser): ProfileClipboardData => {
+  const copyProfileForLauncher = useCallback(
+    async (user: ProfileUser): Promise<{ ok: boolean; hint: string }> => {
       const secrets = clipboardSecretsRef.current[user.id];
-      return buildClipboardPayload(user, {
+      let payload = buildClipboardPayload(user, {
         password: secrets?.password,
         activationToken: secrets?.activationToken,
       });
+
+      if (!profileHasLauncherClipboardSecret(payload) && user.id) {
+        const next = generateSecurePassword();
+        const data = await profileAction({
+          action: "reset-password",
+          id: user.id,
+          password: next,
+        });
+        if (!data.success) {
+          return {
+            ok: false,
+            hint: data.error ?? "No hay contraseña guardada. Resetea en Seguridad.",
+          };
+        }
+        rememberClipboardSecrets(user.id, { password: next });
+        payload = buildClipboardPayload(
+          {
+            ...user,
+            portalAccessSealed: data.portalAccessSealed ?? user.portalAccessSealed,
+          },
+          { password: next, activationToken: secrets?.activationToken }
+        );
+      }
+
+      const ok = await copyProfileData(payload);
+      return {
+        ok,
+        hint: ok
+          ? clipboardCopyHint(payload, Boolean(user.portalAccessSealed))
+          : "No se pudo copiar automáticamente. Usa Ctrl+C sobre el texto.",
+      };
     },
-    []
+    [rememberClipboardSecrets]
   );
 
   const fillRandomProfile = useCallback(() => {
@@ -1136,14 +1197,7 @@ export function ProfileAdminPanel() {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      const payload = resolveClipboardPayload(selected);
-                      void copyProfileData(payload).then((ok) =>
-                        setCopyHint(
-                          ok
-                            ? clipboardCopyHint(payload, Boolean(selected.portalAccessSealed))
-                            : "No se pudo copiar automáticamente. Usa Ctrl+C sobre el texto."
-                        )
-                      );
+                      void copyProfileForLauncher(selected).then(({ ok, hint }) => setCopyHint(hint));
                     }}
                   >
                     <Copy className="h-3.5 w-3.5" />

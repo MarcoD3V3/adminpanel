@@ -1,3 +1,5 @@
+import { getPanelBase } from "./panel-base.mjs";
+
 const CF_BASE = "https://api.curseforge.com/v1";
 const MINECRAFT_GAME_ID = 432;
 const MODS_CLASS_ID = 6;
@@ -29,13 +31,31 @@ function friendlyCfError(status, body) {
   return `CurseForge ${status}: ${body.slice(0, 120) || "Error de API"}`;
 }
 
-async function cfFetch(path, params = {}) {
-  const key = apiKey();
-  if (!key) {
-    throw new Error(
-      "CurseForge API no configurada. Añade CURSEFORGE_API_KEY en .env.local (https://console.curseforge.com) y reinicia el launcher."
-    );
+async function cfProxyFetch(path, params = {}) {
+  const base = getPanelBase();
+  const url = new URL(`${base}/api/curseforge`);
+  url.searchParams.set("path", path);
+  for (const [k, v] of Object.entries(params)) {
+    if (v !== undefined && v !== null && v !== "") url.searchParams.set(k, String(v));
   }
+
+  const res = await fetch(url, { headers: { Accept: "application/json" } });
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    if (res.status === 503) {
+      throw new Error(
+        "CurseForge no está configurado en el servidor admin. Pide al administrador que añada CURSEFORGE_API_KEY en Railway."
+      );
+    }
+    throw new Error(friendlyCfError(res.status, body));
+  }
+
+  return res.json();
+}
+
+async function cfDirectFetch(path, params = {}) {
+  const key = apiKey();
+  if (!key) throw new Error("Sin API key local");
 
   const url = new URL(`${CF_BASE}${path}`);
   for (const [k, v] of Object.entries(params)) {
@@ -52,6 +72,13 @@ async function cfFetch(path, params = {}) {
   }
 
   return res.json();
+}
+
+async function cfFetch(path, params = {}) {
+  if (apiKey()) {
+    return cfDirectFetch(path, params);
+  }
+  return cfProxyFetch(path, params);
 }
 
 function mapMod(m) {
@@ -97,46 +124,56 @@ export async function searchResourcePacks(query, opts = {}) {
 }
 
 export function curseForgeConfigured() {
-  return Boolean(apiKey());
+  return Boolean(apiKey()) || Boolean(getPanelBase());
 }
 
-/** Comprueba que haya key y que no esté recortada por error. */
+/** Comprueba que haya key local o proxy del admin disponible. */
 export function curseForgeKeyStatus() {
   const key = apiKey();
-  if (!key) {
+  if (key) {
+    if (key.startsWith("$2a$") && key.length < 55) {
+      return {
+        ok: false,
+        reason: "truncated",
+        message:
+          "La key parece incompleta. Si la copiaste desde console.curseforge.com, pega el token entero " +
+          "(incluido $2a$10$ al inicio). No quites ese prefijo.",
+      };
+    }
+    if (!key.startsWith("$2a$") && key.length >= 50 && key.length <= 56 && /^[A-Za-z0-9./]+$/.test(key)) {
+      return {
+        ok: false,
+        reason: "missing_prefix",
+        message:
+          "Parece que pegaste solo una parte de la key (sin $2a$10$). Copia el token completo desde " +
+          "console.curseforge.com → API Keys.",
+      };
+    }
+    if (key.length < 20) {
+      return {
+        ok: false,
+        reason: "short",
+        message: "La API key parece demasiado corta. Copia la key completa desde console.curseforge.com.",
+      };
+    }
+    return { ok: true, reason: "local", message: "" };
+  }
+
+  const panel = getPanelBase();
+  if (panel) {
     return {
-      ok: false,
-      reason: "missing",
-      message: "Falta CURSEFORGE_API_KEY en .env.local",
+      ok: true,
+      reason: "server_proxy",
+      message: "",
     };
   }
-  // Keys de console.curseforge.com suelen ser ~60 chars y pueden empezar por $2a$10$
-  if (key.startsWith("$2a$") && key.length < 55) {
-    return {
-      ok: false,
-      reason: "truncated",
-      message:
-        "La key parece incompleta. Si la copiaste desde console.curseforge.com, pega el token entero " +
-        "(incluido $2a$10$ al inicio). No quites ese prefijo.",
-    };
-  }
-  if (!key.startsWith("$2a$") && key.length >= 50 && key.length <= 56 && /^[A-Za-z0-9./]+$/.test(key)) {
-    return {
-      ok: false,
-      reason: "missing_prefix",
-      message:
-        "Parece que pegaste solo una parte de la key (sin $2a$10$). Copia el token completo desde " +
-        "console.curseforge.com → API Keys.",
-    };
-  }
-  if (key.length < 20) {
-    return {
-      ok: false,
-      reason: "short",
-      message: "La API key parece demasiado corta. Copia la key completa desde console.curseforge.com.",
-    };
-  }
-  return { ok: true, reason: "ok", message: "" };
+
+  return {
+    ok: false,
+    reason: "missing",
+    message:
+      "CurseForge no disponible. Configura CURSEFORGE_API_KEY en el admin (Railway) o en .env.local para desarrollo.",
+  };
 }
 
 function mapFile(f) {
