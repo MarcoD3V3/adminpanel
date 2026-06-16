@@ -42,6 +42,7 @@ function defaultSettings(): SystemSettings {
     branding: {
       serverName: "CraftLauncher",
       supportUrl: "https://discord.gg/craftlauncher",
+      launcherDownloadUrl: "https://cinycoxd22.itch.io/launcher-craftlauncher",
     },
     updatedAt: now,
   };
@@ -158,6 +159,7 @@ export function toLauncherPublicConfig(
     oauthMode: settings.oauth.mode,
     serverName: settings.branding.serverName,
     supportUrl: settings.branding.supportUrl,
+    launcherDownloadUrl: settings.branding.launcherDownloadUrl,
     features: settings.features,
     testerModeEnabled: extras.testerModeEnabled,
     launcherAuthEnforced: resolveLauncherAuthEnforced(settings),

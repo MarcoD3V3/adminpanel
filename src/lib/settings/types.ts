@@ -30,6 +30,8 @@ export type SystemSettings = {
   branding: {
     serverName: string;
     supportUrl: string;
+    /** Enlace público de descarga (itch.io, GitHub Releases, etc.) */
+    launcherDownloadUrl: string;
   };
   updatedAt: string;
 };
@@ -45,6 +47,7 @@ export type PublicLauncherConfig = {
   oauthMode: OAuthMode;
   serverName: string;
   supportUrl: string;
+  launcherDownloadUrl: string;
   features: SystemSettings["features"];
   testerModeEnabled: boolean;
   launcherAuthEnforced: boolean;

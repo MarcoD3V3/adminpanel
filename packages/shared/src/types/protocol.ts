@@ -14,6 +14,7 @@ export type RemoteCommand =
       display?: NotificationDisplay;
     }
   | { type: "force_update"; version: string }
+  | { type: "launcher_update_hint"; version: string; downloadUrl?: string }
   | { type: "restart" }
   | { type: "kill_game" }
   | { type: "maintenance"; enabled: boolean }

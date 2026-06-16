@@ -20,6 +20,7 @@ import {
   testDatabaseConnection,
   toLauncherPublicConfig,
   toPublicSettings,
+  compareVersions,
 } from "./store";
 
 const BACKUP_DIR = join(getDataDir(), "backups");
@@ -142,8 +143,9 @@ async function syncForceUpdateRules(settings: SystemSettings): Promise<void> {
   for (const p of presences) {
     if (isLauncherVersionOutdated(p.launcherVersion, settings)) {
       await enqueueCommand(p.deviceId, {
-        type: "force_update",
+        type: "launcher_update_hint",
         version: settings.api.latestLauncherVersion,
+        downloadUrl: settings.branding.launcherDownloadUrl,
       });
     }
   }
@@ -168,20 +170,15 @@ export async function buildPresenceCommands(
   }
 
   if (
-    settings.security.forceUpdate &&
     settings.features.notificationsEnabled &&
-    isLauncherVersionOutdated(launcherVersion, settings)
+    compareVersions(launcherVersion, settings.api.latestLauncherVersion) < 0
   ) {
     commands.push({
-      type: "force_update",
-      version: settings.api.latestLauncherVersion,
-    });
-    commands.push({
       type: "notification",
-      title: "Actualización requerida",
-      message: `Tu launcher (v${launcherVersion}) está por debajo del mínimo v${settings.api.minLauncherVersion}.`,
+      title: "Actualización disponible",
+      message: `v${settings.api.latestLauncherVersion} ya está publicada. Puedes seguir usando v${launcherVersion}.`,
       style: "update",
-      display: "alert",
+      display: "toast",
     });
   }
 

@@ -1,3 +1,4 @@
+export * from "./utils/compare-versions";
 export * from "./constants/forge-versions";
 export * from "./constants/profile-plans";
 export * from "./constants/launcher-tiers";

@@ -86,7 +86,8 @@ export type HubElementType =
   | "chat-input"
   | "chat-send"
   | "chat-close"
-  | "chat-resize-handle";
+  | "chat-resize-handle"
+  | "launcher-update-banner";
 
 export type HubElementAction =
   | "play"

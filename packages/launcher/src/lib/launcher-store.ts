@@ -52,6 +52,7 @@ import {
   type RemoteCommand,
   type ScriptRunResult,
   type ScriptRuntimeCallbacks,
+  compareVersions,
 } from "@craftlauncher/shared";
 import { getSessionAuthApiUrl } from "./auth-api";
 import { getAdminApiUrl } from "./config";
@@ -102,6 +103,50 @@ let layoutSyncInFlight: Promise<void> | null = null;
 let pollInFlight: Promise<void> | null = null;
 let heartbeatInFlight: Promise<void> | null = null;
 let cachedLauncherVersion = "1.0.0";
+
+const UPDATE_DISMISS_PREFIX = "cl_dismissed_update_";
+
+function isUpdateDismissed(latestVersion: string): boolean {
+  try {
+    return localStorage.getItem(`${UPDATE_DISMISS_PREFIX}${latestVersion}`) === "1";
+  } catch {
+    return false;
+  }
+}
+
+type LauncherConfigSlice = {
+  minLauncherVersion?: string;
+  latestLauncherVersion?: string;
+  launcherDownloadUrl?: string;
+  forceUpdate?: boolean;
+};
+
+function syncLauncherUpdateFromConfig(config: LauncherConfigSlice | null | undefined) {
+  if (!config) return;
+  const current = cachedLauncherVersion;
+  const latest = config.latestLauncherVersion?.trim() || current;
+  const downloadUrl = config.launcherDownloadUrl?.trim() ?? "";
+  const belowMinimum =
+    Boolean(config.minLauncherVersion) &&
+    compareVersions(current, config.minLauncherVersion!) < 0;
+  const behindLatest = compareVersions(current, latest) < 0;
+  const available = behindLatest;
+
+  if (!available || isUpdateDismissed(latest)) {
+    setState({ launcherUpdate: null });
+    return;
+  }
+
+  setState({
+    launcherUpdate: {
+      available: true,
+      currentVersion: current,
+      latestVersion: latest,
+      downloadUrl,
+      belowMinimum,
+    },
+  });
+}
 
 export type LaunchPhase =
   | "idle"
@@ -184,6 +229,14 @@ export interface LauncherBanner {
   style: NotificationStyle;
 }
 
+export type LauncherUpdateInfo = {
+  available: boolean;
+  currentVersion: string;
+  latestVersion: string;
+  downloadUrl: string;
+  belowMinimum: boolean;
+};
+
 /** Solo datos serializables — las acciones viven en `launcherActions`. */
 export interface LauncherState {
   layout: HubLayout;
@@ -193,6 +246,7 @@ export interface LauncherState {
   floatingAlerts: FloatingAlert[];
   modalAlerts: ModalAlert[];
   banners: LauncherBanner[];
+  launcherUpdate: LauncherUpdateInfo | null;
   status: string;
   launchProgress: string | null;
   launchSession: LaunchSession;
@@ -372,6 +426,7 @@ const launcherStore = createStore<LauncherState>(() => ({
   floatingAlerts: [],
   modalAlerts: [],
   banners: [],
+  launcherUpdate: null,
   status: "idle",
   launchProgress: null,
   launchSession: emptyLaunchSession(),
@@ -1264,7 +1319,11 @@ export const launcherActions = {
 
   pushNotification: (payload: LauncherNotificationPayload) => {
     const style = payload.style ?? "info";
-    const display = payload.display ?? "toast";
+    let display = payload.display ?? "toast";
+
+    if (display === "alert" && style === "update") {
+      display = "toast";
+    }
 
     if (display === "alert") {
       setState((s) => {
@@ -1298,8 +1357,27 @@ export const launcherActions = {
   },
 
   setLauncherVersion: (version: string) => {
-    if (version.trim()) cachedLauncherVersion = version.trim();
+    if (!version.trim()) return;
+    cachedLauncherVersion = version.trim();
+    const u = getState().launcherUpdate;
+    if (u && compareVersions(cachedLauncherVersion, u.latestVersion) >= 0) {
+      setState({ launcherUpdate: null });
+    }
   },
+
+  dismissLauncherUpdateBanner: () => {
+    const u = getState().launcherUpdate;
+    if (u) {
+      try {
+        localStorage.setItem(`${UPDATE_DISMISS_PREFIX}${u.latestVersion}`, "1");
+      } catch {
+        /* ignore */
+      }
+    }
+    setState({ launcherUpdate: null });
+  },
+
+  syncLauncherUpdateFromConfig,
 
   buildLiveOpsPayload: (): LiveOpsHeartbeatPayload => {
     const s = getState();
@@ -1380,11 +1458,11 @@ export const launcherActions = {
       }
 
       if (result.config) {
-        const cfg = result.config as {
+        const cfg = result.config as LauncherConfigSlice & {
           maintenanceMode?: boolean;
           maintenanceMessage?: string;
-          minLauncherVersion?: string;
         };
+        syncLauncherUpdateFromConfig(cfg);
         if (cfg.maintenanceMode) {
           launcherActions.pushFloatingAlert({
             id: `maint_${Date.now()}`,
@@ -1601,6 +1679,28 @@ export const launcherActions = {
           message: res?.ok ? "Minecraft cerrado remotamente" : (res?.error ?? "No se pudo cerrar MC"),
           style: res?.ok ? "warning" : "error",
         });
+      });
+      return;
+    }
+    if (cmd.type === "launcher_update_hint") {
+      syncLauncherUpdateFromConfig({
+        latestLauncherVersion: cmd.version,
+        launcherDownloadUrl: cmd.downloadUrl,
+        minLauncherVersion: cmd.version,
+        forceUpdate: true,
+      });
+      launcherActions.pushFloatingAlert({
+        id: `update-hint-${cmd.version}`,
+        title: "Actualización disponible",
+        message: `v${cmd.version} ya está publicada. El launcher sigue funcionando.`,
+        style: "update",
+      });
+      return;
+    }
+    if (cmd.type === "force_update") {
+      syncLauncherUpdateFromConfig({
+        latestLauncherVersion: cmd.version,
+        forceUpdate: true,
       });
       return;
     }

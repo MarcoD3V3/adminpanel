@@ -42,6 +42,7 @@ type FormState = {
   integrationsEnabled: boolean;
   serverName: string;
   supportUrl: string;
+  launcherDownloadUrl: string;
 };
 
 function toForm(settings: SystemSettingsPublic): FormState {
@@ -65,6 +66,7 @@ function toForm(settings: SystemSettingsPublic): FormState {
     integrationsEnabled: settings.features.integrationsEnabled,
     serverName: settings.branding.serverName,
     supportUrl: settings.branding.supportUrl,
+    launcherDownloadUrl: settings.branding.launcherDownloadUrl,
   };
 }
 
@@ -139,6 +141,7 @@ export default function SettingsPage() {
           branding: {
             serverName: merged.serverName,
             supportUrl: merged.supportUrl,
+            launcherDownloadUrl: merged.launcherDownloadUrl,
           },
         }),
       });
@@ -291,6 +294,14 @@ export default function SettingsPage() {
                   value={form.supportUrl}
                   onChange={(e) => setForm((f) => (f ? { ...f, supportUrl: e.target.value } : f))}
                 />
+                <Input
+                  label="Descarga del launcher (.exe)"
+                  value={form.launcherDownloadUrl}
+                  onChange={(e) =>
+                    setForm((f) => (f ? { ...f, launcherDownloadUrl: e.target.value } : f))
+                  }
+                  placeholder="https://tu-usuario.itch.io/craftlauncher"
+                />
                 <Button variant="outline" onClick={() => void saveSection({})} disabled={saving}>
                   Guardar branding
                 </Button>
@@ -362,7 +373,7 @@ export default function SettingsPage() {
                   onChange={(e) => setForm((f) => (f ? { ...f, maintenanceMessage: e.target.value } : f))}
                 />
                 <Toggle
-                  label="Update obligatorio"
+                  label="Avisar actualización (sin bloquear)"
                   checked={form.forceUpdate}
                   onChange={(v) => {
                     setForm((f) => (f ? { ...f, forceUpdate: v } : f));

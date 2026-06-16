@@ -57,6 +57,7 @@ import { PanelVisibilitySelectHub } from "./automation-hub/PanelVisibilitySelect
 import { HubElementShell } from "./hub/HubElementShell";
 import { CHAT_OVERLAY_ELEMENT_TYPES } from "@craftlauncher/shared";
 import { ChatBubbleToggleHub } from "./chat-hub/PortalChatHub";
+import { LauncherUpdateBannerHub } from "./update-hub/LauncherUpdateBannerHub";
 
 function cssToStyle(css: HubElement["css"]): React.CSSProperties {
   return hubElementCssToStyle(css) as React.CSSProperties;
@@ -524,6 +525,14 @@ export function HubElementView({ element, allElements, onClick, onChange, flow, 
     return (
       <div {...lhWrap()}>
         <MinecraftStatusChip label={element.label || undefined} />
+      </div>
+    );
+  }
+
+  if (element.type === "launcher-update-banner") {
+    return (
+      <div {...lhWrap()}>
+        <LauncherUpdateBannerHub label={element.label || undefined} />
       </div>
     );
   }

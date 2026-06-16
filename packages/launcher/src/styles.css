@@ -2618,6 +2618,77 @@ body:has(.lw-shell) {
   box-sizing: border-box;
 }
 
+.launcher-update-banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(100, 160, 220, 0.35);
+  background: linear-gradient(135deg, rgba(26, 35, 50, 0.95), rgba(20, 28, 40, 0.92));
+  box-sizing: border-box;
+}
+
+.launcher-update-banner-title {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #e8f0ff;
+}
+
+.launcher-update-banner-msg {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.45;
+  color: rgba(220, 228, 240, 0.78);
+}
+
+.launcher-update-banner-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+}
+
+.launcher-update-banner-dl {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  background: #4a8f5c;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.launcher-update-banner-dl:hover {
+  filter: brightness(1.08);
+}
+
+.launcher-update-banner-dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+}
+
+.launcher-update-banner-dismiss:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
 .mc-status-dot {
   width: 8px;
   height: 8px;

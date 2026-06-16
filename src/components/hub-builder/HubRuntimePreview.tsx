@@ -853,6 +853,19 @@ export function HubRuntimePreview({ element, style, compact }: HubRuntimePreview
     );
   }
 
+  if (element.type === "launcher-update-banner") {
+    return (
+      <PreviewShell element={element} compact={compact} frameStyle={style}>
+        <div className="launcher-update-banner" style={{ position: "relative", height: "100%" }}>
+          <div className="launcher-update-banner-body">
+            <p className="launcher-update-banner-title">{element.label || "Nueva actualización"}</p>
+            <p className="launcher-update-banner-msg">v1.3.0 · ejemplo (solo si hay update real)</p>
+          </div>
+        </div>
+      </PreviewShell>
+    );
+  }
+
   if (
     element.type === "chat-header" ||
     element.type === "chat-panel" ||
