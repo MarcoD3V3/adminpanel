@@ -55,8 +55,9 @@ import {
 import { MinecraftStatusChip } from "./automation-hub/MinecraftStatusChip";
 import { PanelVisibilitySelectHub } from "./automation-hub/PanelVisibilitySelectHub";
 import { HubElementShell } from "./hub/HubElementShell";
-import { CHAT_OVERLAY_ELEMENT_TYPES } from "@craftlauncher/shared";
+import { CHAT_OVERLAY_ELEMENT_TYPES, isChatOverlayHubElement } from "@craftlauncher/shared";
 import { ChatBubbleAtHub, ChatOverlayAtPosition } from "./chat-hub/ChatHubLayoutElements";
+import { usePortalChatStore } from "@/lib/portal-chat-store";
 import { LauncherUpdateBannerHub } from "./update-hub/LauncherUpdateBannerHub";
 
 function cssToStyle(css: HubElement["css"]): React.CSSProperties {
@@ -78,7 +79,10 @@ export function HubElementView({ element, allElements, onClick, onChange, flow, 
   const pool = allElements?.length ? allElements : [element];
   const effectiveElement = { ...element, css: resolveEffectiveHubCss(element, pool) };
   const cssStyle = cssToStyle(effectiveElement.css);
-  if (!element.visible) return null;
+  if (!element.visible) {
+    const chatOpen = usePortalChatStore.getState().isOpen;
+    if (!(chatOpen && isChatOverlayHubElement(element))) return null;
+  }
 
   const textColor = resolveHubTextColor(element.style.textColor);
   const bg = resolveHubBackgroundColor(element.style.backgroundColor, DEFAULT_HUB_SURFACE_BG);

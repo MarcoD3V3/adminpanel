@@ -19,6 +19,8 @@ import { isLaunchUiActive } from "@/lib/launch-session-ui";
 import { launcherActions, useLauncherStore } from "@/lib/launcher-store";
 import { getAdminApiUrl } from "@/lib/config";
 import { useAuthStore } from "@/lib/auth-store";
+import { usePortalChatStore } from "@/lib/portal-chat-store";
+import { isChatRuntimeElement } from "@craftlauncher/shared";
 import { HubElementView } from "./HubElementView";
 
 const CLICKABLE = new Set([
@@ -61,6 +63,7 @@ export function HubRuntime({ screenId: forcedScreenId }: HubRuntimeProps = {}) {
   );
   const launchStatus = useLauncherStore((s) => s.status);
   const launchUiActive = isLaunchUiActive(launchPhase, launchStatus);
+  const chatOpen = usePortalChatStore((s) => s.isOpen);
   const screen =
     (forcedScreenId
       ? layout.screens.find((s) => s.id === forcedScreenId)
@@ -145,6 +148,7 @@ export function HubRuntime({ screenId: forcedScreenId }: HubRuntimeProps = {}) {
       el.type === "launch-panel" ||
       (LAUNCH_UI_ELEMENT_TYPES.has(el.type) && el.type !== "launch-desktop-window-toggle");
     if (isLaunchWidget && (!el.visible || !launchUiActive)) return false;
+    if (isChatRuntimeElement(el) && el.type !== "chat-bubble-toggle" && !chatOpen) return false;
     if (el.type === "visibility-zone") {
       const phaseKey = String(el.value ?? el.logic?.constants?.PHASE ?? "any");
       if (!visibilityZoneMatches(phaseKey, launchPhase)) return false;

@@ -15,7 +15,6 @@ import {
 } from "@/lib/hub-builder-placement";
 import {
   backgroundExtendsIntoChrome,
-  computeChatOverlayBounds,
   hubScreenContentBackgroundStyle,
   hubWindowFrameBackgroundStyle,
   isChatHubElementType,
@@ -171,18 +170,19 @@ export function HubCanvas() {
   const editTarget = useHubBuilderStore((s) => s.editTarget);
   const canvasScreen = previewMode ? contentScreen : editScreen;
   const sortedElements = [...canvasScreen.elements].sort((a, b) => a.zIndex - b.zIndex);
-  const editableElements = useMemo(
-    () => canvasLayerElements(sortedElements),
-    [sortedElements]
-  );
-  const chatGroupBounds = useMemo(() => {
-    if (previewMode) return null;
+  const previewChatOpen = useHubBuilderStore((s) => s.previewChatOpen);
+  const editorChatPreview = useMemo(() => {
+    if (previewMode) return previewChatOpen;
     const activeIds = selectedIds?.length ? selectedIds : selectedId ? [selectedId] : [];
-    if (!activeIds.length) return null;
+    if (!activeIds.length) return false;
     const selected = canvasScreen.elements.filter((e) => activeIds.includes(e.id));
-    if (!selected.some((e) => isChatHubElementType(e.type))) return null;
-    return computeChatOverlayBounds(canvasScreen.elements);
-  }, [previewMode, selectedId, selectedIds, canvasScreen.elements]);
+    return selected.some((e) => isChatHubElementType(e.type) || e.hubGroup === "chat");
+  }, [previewMode, previewChatOpen, selectedId, selectedIds, canvasScreen.elements]);
+
+  const editableElements = useMemo(
+    () => canvasLayerElements(sortedElements, { editorChatPreview }),
+    [sortedElements, editorChatPreview]
+  );
   const isGameMenu = layout.activeScreenId === GAME_MENU_SCREEN_ID;
   const isLoadingScreen = layout.activeScreenId === GAME_LOADING_SCREEN_ID;
   const isMinecraftScreen = isGameMenu || isLoadingScreen;
@@ -1217,19 +1217,6 @@ export function HubCanvas() {
               }}
             />
           )}
-          {!previewMode && chatGroupBounds && (
-            <div
-              className="hub-builder-chat-group-frame pointer-events-none absolute z-[7500]"
-              style={{
-                left: chatGroupBounds.x,
-                top: chatGroupBounds.y,
-                width: chatGroupBounds.width,
-                height: chatGroupBounds.height,
-              }}
-            >
-              <span className="hub-builder-chat-group-label">Panel de chat (visible al abrir la burbuja)</span>
-            </div>
-          )}
           <HubPreviewToasts />
           <HubCssElementsProvider elements={canvasScreen.elements}>
           <HubAdvancedCssSheet elements={canvasScreen.elements} />
@@ -1284,6 +1271,7 @@ export function HubCanvas() {
                     editing={!previewMode}
                     runtime={previewMode || isMinecraftScreen}
                     fillParent
+                    editorChatPreview={editorChatPreview}
                     onRuntimeClick={() => void executeElementAction(element.id)}
                     onRuntimeChange={(value) => void handleRuntimeChange(element.id, value)}
                   />

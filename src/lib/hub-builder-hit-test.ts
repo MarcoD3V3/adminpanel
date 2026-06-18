@@ -1,4 +1,5 @@
 import type { HubElement } from "@/types/hub-builder";
+import { isChatOverlayHubElement, isChatPanelContainer } from "@craftlauncher/shared";
 
 export type HubElementBounds = (el: HubElement) => {
   x: number;
@@ -8,14 +9,24 @@ export type HubElementBounds = (el: HubElement) => {
 };
 
 /** Elementos que se pintan como capa propia en el canvas (no piezas embebidas del launch-panel). */
-export function canvasLayerElements(elements: HubElement[]): HubElement[] {
+export function canvasLayerElements(
+  elements: HubElement[],
+  opts?: { editorChatPreview?: boolean }
+): HubElement[] {
   const byId = new Map(elements.map((e) => [e.id, e] as const));
   return elements.filter((el) => {
-    if (!el.visible) return false;
+    const chatPart = isChatOverlayHubElement(el) || isChatPanelContainer(el);
+    const chatBubble = el.type === "chat-bubble-toggle";
+
+    if (chatPart && !opts?.editorChatPreview) return false;
+    if (!chatBubble && !el.visible && !(opts?.editorChatPreview && chatPart)) return false;
+
     if (!el.parentId) return true;
     const parent = byId.get(el.parentId);
     if (!parent) return true;
-    return parent.type !== "launch-panel";
+    if (parent.type === "launch-panel") return false;
+    if (isChatPanelContainer(parent)) return false;
+    return true;
   });
 }
 

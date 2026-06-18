@@ -36,6 +36,7 @@ import {
   collectAllRefIds,
   collectLaunchHudElements,
   createLaunchPanelBundle,
+  createChatPanelBundle,
   hasVisibilityActions,
   isVisibilityRuleElement,
   parseVisibilityActions,
@@ -423,6 +424,8 @@ interface HubBuilderState {
   zoom: number;
   autoFit: boolean;
   previewMode: boolean;
+  /** En modo Probar: chat abierto/cerrado al pulsar la burbuja. */
+  previewChatOpen: boolean;
   /** Tamaño de ventana simulado en modo probar (null = usar layout). */
   previewFrameSize: { width: number; height: number } | null;
   /** Escala visual de fuentes/bordes del menú Minecraft en el canvas. */
@@ -571,6 +574,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
   zoom: 1,
   autoFit: true,
   previewMode: false,
+  previewChatOpen: false,
   previewFrameSize: null,
   gameMenuUiScale: 1,
   previewToasts: [],
@@ -748,6 +752,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
         : get().layout.window?.height ?? (screen ? screen.height + chromeH : 520);
       set({
         previewMode: true,
+        previewChatOpen: false,
         previewFrameSize: {
           width: Math.max(320, Math.round(frameW)),
           height: Math.max(200, Math.round(frameH)),
@@ -777,6 +782,7 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
       screen?.id === GAME_MENU_SCREEN_ID || screen?.id === GAME_LOADING_SCREEN_ID;
     set({
       previewMode: false,
+      previewChatOpen: false,
       previewFrameSize: isMinecraftScreen
         ? get().previewFrameSize ?? DEFAULT_MINECRAFT_WINDOW
         : null,
@@ -1230,6 +1236,11 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
       return;
     }
 
+    if (el.type === "chat-bubble-toggle") {
+      set({ previewChatOpen: !get().previewChatOpen });
+      return;
+    }
+
     if (el.action === "hide-launch-panel" && get().previewMode) {
       get().pushPreviewToast("Vista previa: ocultar panel de descarga", "info");
       return;
@@ -1569,6 +1580,34 @@ export const useHubBuilderStore = create<HubBuilderState>((set, get) => ({
       rawY,
       selectedId: get().selectedId,
     });
+
+    if (palette.id === "chat.bubbleToggle" || palette.type === "chat-bubble-toggle") {
+      let bubbleX = placement.x;
+      let bubbleY = placement.y;
+      if (placement.parentId) {
+        const pAbs = elementAbsolutePosition(repaired, placement.parentId);
+        bubbleX = pAbs.x + placement.x;
+        bubbleY = pAbs.y + placement.y;
+      }
+      const bundle = createChatPanelBundle({
+        bubbleX,
+        bubbleY,
+        zIndex: maxZ + 1,
+        existingRefs,
+        screenWidth: screen.width,
+        screenHeight: screen.height,
+      });
+      const bubble = bundle.find((e) => e.type === "chat-bubble-toggle");
+      set((state) => ({
+        layout: patchScreenOrChromeElements(state.layout, screen.id, (elements) => [
+          ...repairInvalidElementParents(elements, grid),
+          ...bundle,
+        ]),
+        selectedId: bubble?.id ?? bundle[0]?.id ?? null,
+        selectedIds: bubble ? [bubble.id] : bundle[0] ? [bundle[0].id] : [],
+      }));
+      return;
+    }
 
     if (palette.id === "launch.panel" || palette.type === "launch-panel") {
       let topX = placement.x;

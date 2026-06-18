@@ -43,6 +43,7 @@ export * from "./layout/hub-advanced-css";
 export * from "./layout/hub-surface-box-style";
 export * from "./layout/instance-avatar-utils";
 export * from "./layout/chat-hub-layout";
+export * from "./layout/hub-chat-panel-bundle";
 export * from "./api/hub-layout";
 export * from "./api/launcher-auth";
 export * from "./api/launcher-skins";

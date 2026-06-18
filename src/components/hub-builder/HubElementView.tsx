@@ -10,6 +10,7 @@ import {
   resolveTextColor,
 } from "@/components/hub-builder/hub-builder-hooks";
 import { bindAccountHubElement } from "@craftlauncher/shared";
+import { CHAT_PANEL_PARTS, isChatOverlayHubElement, isChatPanelContainer } from "@craftlauncher/shared";
 import { paletteIcons } from "@/components/hub-builder/palette-icons";
 import { useHubBuilderStore } from "@/lib/hub-builder-store";
 import {
@@ -31,6 +32,7 @@ interface HubElementViewProps {
   editing?: boolean;
   runtime?: boolean;
   fillParent?: boolean;
+  editorChatPreview?: boolean;
   onRuntimeClick?: () => void;
   onRuntimeChange?: (value: string | number | boolean) => void;
 }
@@ -115,12 +117,17 @@ export function HubElementView({
   editing,
   runtime,
   fillParent,
+  editorChatPreview,
   onRuntimeClick,
   onRuntimeChange,
 }: HubElementViewProps) {
   const screenElements = useHubBuilderStore((s) => s.getActiveScreen().elements);
   const launchPanelChildren = useMemo(() => {
     if (element.type !== "launch-panel") return [];
+    return screenElements.filter((e) => e.parentId === element.id).sort((a, b) => a.y - b.y);
+  }, [screenElements, element.id, element.type]);
+  const chatPanelChildren = useMemo(() => {
+    if (!isChatPanelContainer(element)) return [];
     return screenElements.filter((e) => e.parentId === element.id).sort((a, b) => a.y - b.y);
   }, [screenElements, element.id, element.type]);
 
@@ -136,7 +143,15 @@ export function HubElementView({
     });
   }, [allElements, element, runtime]);
 
-  if (!element.visible) return null;
+  if (
+    !element.visible &&
+    !(
+      editorChatPreview &&
+      (isChatOverlayHubElement(element) || isChatPanelContainer(element))
+    )
+  ) {
+    return null;
+  }
 
   if (element.type.startsWith("chrome-")) {
     const chromeClickProps = runtimeClickProps(runtime && Boolean(onRuntimeClick), onRuntimeClick);
@@ -229,6 +244,44 @@ export function HubElementView({
         borderRadius: radius,
         color: textColor,
       };
+
+  if (isChatPanelContainer(element)) {
+    const partLabels = new Map(CHAT_PANEL_PARTS.map((p) => [p.type, p.refBase]));
+
+    if (chatPanelChildren.length > 0) {
+      return (
+        <div
+          className={cn(baseClass, "overflow-hidden")}
+          style={{
+            ...boxStyle,
+            background: bg || "#0f1116",
+            border: "1px solid rgba(124, 131, 255, 0.45)",
+            borderRadius: element.style.borderRadius ?? 14,
+            ...cssStyle,
+          }}
+        >
+          <div className="flex h-full flex-col gap-1.5 p-2">
+            <p className="text-[9px] font-medium text-[#a5abff]">Panel chat · piezas</p>
+            {chatPanelChildren.map((child) => {
+              const ChildIcon = typeIcons[child.type];
+              return (
+                <div
+                  key={child.id}
+                  className="flex min-h-0 flex-1 items-center gap-2 rounded-md border border-dashed border-[#7c83ff55] bg-black/30 px-2"
+                  style={{ minHeight: Math.max(14, child.height - 4) }}
+                >
+                  {ChildIcon && <ChildIcon className="h-3 w-3 shrink-0 text-[#a5abff]" strokeWidth={1.5} />}
+                  <span className="truncate font-mono text-[9px] text-[var(--color-muted)]">
+                    {child.label || child.logic?.refId || partLabels.get(child.type) || child.type}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+  }
 
   if (element.type === "launch-panel") {
     const partLabels = new Map(LAUNCH_PANEL_PARTS.map((p) => [p.type, p.refBase]));
